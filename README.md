@@ -1,21 +1,19 @@
-# Malino – wersja GitHub/Vercel
+# Malino 1.1
 
-Ta wersja jest przygotowana do pierwszego poprawnego wdrożenia przez GitHub i Vercel.
+Aktualizacja aplikacji Malino dla GitHub + Vercel.
 
-## Wgranie do GitHub
+## Nowości
+- pasek postępu dziecka,
+- pierwsza odznaka,
+- sekcja ostatnio otwieranych kolorowanek,
+- panel rodzica ze statystykami,
+- zapamiętywanie otwieranych i ukończonych obrazków,
+- ulepszone nagłówki bezpieczeństwa.
 
-1. Otwórz repozytorium `Malino`.
-2. Kliknij **Add file → Upload files**.
-3. Prześlij pliki:
-   - `index.html`
-   - `vercel.json`
-   - `README.md`
-4. Na dole kliknij **Commit changes**.
-
-Vercel automatycznie rozpocznie wdrożenie po zapisaniu plików.
-
-## Dlaczego jeden plik HTML?
-
-Na pierwszym etapie style, JavaScript i grafiki są osadzone w `index.html`.
-Zapobiega to problemom z brakującymi plikami podczas przesyłania z iPada.
-Po potwierdzeniu poprawnego wdrożenia rozdzielimy projekt na moduły.
+## Aktualizacja
+1. Rozpakuj ZIP.
+2. W GitHub otwórz repozytorium Malino.
+3. Kliknij Add file → Upload files.
+4. Prześlij `index.html`, `vercel.json`, `README.md`.
+5. Zatwierdź jako `Malino 1.1`.
+6. Vercel wdroży wersję automatycznie.
