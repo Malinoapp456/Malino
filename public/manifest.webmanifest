@@ -1,0 +1,8 @@
+{
+  "name": "Malino \u2013 Dein kreativer Freund",
+  "short_name": "Malino",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#eef9ff",
+  "theme_color": "#2979ff"
+}
