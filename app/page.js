@@ -63,7 +63,8 @@ function useStore(key,initial){
  useEffect(()=>{try{localStorage.setItem(key,JSON.stringify(v))}catch{}},[key,v]);
  return [v,setV];
 }
-function Logo(){return <div className="logo"><b>M</b><b>A</b><b>L</b><b>I</b><b>N</b><b>O</b></div>}
+function Logo(){return <div className="logo logoV2" aria-label="Malino"><b>M</b><b>A</b><b>L</b><b>I</b><b>N</b><b>O</b><i className="logoPaw">●</i></div>}
+function HomeMascot(){return <div className="homeMascot" aria-label="Malino, dein kreativer Freund"><img src="/ui/malino-mascot.webp" alt="Fröhlicher Malino mit Pinsel"/><span className="mascotSpark s1">✦</span><span className="mascotSpark s2">✦</span><span className="mascotSpark s3">•</span></div>}
 function Lion(){return <div className="lion">🦁</div>}
 function Thumb({it,done}){return <div className="thumb" style={{background:it.bg}}>{it.image?<img src={it.image} alt={it.name}/>:<span>{it.emoji}</span>}{done&&<i>✓</i>}</div>}
 function Dino({fills,paint}){
@@ -181,15 +182,16 @@ export default function Page(){
  return <main>
   <header><button>🇩🇪 Deutsch⌄</button><Logo/><div><span>⭐ {stars}</span><button onClick={()=>setScreen("parent")}>👤 Eltern</button></div></header>
 
-  {screen==="start"&&<section>
-   <div className="hero">
-    <Lion/><div className="speech"><h1>Hallo! 👋</h1><p>Schön, dass du da bist!<br/>Was möchtest du heute malen?</p><button className="primary" onClick={()=>open(items[0])}>🖌️ Jetzt malen!</button></div>
-    <div className="daily"><b>⭐ Bild des Tages</b><Thumb it={items[0]} done={done.includes("dino")}/><button onClick={()=>open(items[0])}>Jetzt malen!</button></div>
+  {screen==="start"&&<section className="startV2">
+   <div className="hero heroV2">
+    <HomeMascot/>
+    <div className="speech speechV2"><span className="welcomeTag">Dein kreativer Freund</span><h1>Hallo! 👋</h1><p>Schön, dass du da bist!<br/>Was möchtest du heute malen?</p><button className="primary" onClick={()=>open(items[0])}>🖌️ Jetzt malen!</button></div>
+    <div className="daily dailyV2"><b>⭐ Bild des Tages</b><Thumb it={items[0]} done={done.includes(items[0].id)}/><button onClick={()=>open(items[0])}>Jetzt malen!</button></div>
    </div>
-   <div className="panel"><h2>Wähle eine Kategorie</h2><div className="cats">{visibleCategories.map(c=><button key={c} onClick={()=>{setCat(c);setScreen("library")}}><span>{categoryMeta[c].emoji}</span><b>{categoryMeta[c].label}</b><small>{categoryCount(c)} {categoryCount(c)===1?"Bild":"Bilder"}</small></button>)}</div>
-    <div className="title"><h2>Letzte Bilder</h2><button onClick={()=>setScreen("gallery")}>Alle anzeigen ›</button></div>
-    <div className="row">{(gallery.length?gallery:items.slice(0,5)).slice(0,5).map(x=><button key={x.id} onClick={()=>open(x)}><Thumb it={x} done={done.includes(x.id)}/></button>)}</div>
-    <div className="progress">⭐ <div><b>Toll gemacht!</b><small>Du hast schon {done.length} Bilder gemalt.</small></div><button onClick={()=>setScreen("library")}>Weiter malen</button></div>
+   <div className="panel startPanelV2"><div className="startSectionTitle"><h2>Wähle eine Kategorie <span>🐾</span></h2><button onClick={()=>setScreen("library")}>Alle anzeigen ›</button></div><div className="cats startCatsV2">{visibleCategories.map(c=><button key={c} onClick={()=>{setCat(c);setScreen("library")}}><span>{categoryMeta[c].emoji}</span><b>{categoryMeta[c].label}</b><small>{categoryCount(c)} {categoryCount(c)===1?"Bild":"Bilder"}</small></button>)}</div>
+    <div className="title startRecentTitle"><h2>🕘 Letzte Bilder</h2><button onClick={()=>setScreen("gallery")}>Alle anzeigen ›</button></div>
+    <div className="row startRecentRow">{(gallery.length?gallery:items.slice(0,5)).slice(0,5).map(x=><button key={x.id} onClick={()=>open(x)}><Thumb it={x} done={done.includes(x.id)}/></button>)}</div>
+    <div className="progress startProgress">⭐ <div><b>Toll gemacht!</b><small>Du hast schon {done.length} Bilder gemalt.</small></div><button onClick={()=>setScreen("library")}>Weiter malen</button></div>
    </div>
   </section>}
 
