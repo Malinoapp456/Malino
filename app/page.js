@@ -1159,6 +1159,49 @@ export default function Page(){
     </div>}
   </section>}
 
+  {rewardPopup&&<div className={`rewardUnlockOverlay ${rewardPopup==="chest200"?"goldenUnlockOverlay":""}`} role="dialog" aria-modal="true" aria-label="Belohnung freigeschaltet">
+   <div className={`rewardUnlockCard ${rewardPopup==="chest200"?"goldenUnlockCard":""}`}>
+    <button className="rewardClose" onClick={()=>setRewardPopup(null)} aria-label="Schließen">×</button>
+
+    {rewardPopup==="chest50"&&<>
+     <div className="unlockBurst">🎁✨</div>
+     <span className="eyebrow">50 Sterne</span>
+     <h2>Bonusfarben freigeschaltet!</h2>
+     <p>Malino hat drei neue Farben für deinen Malkasten gefunden.</p>
+     <div className="unlockedColors">
+      {chest50Colors.map(col=><div key={col.value}><i style={{background:col.value}}/><b>{col.name}</b></div>)}
+     </div>
+     <button className="unlockPaintBtn" onClick={()=>{setRewardPopup(null);setScreen("library")}}>🎨 Farben ausprobieren</button>
+     <small>Die Farben bleiben für dieses Kinderprofil freigeschaltet.</small>
+    </>}
+
+    {rewardPopup==="chest100"&&<>
+     <div className="unlockBurst">🪄🌈</div>
+     <span className="eyebrow">100 Sterne</span>
+     <h2>Zauberpinsel freigeschaltet!</h2>
+     <p>Ein besonderer Malino-Schatz ist jetzt Teil deiner Sammlung.</p>
+     <div className="magicBrushUnlock">
+      <span>🌈</span><span>✨</span><span>🖌️</span>
+     </div>
+     <button className="unlockPaintBtn" onClick={()=>{setRewardPopup(null);setScreen("library")}}>🖌️ Weiter malen</button>
+     <small>Du findest den Zauberpinsel und den neuen Schatz in Malinos Sammlung.</small>
+    </>}
+
+    {rewardPopup==="chest200"&&<>
+     <div className="unlockBurst">👑✨</div>
+     <span className="eyebrow">200 Sterne</span>
+     <h2>Malinos Geheimbild!</h2>
+     <p>Die goldene Schatzkiste enthält ein geheimes Malbild nur für echte Malino-Meister.</p>
+     <div className="secretRewardPreview">
+      <Thumb it={secretMalinoItem} done={done.includes(secretMalinoItem.id)}/>
+      <span>🦁 Geheimes Malbild</span>
+     </div>
+     <button className="unlockPaintBtn goldenPaintNow" onClick={()=>{setRewardPopup(null);open(secretMalinoItem)}}>✨ Jetzt entdecken</button>
+     <small>Das Geheimbild bleibt dauerhaft für dieses Profil freigeschaltet.</small>
+    </>}
+   </div>
+  </div>}
+
   {profileDialog&&<div className="rewardUnlockOverlay" role="dialog" aria-modal="true" aria-label="Kinderprofil">
    <div className="rewardUnlockCard" style={{maxWidth:520}}>
     <button className="rewardClose" onClick={closeProfileDialog} aria-label="Schließen">×</button>

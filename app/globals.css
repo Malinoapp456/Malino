@@ -5119,3 +5119,42 @@ main{
  .roomRug{width:230px}.roomCollectionGrid{grid-template-columns:1fr}.roomFooterCta{align-items:flex-start;flex-direction:column}.roomFooterCta button{width:100%}
 }
 
+
+
+/* Malino v18.3 — Schatzkisten-Animation wiederhergestellt */
+.rewardUnlockOverlay{
+  animation:malinoRewardFade .22s ease-out both;
+}
+.magicBrushUnlock{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  margin:16px 0 21px;
+}
+.magicBrushUnlock span{
+  width:68px;
+  height:68px;
+  display:grid;
+  place-items:center;
+  border-radius:22px;
+  background:#fff;
+  box-shadow:0 8px 20px #17366b16;
+  font-size:36px;
+  animation:malinoGiftFloat .75s cubic-bezier(.2,.8,.25,1.15) both;
+}
+.magicBrushUnlock span:nth-child(2){animation-delay:.08s}
+.magicBrushUnlock span:nth-child(3){animation-delay:.16s}
+
+@keyframes malinoRewardFade{
+  from{opacity:0}
+  to{opacity:1}
+}
+@keyframes malinoGiftFloat{
+  0%{opacity:0;transform:translateY(18px) scale(.55) rotate(-8deg)}
+  65%{opacity:1;transform:translateY(-4px) scale(1.08) rotate(3deg)}
+  100%{opacity:1;transform:translateY(0) scale(1) rotate(0)}
+}
+@media(prefers-reduced-motion:reduce){
+  .rewardUnlockOverlay,.magicBrushUnlock span{animation:none !important}
+}
