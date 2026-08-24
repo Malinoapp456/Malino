@@ -67,7 +67,18 @@ function useStore(key,initial){
  const [v,setV]=useState(initial);
  useEffect(()=>{
   if(typeof window==="undefined"||!("serviceWorker" in navigator))return;
-  const register=()=>navigator.serviceWorker.register("/sw.js").catch(()=>{});
+  let refreshing=false;
+  const register=async()=>{
+   try{
+    const reg=await navigator.serviceWorker.register("/sw.js");
+    reg.update().catch(()=>{});
+    navigator.serviceWorker.addEventListener("controllerchange",()=>{
+     if(refreshing)return;
+     refreshing=true;
+     window.location.reload();
+    });
+   }catch{}
+  };
   if(document.readyState==="complete")register();
   else window.addEventListener("load",register,{once:true});
  },[]);
