@@ -5082,3 +5082,39 @@ main{
   .treasureCopy small{font-size:8px}
   .treasureCollectible button,.treasureCollectible em{font-size:9px;min-height:31px;padding:6px}
 }
+
+
+/* Malino Kreativ-Zimmer v17 */
+.treasureHeadActions{display:flex;align-items:center;gap:9px}
+.treasureHeadActions>span{min-width:42px;text-align:center}
+.treasureHeadActions button{border:0;border-radius:13px;padding:9px 11px;background:#f0eaff;color:#6646bb;font-size:10px;font-weight:950}
+.malinoRoomPage{padding-top:18px}
+.roomHero{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;padding:20px 22px;border:1px solid #e2e8f2;border-radius:27px;background:linear-gradient(135deg,#f2fbff,#fff8e9);box-shadow:0 12px 30px rgba(36,55,88,.07)}
+.roomBack{border:0;border-radius:13px;padding:10px 12px;background:#fff;color:#58708c;font-weight:900}
+.roomHeroCopy h1{margin:3px 0 5px;color:#123a7a}.roomHeroCopy p{margin:0;color:#718097;font-weight:650}
+.roomCounter{display:grid;place-items:center;min-width:88px;padding:11px;border-radius:18px;background:#fff;box-shadow:0 7px 18px rgba(36,55,88,.06)}
+.roomCounter b{font-size:23px;color:#6b4cc3}.roomCounter small{color:#7a8799;font-weight:750}
+.malinoRoomScene{position:relative;min-height:470px;margin-top:16px;overflow:hidden;border:1px solid #e1e7f0;border-radius:30px;background:linear-gradient(#dff5ff 0 58%,#f3d7a5 58% 100%);box-shadow:0 16px 38px rgba(36,55,88,.09)}
+.malinoRoomScene::before{content:"";position:absolute;left:0;right:0;top:58%;height:12px;background:#e6b87c;box-shadow:0 3px 8px rgba(89,58,24,.08)}
+.roomWindow{position:absolute;right:7%;top:9%;width:130px;height:110px;display:flex;align-items:center;justify-content:space-around;border:9px solid #fff;border-radius:22px;background:linear-gradient(#a9dcff,#eaf8ff);box-shadow:0 9px 20px rgba(44,78,111,.10);font-size:29px}
+.roomShelf{position:absolute;left:7%;top:28%;display:flex;gap:12px;padding:10px 13px;border-radius:13px;background:#b98251;box-shadow:0 7px 12px rgba(80,48,21,.15)}
+.roomShelf span{width:43px;height:43px;display:grid;place-items:center;border-radius:12px;background:#e8d7c7;color:#8f725b;font-size:20px;font-weight:950}.roomShelf span.won{background:#fff8d8}
+.roomWallDecor{position:absolute;width:64px;height:64px;display:grid;place-items:center;border-radius:20px;background:rgba(255,255,255,.72);box-shadow:0 7px 17px rgba(43,66,94,.08);font-size:31px}
+.roomRainbow{left:9%;top:8%}.roomSparkles{left:24%;top:12%}.roomGolden{right:26%;top:16%}
+.roomMascotStage{position:absolute;left:50%;bottom:53px;transform:translateX(-50%);width:300px;height:330px;display:flex;align-items:flex-end;justify-content:center}
+.roomGlow{position:absolute;left:50%;bottom:5px;transform:translateX(-50%);width:240px;height:110px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,231,111,.55),transparent 67%)}
+.roomMascotStage img{position:relative;z-index:2;max-width:255px;max-height:285px;object-fit:contain;filter:drop-shadow(0 13px 12px rgba(55,54,76,.15));animation:roomMalinoFloat 3.2s ease-in-out infinite}
+@keyframes roomMalinoFloat{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-8px) rotate(1deg)}}
+.roomSpeech{position:absolute;z-index:4;right:-175px;top:52px;width:185px;padding:11px 13px;border-radius:17px 17px 17px 5px;background:#fff;color:#50627a;font-size:11px;font-weight:850;line-height:1.35;box-shadow:0 8px 20px rgba(39,59,88,.09)}
+.roomRug{position:absolute;left:50%;bottom:15px;transform:translateX(-50%);width:330px;padding:11px;text-align:center;border-radius:50%;background:#c8a7f5;color:#fff;font-size:11px;font-weight:950;letter-spacing:.12em}
+.roomCollectionHead{display:flex;justify-content:space-between;align-items:end;margin:24px 2px 10px}.roomCollectionHead h2{margin:2px 0;color:#123a7a}.roomCollectionHead>span{padding:7px 10px;border-radius:12px;background:#f0eaff;color:#6749ba;font-weight:950}
+.roomCollectionGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.roomTreasure{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:13px;border:1px solid #e4eaf3;border-radius:18px;background:#fff}.roomTreasure>span{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:#f6f8fc;font-size:24px}.roomTreasure>div{display:grid;gap:2px}.roomTreasure b{color:#123a7a}.roomTreasure small{color:#758399;font-size:9px;font-weight:700}.roomTreasure em{font-style:normal;color:#37a35a;font-weight:950}.roomTreasure.locked{opacity:.55;filter:saturate(.45)}
+.roomFooterCta{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-top:14px;padding:16px 18px;border-radius:20px;background:#f5f8fd}.roomFooterCta>div{display:flex;align-items:center;gap:10px}.roomFooterCta>div>span{font-size:28px}.roomFooterCta p{display:grid;margin:0}.roomFooterCta p b{color:#123a7a}.roomFooterCta p small{color:#748299}.roomFooterCta button{border:0;border-radius:13px;padding:10px 13px;background:#2679ed;color:#fff;font-weight:900}
+@media(max-width:760px){
+ .treasureHeadActions{align-items:flex-end;flex-direction:column;gap:5px}.treasureHeadActions button{padding:7px 8px}
+ .roomHero{grid-template-columns:auto 1fr;padding:14px;gap:10px}.roomHeroCopy h1{font-size:22px}.roomHeroCopy p{font-size:10px}.roomCounter{grid-column:1/-1;width:100%;display:flex;gap:6px;justify-content:center}
+ .malinoRoomScene{min-height:430px;border-radius:23px}.roomWindow{width:88px;height:76px;right:5%;border-width:6px;font-size:21px}.roomWallDecor{width:48px;height:48px;border-radius:15px;font-size:23px}.roomRainbow{left:5%}.roomSparkles{left:21%;top:15%}.roomGolden{right:32%;top:22%}
+ .roomShelf{left:5%;top:31%;gap:6px;padding:7px}.roomShelf span{width:32px;height:32px;font-size:15px}
+ .roomMascotStage{width:220px;height:285px;bottom:50px}.roomMascotStage img{max-width:200px;max-height:240px}.roomSpeech{right:auto;left:50%;transform:translateX(-50%);top:-10px;width:190px;text-align:center;border-radius:15px}
+ .roomRug{width:230px}.roomCollectionGrid{grid-template-columns:1fr}.roomFooterCta{align-items:flex-start;flex-direction:column}.roomFooterCta button{width:100%}
+}

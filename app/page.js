@@ -990,7 +990,7 @@ export default function Page(){
 
    <div className="rewardsSectionHead treasureCollectionHead">
     <div><span className="eyebrow">Schatzsammlung</span><h2>Malinos Fundstücke ✨</h2><p className="badgeSectionIntro">Sammle Sticker und Rahmen. Freigeschaltete Rahmen kannst du direkt für deine Galerie auswählen.</p></div>
-    <span>{unlockedTreasureCount}/{treasureItems.length}</span>
+    <div className="treasureHeadActions"><span>{unlockedTreasureCount}/{treasureItems.length}</span><button onClick={()=>setScreen("room")}>🦁 Mein Malino-Zimmer</button></div>
    </div>
    <div className="treasureCollectionGrid">
     <article className={`treasureCollectible unlocked ${activeFrame==="classic"?"equipped":""}`}>
@@ -1014,6 +1014,42 @@ export default function Page(){
    </div>
 
    <div className="rewardsCta"><div><span>✨</span><p><b>Weiter so!</b><small>Jedes fertige Bild bringt dir 5 neue Sterne.</small></p></div><button onClick={()=>setScreen("library")}>Weiter malen</button></div>
+  </section>}
+
+  {screen==="room"&&<section className="malinoRoomPage">
+   <div className="roomHero">
+    <button className="roomBack" onClick={()=>setScreen("reward")}>‹ Zurück</button>
+    <div className="roomHeroCopy"><span className="eyebrow">Meine Sammlung</span><h1>Malinos Kreativ-Zimmer 🦁✨</h1><p>Hier zeigt Malino alle Schätze, die <b>{activeProfile.name}</b> schon gesammelt hat.</p></div>
+    <div className="roomCounter"><b>{unlockedTreasureCount}</b><small>Schätze</small></div>
+   </div>
+
+   <div className="malinoRoomScene">
+    <div className="roomWallDecor roomRainbow">{unlockedRewards.includes("chest50")?"🌈":"🔒"}</div>
+    <div className="roomWallDecor roomSparkles">{unlockedRewards.includes("chest100")?"✨":"🔒"}</div>
+    <div className="roomWallDecor roomGolden">{unlockedRewards.includes("chest200")?"👑":"🔒"}</div>
+    <div className="roomWindow"><span>☁️</span><span>☀️</span></div>
+    <div className="roomShelf">
+     <span className={unlockedBadgeCount>=3?"won":""}>{unlockedBadgeCount>=3?"⭐":"?"}</span>
+     <span className={dailyStreak>=3?"won":""}>{dailyStreak>=3?"🔥":"?"}</span>
+     <span className={done.length>=10?"won":""}>{done.length>=10?"🎨":"?"}</span>
+    </div>
+    <div className="roomMascotStage">
+     <div className="roomGlow"/>
+     <img src="/malino-hero-mascot.png" alt="Malino"/>
+     <div className="roomSpeech">{unlockedTreasureCount===0?"Male weiter – bald füllt sich unser Zimmer!":unlockedTreasureCount>=treasureItems.length?"Wow! Unsere Sammlung ist riesig!":"Schau mal, was wir schon gesammelt haben!"}</div>
+    </div>
+    <div className="roomRug">⭐ MALINO ⭐</div>
+   </div>
+
+   <div className="roomCollectionHead"><div><span className="eyebrow">Deine Fundstücke</span><h2>Sammlung</h2></div><span>{unlockedTreasureCount}/{treasureItems.length}</span></div>
+   <div className="roomCollectionGrid">
+    {treasureItems.map(t=><article key={t.id} className={`roomTreasure ${t.ok?"unlocked":"locked"}`}>
+     <span>{t.ok?t.icon:"🔒"}</span>
+     <div><b>{t.title}</b><small>{t.ok?"Im Zimmer freigeschaltet":t.desc}</small></div>
+     {t.ok&&<em>✓</em>}
+    </article>)}
+   </div>
+   <div className="roomFooterCta"><div><span>🎨</span><p><b>Noch mehr Schätze finden?</b><small>Male Bilder, sammle Sterne und halte deine Tages-Serie.</small></p></div><button onClick={()=>setScreen("library")}>Weiter malen</button></div>
   </section>}
 
   {screen==="gallery"&&<section className="galleryPage premiumGalleryPage">
@@ -1318,6 +1354,6 @@ export default function Page(){
    </div>
   </div>}
 
-  <nav>{[["start","🏠","Start"],["library","📚","Bibliothek"],["paint","🖌️","Malen"],["reward","🏆","Belohnungen"],["gallery","🎨","Galerie"]].map(([s,e,l])=><button key={s} className={screen===s?"active":""} onClick={()=>s==="paint"?open(current):setScreen(s)}>{e}<span>{l}</span></button>)}</nav>
+  <nav>{[["start","🏠","Start"],["library","📚","Bibliothek"],["paint","🖌️","Malen"],["reward","🏆","Belohnungen"],["gallery","🎨","Galerie"]].map(([s,e,l])=><button key={s} className={(screen===s||(screen==="room"&&s==="reward"))?"active":""} onClick={()=>s==="paint"?open(current):setScreen(s)}>{e}<span>{l}</span></button>)}</nav>
  </main>
 }
