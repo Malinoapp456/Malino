@@ -5121,24 +5121,33 @@ main{
 
 
 /* =========================================================
-   Malino v17.1 — Bigger mobile logo only
+   Malino v17.1 FIX — Bigger mobile logo
+   Overrides older, more specific mobile rules.
    iPad/tablet remains unchanged.
    ========================================================= */
 @media (max-width:650px){
-  .logoV3 img{
-    width:min(285px,68vw) !important;
+  header > .logoV3{
+    min-width:0 !important;
+    overflow:visible !important;
+  }
+
+  header > .logoV3 img{
+    width:min(295px,72vw) !important;
     max-width:none !important;
+    height:auto !important;
   }
 }
 
 @media (max-width:430px){
-  .logoV3 img{
-    width:min(255px,66vw) !important;
+  header > .logoV3 img{
+    width:min(270px,70vw) !important;
+    max-width:none !important;
   }
 }
 
 @media (max-width:360px){
-  .logoV3 img{
-    width:min(230px,64vw) !important;
+  header > .logoV3 img{
+    width:min(240px,68vw) !important;
+    max-width:none !important;
   }
 }
