@@ -1,4 +1,4 @@
-const CACHE="malino-pwa-v18-1";
+const CACHE="malino-pwa-v18-2";
 const CORE=["/","/manifest.webmanifest","/icon-192.png","/icon-512.png","/apple-touch-icon.png","/malino-hero-mascot.png","/malino-hero-background.png","/sounds/click.wav","/sounds/color.wav","/sounds/success.wav","/sounds/stars.wav","/sounds/reward.wav","/sounds/streak.wav"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(CACHE).then(c=>Promise.allSettled(CORE.map(u=>c.add(u)))));self.skipWaiting()});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});
