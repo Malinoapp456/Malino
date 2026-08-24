@@ -4832,3 +4832,37 @@ main{
 
 /* v12 mascot crop fix */
 .galleryMascot img{image-rendering:auto;}
+
+
+/* Malino Galerie mascot premium v13 */
+.premiumGalleryHero .galleryMascot{
+  width:104px !important;
+  height:104px !important;
+  padding:7px !important;
+  border-radius:28px !important;
+  background:linear-gradient(145deg,#ffffff,#f8fbff) !important;
+  border:1px solid rgba(255,255,255,.96) !important;
+  box-shadow:
+    0 14px 28px rgba(34,54,86,.10),
+    0 0 0 5px rgba(255,255,255,.42) !important;
+  transform:rotate(-2deg);
+}
+.premiumGalleryHero .galleryMascot img{
+  object-fit:contain !important;
+  object-position:center !important;
+  transform:scale(1.08);
+  filter:drop-shadow(0 8px 12px rgba(36,57,90,.10));
+}
+
+@media(max-width:760px){
+  .premiumGalleryHero .galleryMascot{
+    width:78px !important;
+    height:78px !important;
+    padding:5px !important;
+    border-radius:21px !important;
+    transform:rotate(-1.5deg);
+  }
+  .premiumGalleryHero .galleryMascot img{
+    transform:scale(1.05);
+  }
+}
