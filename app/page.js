@@ -242,6 +242,12 @@ export default function Page(){
  const [parentPinInput,setParentPinInput]=useState("");
  const [parentPinMode,setParentPinMode]=useState("locked");
  const [parentPinError,setParentPinError]=useState("");
+ const [parentTool,setParentTool]=useState(null);
+ const [screenTimeLimit,setScreenTimeLimit]=useState(0);
+ const [screenTimeUsage,setScreenTimeUsage]=useState(0);
+ const [animationsEnabled,setAnimationsEnabled]=useState(true);
+ const [parentToolNotice,setParentToolNotice]=useState("");
+
 
  const [current,setCurrent]=useState(items[0]);
  const [query,setQuery]=useState("");
@@ -301,6 +307,43 @@ export default function Page(){
    const savedPin=localStorage.getItem("malino:parentPin:v1");
    if(savedPin)setParentPin(savedPin);
   }catch{}
+ },[]);
+
+ useEffect(()=>{
+  try{
+   const limit=Number(localStorage.getItem("malino:screenTimeLimit:v1")||0);
+   setScreenTimeLimit(Number.isFinite(limit)?limit:0);
+   const anim=localStorage.getItem("malino:animations:v1");
+   if(anim!==null)setAnimationsEnabled(anim!=="off");
+   const key=new Date().toLocaleDateString("sv-SE");
+   const raw=localStorage.getItem("malino:screenTimeUsage:v1");
+   if(raw){
+    const parsed=JSON.parse(raw);
+    setScreenTimeUsage(parsed?.date===key?Number(parsed.minutes||0):0);
+   }
+  }catch{}
+ },[]);
+
+ useEffect(()=>{
+  try{
+   localStorage.setItem("malino:animations:v1",animationsEnabled?"on":"off");
+   document.documentElement.classList.toggle("malino-no-animations",!animationsEnabled);
+  }catch{}
+ },[animationsEnabled]);
+
+ useEffect(()=>{
+  const timer=setInterval(()=>{
+   if(typeof document!=="undefined"&&document.visibilityState!=="visible")return;
+   setScreenTimeUsage(prev=>{
+    const next=prev+1;
+    try{
+     const key=new Date().toLocaleDateString("sv-SE");
+     localStorage.setItem("malino:screenTimeUsage:v1",JSON.stringify({date:key,minutes:next}));
+    }catch{}
+    return next;
+   });
+  },60000);
+  return()=>clearInterval(timer);
  },[]);
 
 
@@ -365,6 +408,59 @@ export default function Page(){
  const setDailyStreak=value=>updateProfileField("dailyStreak",value);
  const setLastDailyDate=value=>updateProfileField("lastDailyDate",value);
 
+ const openParentTool=tool=>{
+  setParentToolNotice("");
+  setParentTool(tool);
+ };
+ const closeParentTool=()=>{
+  setParentTool(null);
+  setParentToolNotice("");
+ };
+ const saveScreenTimeLimit=minutes=>{
+  const value=Number(minutes||0);
+  setScreenTimeLimit(value);
+  try{localStorage.setItem("malino:screenTimeLimit:v1",String(value))}catch{}
+ };
+ const resetTodayScreenTime=()=>{
+  setScreenTimeUsage(0);
+  try{
+   const key=new Date().toLocaleDateString("sv-SE");
+   localStorage.setItem("malino:screenTimeUsage:v1",JSON.stringify({date:key,minutes:0}));
+  }catch{}
+  setParentToolNotice("Heutige Bildschirmzeit wurde zurückgesetzt.");
+ };
+ const exportProfileData=()=>{
+  const payload={
+   app:"Malino",
+   exportedAt:new Date().toISOString(),
+   profile:{id:activeProfileId,name:activeProfile.name},
+   data:profileData?.[activeProfileId]||emptyProfileData()
+  };
+  try{
+   const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+   const url=URL.createObjectURL(blob);
+   const a=document.createElement("a");
+   a.href=url;
+   a.download=`malino-${activeProfile.name.replace(/[^a-z0-9_-]+/gi,"-").toLowerCase()}-profil.json`;
+   document.body.appendChild(a);
+   a.click();
+   a.remove();
+   setTimeout(()=>URL.revokeObjectURL(url),1200);
+   setParentToolNotice("Profildaten wurden exportiert.");
+  }catch{
+   setParentToolNotice("Export konnte auf diesem Gerät nicht gestartet werden.");
+  }
+ };
+ const printParentArea=()=>{try{window.print()}catch{}};
+ const copySupportInfo=async()=>{
+  const text=`Malino Support-Info\nProfil: ${activeProfile.name}\nSterne: ${stars}\nGemalte Bilder: ${done.length}\nGalerie: ${gallery.length}\nBelohnungen: ${unlockedRewards.length}\nGerät: ${typeof navigator!=="undefined"?navigator.userAgent:""}`;
+  try{
+   await navigator.clipboard.writeText(text);
+   setParentToolNotice("Support-Info wurde kopiert.");
+  }catch{
+   setParentToolNotice("Kopieren ist auf diesem Gerät nicht verfügbar.");
+  }
+ };
  const openParentArea=()=>{
   setParentPinInput("");
   setParentPinError("");
@@ -530,6 +626,7 @@ export default function Page(){
  const visibleCategories=cats.slice(1).filter(c=>categoryCount(c)>0);
  const visibleTitle=cat==="Alle"?"Alle Malbilder":categoryMeta[cat]?.label||cat;
  const headerStarCount=Number(profileData?.[activeProfileId]?.stars ?? 0);
+ const screenTimeBlocked=screenTimeLimit>0&&screenTimeUsage>=screenTimeLimit;
  const profileStatsData=profileData?.[activeProfileId]||emptyProfileData();
  const profileStatsDone=Array.isArray(profileStatsData.done)?profileStatsData.done:[];
  const profileStatsGallery=Array.isArray(profileStatsData.gallery)?profileStatsData.gallery:[];
@@ -1035,11 +1132,11 @@ export default function Page(){
     <button onClick={renameActiveProfile}>🎨 Profil bearbeiten<span>›</span></button>
     <button onClick={resetActiveProfile}>↺ Fortschritt zurücksetzen<span>›</span></button>
     {profiles.length>1&&<button onClick={deleteActiveProfile}>🗑️ Profil löschen<span>›</span></button>}
-    <button>⏱️ Bildschirmzeit<span>›</span></button>
-    <button>⚙️ App-Einstellungen<span>›</span></button>
-    <button>🖨️ Export & Drucken<span>›</span></button>
-    <button>❓ Hilfe & Feedback<span>›</span></button>
-    <button>ℹ️ Über Malino<span>›</span></button>
+    <button onClick={()=>openParentTool("screenTime")}>⏱️ Bildschirmzeit<span>›</span></button>
+    <button onClick={()=>openParentTool("settings")}>⚙️ App-Einstellungen<span>›</span></button>
+    <button onClick={()=>openParentTool("export")}>🖨️ Export & Drucken<span>›</span></button>
+    <button onClick={()=>openParentTool("help")}>❓ Hilfe & Feedback<span>›</span></button>
+    <button onClick={()=>openParentTool("about")}>ℹ️ Über Malino<span>›</span></button>
    </div>
    <div className="panel">
     <h2>Profil-Statistik</h2>
@@ -1054,8 +1151,91 @@ export default function Page(){
     <div className="bars">{[30,50,42,65,55,75,88].map((h,i)=><i key={i} style={{height:h+"%"}}/>)}</div>
    </div>
   
+   {parentTool&&<div className="parentUtilityOverlay" role="dialog" aria-modal="true">
+    <div className="parentUtilityCard">
+     <button className="parentUtilityClose" onClick={closeParentTool} aria-label="Schließen">×</button>
+
+     {parentTool==="screenTime"&&<>
+      <span className="parentUtilityIcon">⏱️</span>
+      <span className="eyebrow">Bildschirmzeit</span>
+      <h2>Tägliches Zeitlimit</h2>
+      <p>Lege fest, wie lange Malino pro Tag auf diesem Gerät genutzt werden darf.</p>
+      <div className="screenTimeSummary">
+       <div><b>{screenTimeUsage} Min.</b><small>heute genutzt</small></div>
+       <div><b>{screenTimeLimit?`${screenTimeLimit} Min.`:"∞"}</b><small>Tageslimit</small></div>
+      </div>
+      {screenTimeLimit>0&&<div className="screenTimeTrack"><i style={{width:`${Math.min(100,Math.round((screenTimeUsage/screenTimeLimit)*100))}%`}}/></div>}
+      <div className="screenTimeOptions">
+       {[0,15,30,45,60,90].map(m=><button key={m} className={screenTimeLimit===m?"selected":""} onClick={()=>saveScreenTimeLimit(m)}>{m===0?"Kein Limit":`${m} Min.`}</button>)}
+      </div>
+      <button className="parentUtilitySecondary fullWidth" onClick={resetTodayScreenTime}>Heute zurücksetzen</button>
+     </>}
+
+     {parentTool==="settings"&&<>
+      <span className="parentUtilityIcon">⚙️</span>
+      <span className="eyebrow">App-Einstellungen</span>
+      <h2>Malino anpassen</h2>
+      <div className="settingRow">
+       <div><b>✨ Animationen</b><small>Maskottchen, Übergänge und kleine Bewegungseffekte.</small></div>
+       <button className={`settingToggle ${animationsEnabled?"on":""}`} onClick={()=>setAnimationsEnabled(v=>!v)} aria-pressed={animationsEnabled}><i/></button>
+      </div>
+      <div className="settingInfo"><b>💾 Lokale Speicherung</b><small>Profile, Sterne und Fortschritt werden aktuell auf diesem Gerät gespeichert.</small></div>
+     </>}
+
+     {parentTool==="export"&&<>
+      <span className="parentUtilityIcon">🖨️</span>
+      <span className="eyebrow">Export & Drucken</span>
+      <h2>Daten sichern</h2>
+      <p>Exportiere das aktive Kinderprofil als Datei oder öffne den Druckdialog des Geräts.</p>
+      <div className="parentUtilityActions">
+       <button className="parentUtilityPrimary" onClick={exportProfileData}>⬇️ Profildaten exportieren</button>
+       <button className="parentUtilitySecondary" onClick={printParentArea}>🖨️ Drucken</button>
+      </div>
+     </>}
+
+     {parentTool==="help"&&<>
+      <span className="parentUtilityIcon">❓</span>
+      <span className="eyebrow">Hilfe & Feedback</span>
+      <h2>Wie können wir helfen?</h2>
+      <div className="helpFaq">
+       <div><b>Bild reagiert nicht?</b><small>Seite neu laden und prüfen, ob die Malvorlage vollständig geladen wurde.</small></div>
+       <div><b>Fortschritt fehlt?</b><small>Prüfe zuerst, ob das richtige Kinderprofil aktiv ist.</small></div>
+       <div><b>Belohnung testen?</b><small>Im Elternbereich kannst du mit „+50 ⭐“ Teststerne vergeben.</small></div>
+      </div>
+      <div className="parentUtilityActions">
+       <button className="parentUtilityPrimary" onClick={copySupportInfo}>📋 Support-Info kopieren</button>
+       <button className="parentUtilitySecondary" onClick={()=>window.location.reload()}>↻ App neu laden</button>
+      </div>
+     </>}
+
+     {parentTool==="about"&&<>
+      <span className="parentUtilityIcon">🦁</span>
+      <span className="eyebrow">Über Malino</span>
+      <h2>Malino</h2>
+      <p>Eine kinderfreundliche Mal-App mit Tages-Challenges, Belohnungen, Profilen und kreativen Malbildern.</p>
+      <div className="aboutMalinoGrid">
+       <div><b>Version</b><small>Web-App 1.0</small></div>
+       <div><b>Aktives Profil</b><small>{activeProfile.name}</small></div>
+       <div><b>Speicherung</b><small>lokal auf dem Gerät</small></div>
+       <div><b>Sprache</b><small>Deutsch</small></div>
+      </div>
+     </>}
+
+     {parentToolNotice&&<div className="parentToolNotice">✓ {parentToolNotice}</div>}
+    </div>
+   </div>}
+
    </>}
   </section>}
+
+  {screenTimeBlocked&&screen!=="parent"&&<div className="screenTimeBlockedOverlay" role="dialog" aria-modal="true">
+   <div className="screenTimeBlockedCard">
+    <span>⏱️</span>
+    <h2>Malzeit für heute beendet</h2>
+    <p>Das eingestellte Tageslimit von <b>{screenTimeLimit} Minuten</b> wurde erreicht.</p>
+    <button onClick={()=>{setParentPinInput("");setParentPinError("");setParentPinMode(parentPin?"locked":"setup");setScreen("parent")}}>🔐 Elternbereich öffnen</button>
+   </div>
+  </div>}
 
   <nav>{[["start","🏠","Start"],["library","📚","Bibliothek"],["paint","🖌️","Malen"],["reward","🏆","Belohnungen"],["gallery","🎨","Galerie"]].map(([s,e,l])=><button key={s} className={screen===s?"active":""} onClick={()=>s==="paint"?open(current):setScreen(s)}>{e}<span>{l}</span></button>)}</nav>
  </main>
