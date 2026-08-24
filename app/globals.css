@@ -5118,3 +5118,27 @@ main{
  .roomMascotStage{width:220px;height:285px;bottom:50px}.roomMascotStage img{max-width:200px;max-height:240px}.roomSpeech{right:auto;left:50%;transform:translateX(-50%);top:-10px;width:190px;text-align:center;border-radius:15px}
  .roomRug{width:230px}.roomCollectionGrid{grid-template-columns:1fr}.roomFooterCta{align-items:flex-start;flex-direction:column}.roomFooterCta button{width:100%}
 }
+
+
+/* =========================================================
+   Malino v17.1 — Bigger mobile logo only
+   iPad/tablet remains unchanged.
+   ========================================================= */
+@media (max-width:650px){
+  .logoV3 img{
+    width:min(285px,68vw) !important;
+    max-width:none !important;
+  }
+}
+
+@media (max-width:430px){
+  .logoV3 img{
+    width:min(255px,66vw) !important;
+  }
+}
+
+@media (max-width:360px){
+  .logoV3 img{
+    width:min(230px,64vw) !important;
+  }
+}
