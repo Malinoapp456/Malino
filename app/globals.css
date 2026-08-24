@@ -5119,17 +5119,3 @@ main{
  .roomRug{width:230px}.roomCollectionGrid{grid-template-columns:1fr}.roomFooterCta{align-items:flex-start;flex-direction:column}.roomFooterCta button{width:100%}
 }
 
-/* Tymczasowy znacznik testu aktualizacji PWA v18.2 */
-.pwa-version-test{
- position:fixed;
- right:10px;
- top:calc(env(safe-area-inset-top, 0px) + 8px);
- z-index:99999;
- padding:4px 8px;
- border-radius:999px;
- background:rgba(255,255,255,.94);
- box-shadow:0 2px 10px rgba(39,74,126,.16);
- color:#31558c;
- font:700 11px/1.2 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
- pointer-events:none;
-}
