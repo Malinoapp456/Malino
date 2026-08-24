@@ -1,8 +1,24 @@
 {
-  "name": "Malino \u2013 Dein kreativer Freund",
+  "name": "Malino – Kreatives Mal-Abenteuer",
   "short_name": "Malino",
+  "description": "Kinderfreundliche Mal-App mit Profilen, Sternen, Belohnungen und kreativen Abenteuern.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#eef9ff",
-  "theme_color": "#2979ff"
+  "background_color": "#f5fbff",
+  "theme_color": "#7b5ce1",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
