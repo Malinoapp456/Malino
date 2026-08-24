@@ -844,71 +844,53 @@ export default function Page(){
    <div className="rewardsCta"><div><span>✨</span><p><b>Weiter so!</b><small>Jedes fertige Bild bringt dir 5 neue Sterne.</small></p></div><button onClick={()=>setScreen("library")}>Weiter malen</button></div>
   </section>}
 
-  {screen==="gallery"&&<section className="galleryPage">
-   <div className="galleryHero">
+  {screen==="gallery"&&<section className="galleryPage premiumGalleryPage">
+   <div className="galleryHero premiumGalleryHero">
     <div className="galleryMascot"><img src="/ui/malino-mascot.webp" alt="Malino"/></div>
-    <div className="galleryHeroText"><span className="eyebrow">Deine Galerie</span><h1>Meine Kunstwerke 💕</h1><p>Hier wohnen all deine fertigen Malbilder.</p></div>
-    <div className="galleryCount"><span>🎨</span><div><b>{gallery.length}</b><small>{gallery.length===1?"Kunstwerk":"Kunstwerke"}</small></div></div>
-    <button className="galleryNew" onClick={()=>setScreen("library")}>＋ Neues Bild</button>
+    <div className="galleryHeroText">
+     <span className="eyebrow">Deine Galerie</span>
+     <h1>Meine Kunstwerke 🎨</h1>
+     <p>Hier wohnen alle fertigen Malbilder deines aktuellen Profils.</p>
+     <div className="galleryHeroActions">
+      <button className="galleryNew" onClick={()=>setScreen("library")}>＋ Neues Bild</button>
+      {gallery.length>0&&<button className="galleryOpenLatest" onClick={()=>open(gallery[0])}>🖌️ Letztes Bild öffnen</button>}
+     </div>
+    </div>
+    <div className="galleryCount premiumGalleryCount"><span>🎨</span><div><b>{gallery.length}</b><small>{gallery.length===1?"Kunstwerk":"Kunstwerke"}</small></div></div>
    </div>
 
    {gallery.length?
     <>
-     <div className="gallerySectionHead"><div><span className="eyebrow">Meine Sammlung</span><h2>Deine fertigen Bilder</h2></div><span>{gallery.length}</span></div>
-     <div className="galleryGrid">{gallery.map(x=><article key={x.id} className="galleryCard">
-      <button className="galleryOpen" onClick={()=>open(x)}><Thumb it={x} done/></button>
-      <div className="galleryCardText"><b>{x.name}</b><small>🗓️ {x.date}</small></div>
-      <button className="galleryAgain" onClick={()=>open(x)}>Noch einmal malen</button>
+     <div className="gallerySectionHead premiumGallerySectionHead">
+      <div><span className="eyebrow">Meine Sammlung</span><h2>Deine fertigen Bilder</h2><p>Tippe auf ein Bild, um es erneut zu öffnen.</p></div>
+      <span>{gallery.length}</span>
+     </div>
+     <div className="galleryGrid premiumGalleryGrid">{gallery.map((x,index)=><article key={x.id} className={`galleryCard premiumGalleryCard ${index===0?"latest":""}`}>
+      <button className="galleryOpen premiumGalleryOpen" onClick={()=>open(x)}>
+       <Thumb it={x} done/>
+       {index===0&&<span className="latestBadge">✨ Zuletzt gemalt</span>}
+      </button>
+      <div className="galleryCardText premiumGalleryCardText">
+       <div><b>{x.name}</b><small>🗓️ {x.date}</small></div>
+       <span>{items.find(it=>it.id===x.id)?.cat||"Malbild"}</span>
+      </div>
+      <div className="galleryCardActions">
+       <button className="galleryAgain" onClick={()=>open(x)}>🖌️ Noch einmal malen</button>
+       <button className="galleryFavorite" onClick={()=>setFav(fav.includes(x.id)?fav.filter(id=>id!==x.id):[...fav,x.id])} aria-label="Favorit">
+        {fav.includes(x.id)?"❤️":"🤍"}
+       </button>
+      </div>
      </article>)}</div>
-    </>:
-    <div className="galleryEmpty">
+    </>
+    :
+    <div className="galleryEmpty premiumGalleryEmpty">
      <div className="galleryEmptyMascot"><img src="/ui/malino-mascot.webp" alt="Malino"/></div>
      <span className="galleryEmptyIcon">🎨</span>
      <h2>Noch keine Kunstwerke</h2>
-     <p>Male dein erstes Bild und es erscheint hier in deiner Galerie.</p>
-     <button onClick={()=>setScreen("library")}>Mein erstes Bild malen</button>
+     <p>Male dein erstes Bild fertig und es erscheint automatisch hier in deiner Galerie.</p>
+     <button onClick={()=>setScreen("library")}>✨ Erstes Bild auswählen</button>
     </div>}
   </section>}
-
-  {rewardPopup==="chest200"&&<div className="rewardUnlockOverlay goldenUnlockOverlay" role="dialog" aria-modal="true" aria-label="Geheimes Malino Malbild freigeschaltet">
-   <div className="rewardUnlockCard goldenUnlockCard">
-    <button className="rewardClose" onClick={()=>setRewardPopup(null)} aria-label="Schließen">×</button>
-    <div className="unlockBurst">👑🎁</div>
-    <span className="eyebrow">Geheimes Malbild freigeschaltet!</span>
-    <h2>Malino wartet auf deine Farben! 🦁✨</h2>
-    <p>Du hast 200 Sterne gesammelt und eine besondere Malino-Kolورierseite freigeschaltet.</p>
-    <div className="secretRewardPreview"><Thumb it={secretMalinoItem} done={done.includes(secretMalinoItem.id)}/><span>💖 Malino Ausmalbild 💖</span></div>
-    <button className="unlockPaintBtn goldenPaintNow" onClick={()=>{setRewardPopup(null);open(secretMalinoItem)}}>🖌️ Jetzt Malino malen!</button>
-    <small>Die 200 Sterne bleiben natürlich bei dir. ⭐ {stars}</small>
-   </div>
-  </div>}
-
-  {rewardPopup==="chest100"&&<div className="rewardUnlockOverlay" role="dialog" aria-modal="true" aria-label="Zauberpinsel freigeschaltet">
-   <div className="rewardUnlockCard">
-    <button className="rewardClose" onClick={()=>setRewardPopup(null)} aria-label="Schließen">×</button>
-    <div className="unlockBurst">✨🖌️🌈</div>
-    <span className="eyebrow">100 Sterne erreicht!</span>
-    <h2>Der Zauberpinsel ist da! ✨</h2>
-    <p>Male mit einem magischen Regenbogen-Pinsel, der beim Zeichnen automatisch seine Farben wechselt.</p>
-    <div className="unlockedColors"><div><i style={{background:"linear-gradient(135deg,#ef4444,#facc15,#22c55e,#0ea5e9,#7c3aed,#ec4899)"}}/><b>Regenbogen-Zauber</b></div></div>
-    <button className="unlockPaintBtn" onClick={()=>{setRewardPopup(null);setTool("magic");setScreen("library")}}>🖌️ Zauberpinsel ausprobieren</button>
-    <small>Deine Sterne bleiben erhalten. ⭐ {stars}</small>
-   </div>
-  </div>}
-
-  {rewardPopup==="chest50"&&<div className="rewardUnlockOverlay" role="dialog" aria-modal="true" aria-label="Neue Farben freigeschaltet">
-   <div className="rewardUnlockCard">
-    <button className="rewardClose" onClick={()=>setRewardPopup(null)} aria-label="Schließen">×</button>
-    <div className="unlockBurst">🎁</div>
-    <span className="eyebrow">Schatzkiste geöffnet!</span>
-    <h2>3 neue Malino-Farben! 🌈</h2>
-    <p>Du hast Gold, Malino-Rosa und Zauber-Mint freigeschaltet.</p>
-    <div className="unlockedColors">{chest50Colors.map(c=><div key={c.value}><i style={{background:c.value}}/><b>{c.name}</b></div>)}</div>
-    <button className="unlockPaintBtn" onClick={()=>{setRewardPopup(null);setScreen("library")}}>🖌️ Farben ausprobieren</button>
-    <small>Deine Sterne bleiben erhalten. ⭐ {stars}</small>
-   </div>
-  </div>}
-
 
   {profileDialog&&<div className="rewardUnlockOverlay" role="dialog" aria-modal="true" aria-label="Kinderprofil">
    <div className="rewardUnlockCard" style={{maxWidth:520}}>
