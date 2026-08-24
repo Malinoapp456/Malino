@@ -246,6 +246,7 @@ export default function Page(){
  const [screenTimeLimit,setScreenTimeLimit]=useState(0);
  const [screenTimeUsage,setScreenTimeUsage]=useState(0);
  const [animationsEnabled,setAnimationsEnabled]=useState(true);
+ const [soundEnabled,setSoundEnabled]=useState(true);
  const [parentToolNotice,setParentToolNotice]=useState("");
 
 
@@ -260,6 +261,25 @@ export default function Page(){
  const [celebration,setCelebration]=useState({earned:0,dailyBonus:0,doneCount:0,starsAfter:0,newChest:null,nextChest:null,starsToNext:0,repeat:false});
  const rasterRef=useRef(null);
  const feedbackTimer=useRef(null);
+ const soundPool=useRef({});
+ const playSound=type=>{
+  if(!soundEnabled||typeof window==="undefined")return;
+  try{
+   const src=`/sounds/${type}.wav`;
+   let audio=soundPool.current[type];
+   if(!audio){
+    audio=new Audio(src);
+    audio.preload="auto";
+    soundPool.current[type]=audio;
+   }
+   audio.pause();
+   audio.currentTime=0;
+   audio.volume=type==="click"?0.35:0.55;
+   const p=audio.play();
+   if(p?.catch)p.catch(()=>{});
+  }catch{}
+ };
+
 
  useEffect(()=>{
   try{
@@ -315,6 +335,8 @@ export default function Page(){
    setScreenTimeLimit(Number.isFinite(limit)?limit:0);
    const anim=localStorage.getItem("malino:animations:v1");
    if(anim!==null)setAnimationsEnabled(anim!=="off");
+   const snd=localStorage.getItem("malino:sound:v1");
+   if(snd!==null)setSoundEnabled(snd!=="off");
    const key=new Date().toLocaleDateString("sv-SE");
    const raw=localStorage.getItem("malino:screenTimeUsage:v1");
    if(raw){
@@ -330,6 +352,23 @@ export default function Page(){
    document.documentElement.classList.toggle("malino-no-animations",!animationsEnabled);
   }catch{}
  },[animationsEnabled]);
+
+ useEffect(()=>{
+  try{localStorage.setItem("malino:sound:v1",soundEnabled?"on":"off")}catch{}
+ },[soundEnabled]);
+
+ useEffect(()=>{
+  const handler=e=>{
+   if(!soundEnabled)return;
+   const btn=e.target?.closest?.("button");
+   if(!btn)return;
+   if(btn.classList.contains("finish")||btn.classList.contains("openChestBtn"))return;
+   if(btn.closest(".palette"))return;
+   playSound("click");
+  };
+  document.addEventListener("click",handler,true);
+  return()=>document.removeEventListener("click",handler,true);
+ },[soundEnabled]);
 
  useEffect(()=>{
   const timer=setInterval(()=>{
@@ -635,16 +674,19 @@ export default function Page(){
  const paintColors=hasChest50?[...colors,...chest50Colors.map(x=>x.value)]:colors;
  const openChest50=()=>{
   if(stars<50||hasChest50)return;
+  playSound("reward");
   setUnlockedRewards([...unlockedRewards,"chest50"]);
   setRewardPopup("chest50");
  };
  const openChest100=()=>{
   if(stars<100||hasChest100)return;
+  playSound("reward");
   setUnlockedRewards([...unlockedRewards,"chest100"]);
   setRewardPopup("chest100");
  };
  const openChest200=()=>{
   if(stars<200||hasChest200)return;
+  playSound("reward");
   setUnlockedRewards([...unlockedRewards,"chest200"]);
   setRewardPopup("chest200");
  };
@@ -682,6 +724,10 @@ export default function Page(){
   }
   if(earned>0)setStars(starsAfter);
   setGallery([{...current,date:new Date().toLocaleDateString("de-DE")},...gallery.filter(x=>x.id!==current.id)]);
+  if(newChest)playSound("reward");
+  else if(dailyBonus>0)playSound("streak");
+  else if(earned>0)playSound("success");
+  else playSound("click");
   setCelebration({
    earned,
    dailyBonus,
@@ -874,7 +920,7 @@ export default function Page(){
     <button className="newTool" onClick={()=>{if(current.mode==="draw")rasterRef.current?.clear();else{setFills({});setHistory([])}}}><ToolIcon type="new"/><span>Neu</span></button>
    </aside><div className="canvas">{current.mode==="draw"?<RasterPainter ref={rasterRef} src={current.image} color={selected} tool={tool} onFeedback={showFillFeedback}/>:<Dino fills={fills} paint={paint}/>}</div></div>
    <div className={`toolHelp ${fillFeedback?"feedback "+fillFeedback:""}`}>{fillFeedback==="small"?"👆 Diese Fläche ist sehr klein – probiere eine größere.":fillFeedback==="leak"?"🛡️ Malino hat ein Auslaufen gestoppt – tippe in eine geschlossene Fläche.":tool==="fill"?"🪣 Tippe in eine Fläche – Malino füllt sie für dich aus.":tool==="brush"?"🖌️ Male frei mit dem Finger.":"🧽 Wische über Farbe, um sie zu entfernen."}</div>
-   <div className={`palette ${hasChest50?"hasBonusColors":""}`}>{paintColors.map(c=>{const bonus=chest50Colors.some(x=>x.value===c);return <button key={c} title={bonus?(chest50Colors.find(x=>x.value===c)?.name||"Bonusfarbe"):""} style={{background:c}} className={`${selected===c&&tool!=="eraser"?"sel":""} ${bonus?"bonusColor":""}`} onClick={()=>{setSelected(c);if(tool==="eraser")setTool("fill")}}>{bonus&&<span className="bonusSpark">✦</span>}</button>})}</div>
+   <div className={`palette ${hasChest50?"hasBonusColors":""}`}>{paintColors.map(c=>{const bonus=chest50Colors.some(x=>x.value===c);return <button key={c} title={bonus?(chest50Colors.find(x=>x.value===c)?.name||"Bonusfarbe"):""} style={{background:c}} className={`${selected===c&&tool!=="eraser"?"sel":""} ${bonus?"bonusColor":""}`} onClick={()=>{playSound("color");setSelected(c);if(tool==="eraser")setTool("fill")}}>{bonus&&<span className="bonusSpark">✦</span>}</button>})}</div>
    <div className="actions"><button onClick={()=>setScreen("library")}>Vorlagen</button><button className="finish" onClick={finish}>✓ Fertig!</button><button className="saveImageBtn" onClick={()=>rasterRef.current?.save()}><SaveIcon/><span>Bild speichern</span></button></div>
   </section>}
 
@@ -1179,6 +1225,11 @@ export default function Page(){
        <div><b>✨ Animationen</b><small>Maskottchen, Übergänge und kleine Bewegungseffekte.</small></div>
        <button className={`settingToggle ${animationsEnabled?"on":""}`} onClick={()=>setAnimationsEnabled(v=>!v)} aria-pressed={animationsEnabled}><i/></button>
       </div>
+      <div className="settingRow">
+       <div><b>🔊 Töne</b><small>Klicks, Farben, Sterne, Erfolge und Schatzkisten.</small></div>
+       <button className={`settingToggle ${soundEnabled?"on":""}`} onClick={()=>{setSoundEnabled(v=>!v);if(!soundEnabled)setTimeout(()=>playSound("success"),50)}} aria-pressed={soundEnabled}><i/></button>
+      </div>
+
       <div className="settingInfo"><b>💾 Lokale Speicherung</b><small>Profile, Sterne und Fortschritt werden aktuell auf diesem Gerät gespeichert.</small></div>
      </>}
 

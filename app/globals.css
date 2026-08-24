@@ -4911,3 +4911,7 @@ main{
  .parentUtilityActions{grid-template-columns:1fr}
  .aboutMalinoGrid{grid-template-columns:1fr 1fr}
 }
+
+
+/* Malino Sound System v15 */
+.settingRow + .settingRow{margin-top:8px}
