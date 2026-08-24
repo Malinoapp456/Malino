@@ -811,6 +811,7 @@ export default function Page(){
   setScreen("celebrate");
  };
  return <main>
+  <div className="pwa-version-test" aria-label="Malino version">v18.2</div>
   <header key={`header-${activeProfileId}-${headerStarCount}`}><button>🇩🇪 Deutsch⌄</button><Logo/><div><span key={`stars-${activeProfileId}-${headerStarCount}`}>⭐ {headerStarCount}</span><button key={`profile-${activeProfileId}`} onClick={openParentArea}><span className="headerProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><span className="headerProfileName">{activeProfile.name}</span></button></div></header>
 
   {screen==="start"&&<section className="home premiumHome">
