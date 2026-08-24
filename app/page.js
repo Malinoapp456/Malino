@@ -265,16 +265,11 @@ export default function Page(){
  const playSound=type=>{
   if(!soundEnabled||typeof window==="undefined")return;
   try{
-   const src=`/sounds/${type}.wav`;
-   let audio=soundPool.current[type];
-   if(!audio){
-    audio=new Audio(src);
-    audio.preload="auto";
-    soundPool.current[type]=audio;
-   }
-   audio.pause();
-   audio.currentTime=0;
+   const base=soundPool.current[type];
+   if(!base)return;
+   const audio=base.cloneNode();
    audio.volume=type==="click"?0.35:0.55;
+   audio.currentTime=0;
    const p=audio.play();
    if(p?.catch)p.catch(()=>{});
   }catch{}
@@ -323,6 +318,21 @@ export default function Page(){
  },[]);
 
  useEffect(()=>{
+  if(typeof window==="undefined")return;
+  const types=["click","color","success","stars","reward","streak"];
+  const pool={};
+  types.forEach(type=>{
+   try{
+    const audio=new Audio(`/sounds/${type}.wav`);
+    audio.preload="auto";
+    audio.load();
+    pool[type]=audio;
+   }catch{}
+  });
+  soundPool.current=pool;
+ },[]);
+
+ useEffect(()=>{
   try{
    const savedPin=localStorage.getItem("malino:parentPin:v1");
    if(savedPin)setParentPin(savedPin);
@@ -356,6 +366,37 @@ export default function Page(){
  useEffect(()=>{
   try{localStorage.setItem("malino:sound:v1",soundEnabled?"on":"off")}catch{}
  },[soundEnabled]);
+
+ useEffect(()=>{
+  if(typeof document==="undefined")return;
+  let primed=false;
+  const prime=()=>{
+   if(primed)return;
+   primed=true;
+   Object.values(soundPool.current).forEach(audio=>{
+    try{
+     const oldVolume=audio.volume;
+     audio.volume=0;
+     const p=audio.play();
+     if(p?.then){
+      p.then(()=>{
+       audio.pause();
+       audio.currentTime=0;
+       audio.volume=oldVolume;
+      }).catch(()=>{audio.volume=oldVolume;});
+     }
+    }catch{}
+   });
+   document.removeEventListener("pointerdown",prime,true);
+   document.removeEventListener("touchstart",prime,true);
+  };
+  document.addEventListener("pointerdown",prime,true);
+  document.addEventListener("touchstart",prime,true);
+  return()=>{
+   document.removeEventListener("pointerdown",prime,true);
+   document.removeEventListener("touchstart",prime,true);
+  };
+ },[]);
 
  useEffect(()=>{
   const handler=e=>{
