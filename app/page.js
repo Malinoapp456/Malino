@@ -228,7 +228,7 @@ const PROFILE_AVATARS=[
 const avatarEmoji=id=>PROFILE_AVATARS.find(a=>a.id===id)?.emoji||"🦁";
 
 export default function Page(){
- const emptyProfileData=()=>({fav:[],done:[],gallery:[],stars:0,rewards:[],avatar:"lion",dailyClaims:[],dailyStreak:0,lastDailyDate:""});
+ const emptyProfileData=()=>({fav:[],done:[],gallery:[],stars:0,rewards:[],avatar:"lion",dailyClaims:[],dailyStreak:0,lastDailyDate:"",activeFrame:"classic"});
  const [screen,setScreen]=useState("start");
  const [profiles,setProfiles]=useState([{id:"default",name:"Kind 1"}]);
  const [activeProfileId,setActiveProfileId]=useState("default");
@@ -430,6 +430,16 @@ export default function Page(){
   {id:"master",icon:"🏆",title:"Malino-Meister",desc:"42 Bilder fertig",ok:done.length>=42}
  ];
  const unlockedBadgeCount=achievementBadges.filter(b=>b.ok).length;
+ const activeFrame=activeData.activeFrame||"classic";
+ const treasureItems=[
+  {id:"rainbowSticker",type:"sticker",icon:"🌈",title:"Regenbogen-Sticker",desc:"Aus der 50-Sterne-Kiste",ok:unlockedRewards.includes("chest50")},
+  {id:"magicCharm",type:"sticker",icon:"✨",title:"Zauberfunken",desc:"Aus der 100-Sterne-Kiste",ok:unlockedRewards.includes("chest100")},
+  {id:"goldenMalino",type:"sticker",icon:"🦁",title:"Goldener Malino",desc:"Aus der 200-Sterne-Kiste",ok:unlockedRewards.includes("chest200")},
+  {id:"star",type:"frame",icon:"⭐",title:"Sternen-Rahmen",desc:"3 Abzeichen sammeln",ok:unlockedBadgeCount>=3},
+  {id:"fire",type:"frame",icon:"🔥",title:"Feuer-Rahmen",desc:"3-Tage-Serie schaffen",ok:dailyStreak>=3},
+  {id:"rainbow",type:"frame",icon:"🎨",title:"Künstler-Rahmen",desc:"10 Bilder fertig malen",ok:done.length>=10}
+ ];
+ const unlockedTreasureCount=treasureItems.filter(x=>x.ok).length;
 
  const updateProfileField=(field,value)=>{
   setProfileData(prev=>{
@@ -444,6 +454,7 @@ export default function Page(){
  const setStars=value=>updateProfileField("stars",value);
  const setUnlockedRewards=value=>updateProfileField("rewards",value);
  const setDailyClaims=value=>updateProfileField("dailyClaims",value);
+ const setActiveFrame=value=>updateProfileField("activeFrame",value);
  const setDailyStreak=value=>updateProfileField("dailyStreak",value);
  const setLastDailyDate=value=>updateProfileField("lastDailyDate",value);
 
@@ -620,7 +631,7 @@ export default function Page(){
   }
 
   if(profileDialog==="reset"){
-   setProfileData(prev=>({...prev,[activeProfileId]:{...emptyProfileData(),avatar:prev?.[activeProfileId]?.avatar||"lion"}}));
+   setProfileData(prev=>({...prev,[activeProfileId]:{...emptyProfileData(),avatar:prev?.[activeProfileId]?.avatar||"lion",activeFrame:prev?.[activeProfileId]?.activeFrame||"classic"}}));
    setRewardPopup(null);
    setCurrent(items[0]);
    setFills({});
@@ -977,6 +988,24 @@ export default function Page(){
     </article>)}
    </div>
 
+   <div className="rewardsSectionHead treasureCollectionHead">
+    <div><span className="eyebrow">Schatzsammlung</span><h2>Malinos Fundstücke ✨</h2><p className="badgeSectionIntro">Sammle Sticker und Rahmen. Freigeschaltete Rahmen kannst du direkt für deine Galerie auswählen.</p></div>
+    <span>{unlockedTreasureCount}/{treasureItems.length}</span>
+   </div>
+   <div className="treasureCollectionGrid">
+    <article className={`treasureCollectible unlocked ${activeFrame==="classic"?"equipped":""}`}>
+     <div className="treasurePreview framePreview frame-classic"><span>🖼️</span></div>
+     <div className="treasureCopy"><b>Klassischer Rahmen</b><small>Immer verfügbar</small></div>
+     <button onClick={()=>setActiveFrame("classic")}>{activeFrame==="classic"?"✓ Aktiv":"Verwenden"}</button>
+    </article>
+    {treasureItems.map(t=><article key={t.id} className={`treasureCollectible ${t.ok?"unlocked":"locked"} ${t.type==="frame"&&activeFrame===t.id?"equipped":""}`}>
+     <div className={`treasurePreview ${t.type==="frame"?`framePreview frame-${t.id}`:""}`}><span>{t.ok?t.icon:"🔒"}</span></div>
+     <div className="treasureCopy"><b>{t.title}</b><small>{t.ok?(t.type==="frame"?"Galerie-Rahmen freigeschaltet":"Sticker gesammelt"):t.desc}</small></div>
+     {t.ok&&t.type==="frame"&&<button onClick={()=>setActiveFrame(t.id)}>{activeFrame===t.id?"✓ Aktiv":"Verwenden"}</button>}
+     {t.ok&&t.type==="sticker"&&<em>Gesammelt ✓</em>}
+    </article>)}
+   </div>
+
    <div className="rewardsSectionHead surprisesHead"><div><span className="eyebrow">Überraschungen</span><h2>Malinos Schatzkisten 🎁</h2></div></div>
    <div className="surpriseGrid">
     <article className={`surpriseCard ${stars>=50?"ready":""} ${hasChest50?"opened":""}`}><span>{hasChest50?"🌈":"🎁"}</span><div><b>Kleine Schatzkiste</b><small>{hasChest50?"3 Bonusfarben freigeschaltet":"50 Sterne"}</small></div>{hasChest50?<em>Geöffnet ✓</em>:stars>=50?<button className="openChestBtn" onClick={openChest50}>Öffnen!</button>:<em>Noch {Math.max(0,50-stars)} ⭐</em>}</article>
@@ -1008,7 +1037,7 @@ export default function Page(){
       <div><span className="eyebrow">Meine Sammlung</span><h2>Deine fertigen Bilder</h2><p>Tippe auf ein Bild, um es erneut zu öffnen.</p></div>
       <span>{gallery.length}</span>
      </div>
-     <div className="galleryGrid premiumGalleryGrid">{gallery.map((x,index)=><article key={x.id} className={`galleryCard premiumGalleryCard ${index===0?"latest":""}`}>
+     <div className="galleryGrid premiumGalleryGrid">{gallery.map((x,index)=><article key={x.id} className={`galleryCard premiumGalleryCard galleryFrame-${activeFrame} ${index===0?"latest":""}`}>
       <button className="galleryOpen premiumGalleryOpen" onClick={()=>open(x)}>
        <Thumb it={x} done/>
        {index===0&&<span className="latestBadge">✨ Zuletzt gemalt</span>}
@@ -1191,6 +1220,7 @@ export default function Page(){
     <p>Erhaltene Sterne <b>{profileStatsStars} ⭐</b></p>
     <p>Galerie <b>{profileStatsGallery.length}</b></p>
     <p>Belohnungen <b>{profileStatsRewards.length}</b></p>
+     <p>Schatzsammlung <b>{unlockedTreasureCount}/{treasureItems.length}</b></p>
      <p>Tages-Challenge <b>{dailyClaimed?"Heute geschafft ✓":"Offen 🌟"}</b></p>
      <p>Abzeichen <b>{unlockedBadgeCount}/{achievementBadges.length}</b></p>
      <p>Tages-Serie <b>{dailyStreak} 🔥</b></p>

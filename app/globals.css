@@ -4915,3 +4915,170 @@ main{
 
 /* Malino Sound System v15 */
 .settingRow + .settingRow{margin-top:8px}
+
+
+/* =========================================================
+   Malino Treasure Collection v16
+   ========================================================= */
+.treasureCollectionHead{margin-top:26px !important}
+.treasureCollectionGrid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:20px;
+}
+.treasureCollectible{
+  position:relative;
+  min-width:0;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:11px;
+  align-items:center;
+  padding:13px;
+  border-radius:20px;
+  background:#fff;
+  border:1px solid #e5eaf3;
+  box-shadow:0 8px 20px rgba(37,55,88,.06);
+}
+.treasureCollectible.locked{
+  opacity:.58;
+  filter:saturate(.45);
+}
+.treasureCollectible.equipped{
+  border-color:#8c67e9;
+  box-shadow:0 0 0 3px rgba(140,103,233,.12),0 10px 24px rgba(77,52,140,.09);
+}
+.treasurePreview{
+  width:58px;
+  height:58px;
+  display:grid;
+  place-items:center;
+  border-radius:17px;
+  background:#f7f9fd;
+  font-size:31px;
+}
+.treasureCopy{
+  min-width:0;
+  display:grid;
+  gap:3px;
+}
+.treasureCopy b{
+  color:#123a7a;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.treasureCopy small{
+  color:#718097;
+  font-size:10px;
+  font-weight:700;
+  line-height:1.25;
+}
+.treasureCollectible button,
+.treasureCollectible em{
+  grid-column:1/-1;
+  min-height:34px;
+  border:0;
+  border-radius:12px;
+  padding:8px 10px;
+  font-size:10px;
+  font-weight:900;
+  text-align:center;
+}
+.treasureCollectible button{
+  background:#edf4ff;
+  color:#1769d8;
+}
+.treasureCollectible.equipped button{
+  background:#eee8ff;
+  color:#6546bd;
+}
+.treasureCollectible em{
+  font-style:normal;
+  background:#eaf8ed;
+  color:#2e7541;
+}
+.framePreview{
+  background:#fff;
+  border:5px solid #dce4ef;
+}
+.framePreview.frame-star{
+  border-color:#ffd34f;
+  box-shadow:inset 0 0 0 3px #fff7c9;
+}
+.framePreview.frame-fire{
+  border-color:#ff914d;
+  box-shadow:inset 0 0 0 3px #ffe3c9;
+}
+.framePreview.frame-rainbow{
+  border-color:#8d6bea;
+  box-shadow:inset 0 0 0 3px #ffe3f4;
+}
+.framePreview.frame-classic{
+  border-color:#dce4ef;
+}
+
+/* Apply selected collectible frame to gallery artwork cards */
+.galleryFrame-star{
+  border:3px solid #ffd34f !important;
+  box-shadow:0 0 0 4px #fff5b8,0 12px 30px rgba(151,110,5,.14) !important;
+}
+.galleryFrame-star::after{
+  content:"⭐";
+  position:absolute;
+  right:9px;
+  top:9px;
+  z-index:6;
+  width:30px;height:30px;
+  display:grid;place-items:center;
+  border-radius:50%;
+  background:#fff8c7;
+  font-size:15px;
+}
+.galleryFrame-fire{
+  border:3px solid #ff914d !important;
+  box-shadow:0 0 0 4px #ffe2c4,0 12px 30px rgba(154,74,11,.14) !important;
+}
+.galleryFrame-fire::after{
+  content:"🔥";
+  position:absolute;
+  right:9px;
+  top:9px;
+  z-index:6;
+  width:30px;height:30px;
+  display:grid;place-items:center;
+  border-radius:50%;
+  background:#fff0dc;
+  font-size:15px;
+}
+.galleryFrame-rainbow{
+  border:3px solid transparent !important;
+  background:
+    linear-gradient(#fff,#fff) padding-box,
+    linear-gradient(135deg,#ff769d,#ffc94f,#55d394,#62a7ff,#996bea) border-box !important;
+  box-shadow:0 12px 30px rgba(105,76,180,.14) !important;
+}
+.galleryFrame-rainbow::after{
+  content:"🎨";
+  position:absolute;
+  right:9px;
+  top:9px;
+  z-index:6;
+  width:30px;height:30px;
+  display:grid;place-items:center;
+  border-radius:50%;
+  background:#f7efff;
+  font-size:15px;
+}
+
+@media(max-width:900px){
+  .treasureCollectionGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:650px){
+  .treasureCollectionGrid{grid-template-columns:1fr 1fr;gap:8px}
+  .treasureCollectible{grid-template-columns:46px 1fr;gap:8px;padding:10px;border-radius:16px}
+  .treasurePreview{width:46px;height:46px;border-radius:14px;font-size:25px}
+  .treasureCopy b{font-size:11px}
+  .treasureCopy small{font-size:8px}
+  .treasureCollectible button,.treasureCollectible em{font-size:9px;min-height:31px;padding:6px}
+}
