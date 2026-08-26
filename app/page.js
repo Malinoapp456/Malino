@@ -492,7 +492,7 @@ export default function Page(){
    hint:"Die zwei Zeichen wechseln sich ab."
   },
   {
-   id:"shadow",
+   id:"cat-fish",
    icon:"🐾",
    title:"Finde das Paar",
    age:"4–6",
@@ -500,6 +500,178 @@ export default function Page(){
    options:["🐱 + 🐟","🐶 + 🌙","🚀 + 🍎","🌳 + 🚗"],
    answer:"🐱 + 🐟",
    hint:"Denk daran, was die Katze gern mag."
+  },
+  {
+   id:"count-apples",
+   icon:"🔢",
+   title:"Zähle die Äpfel",
+   age:"4–6",
+   task:"Wie viele Äpfel siehst du?",
+   pattern:"🍎 🍎 🍎 🍎",
+   options:["3","4","5","6"],
+   answer:"4",
+   hint:"Zähle jeden Apfel langsam."
+  },
+  {
+   id:"bigger-animal",
+   icon:"🐘",
+   title:"Was ist größer?",
+   age:"4–6",
+   task:"Welches Tier ist normalerweise größer?",
+   options:["🐘","🐭","🐞","🐜"],
+   answer:"🐘",
+   hint:"Denk an das größte Tier in der Reihe."
+  },
+  {
+   id:"day-night",
+   icon:"☀️",
+   title:"Tag oder Nacht?",
+   age:"4–6",
+   task:"Was sehen wir meistens am Tag?",
+   options:["☀️","🌙","⭐","🦉"],
+   answer:"☀️",
+   hint:"Es macht den Himmel hell."
+  },
+  {
+   id:"color-red",
+   icon:"🎨",
+   title:"Welche Farbe?",
+   age:"4–6",
+   task:"Welche Farbe hat eine reife Erdbeere meistens?",
+   options:["🔴 Rot","🔵 Blau","🟢 Grün","⚪ Weiß"],
+   answer:"🔴 Rot",
+   hint:"Denk an eine Erdbeere im Sommer."
+  },
+  {
+   id:"vehicle-water",
+   icon:"🚤",
+   title:"Was fährt auf Wasser?",
+   age:"4–6",
+   task:"Welches Fahrzeug bewegt sich auf dem Wasser?",
+   options:["🚗","🚤","🚲","🚜"],
+   answer:"🚤",
+   hint:"Es braucht keinen Straßenbelag."
+  },
+  {
+   id:"animal-home",
+   icon:"🏠",
+   title:"Wo wohnt der Fisch?",
+   age:"4–6",
+   task:"Wo lebt ein Fisch?",
+   options:["🌊 Wasser","🌳 Baum","☁️ Himmel","🏠 Haus"],
+   answer:"🌊 Wasser",
+   hint:"Ein Fisch braucht Wasser."
+  },
+  {
+   id:"simple-addition",
+   icon:"➕",
+   title:"Kleine Rechnung",
+   age:"5–7",
+   task:"Wie viel ist 2 + 1?",
+   options:["2","3","4","5"],
+   answer:"3",
+   hint:"Zähle zwei Dinge und nimm noch eins dazu."
+  },
+  {
+   id:"simple-subtraction",
+   icon:"➖",
+   title:"Was bleibt übrig?",
+   age:"5–7",
+   task:"Wie viel ist 5 − 2?",
+   options:["2","3","4","5"],
+   answer:"3",
+   hint:"Nimm von fünf zwei weg."
+  },
+  {
+   id:"sequence-numbers",
+   icon:"🔢",
+   title:"Zahlenreihe",
+   age:"5–7",
+   task:"Welche Zahl kommt als Nächstes?",
+   pattern:"1  2  3  4  …",
+   options:["5","6","7","8"],
+   answer:"5",
+   hint:"Die Zahlen werden immer um eins größer."
+  },
+  {
+   id:"shape-circle",
+   icon:"🔵",
+   title:"Finde den Kreis",
+   age:"4–6",
+   task:"Welche Form ist rund?",
+   options:["🔵","🔺","⬛","🔶"],
+   answer:"🔵",
+   hint:"Sie hat keine Ecken."
+  },
+  {
+   id:"opposites",
+   icon:"↔️",
+   title:"Gegenteile",
+   age:"5–7",
+   task:"Was ist das Gegenteil von groß?",
+   options:["klein","lang","hell","schnell"],
+   answer:"klein",
+   hint:"Denk an eine Maus neben einem Elefanten."
+  },
+  {
+   id:"weather-rain",
+   icon:"🌧️",
+   title:"Was brauchen wir?",
+   age:"4–6",
+   task:"Was nehmen wir bei Regen mit?",
+   options:["☂️","🕶️","🩴","🏖️"],
+   answer:"☂️",
+   hint:"Es hält den Regen über deinem Kopf ab."
+  },
+  {
+   id:"food-category",
+   icon:"🥕",
+   title:"Obst oder Gemüse?",
+   age:"5–7",
+   task:"Welches Bild zeigt Gemüse?",
+   options:["🍓","🍌","🥕","🍎"],
+   answer:"🥕",
+   hint:"Es wächst unter der Erde und ist orange."
+  },
+  {
+   id:"letter-a",
+   icon:"🔤",
+   title:"Buchstaben finden",
+   age:"5–7",
+   task:"Welches Wort beginnt mit A?",
+   options:["Apfel","Ball","Hund","Maus"],
+   answer:"Apfel",
+   hint:"Hör auf den ersten Laut: A..."
+  },
+  {
+   id:"letter-m",
+   icon:"🔤",
+   title:"Malinos Buchstabe",
+   age:"5–7",
+   task:"Mit welchem Buchstaben beginnt „Malino“?",
+   options:["M","L","A","N"],
+   answer:"M",
+   hint:"Sprich „Malino“ ganz langsam."
+  },
+  {
+   id:"logic-wheels",
+   icon:"⚙️",
+   title:"Was braucht Räder?",
+   age:"5–7",
+   task:"Welches Ding hat normalerweise Räder?",
+   options:["🚲 Fahrrad","📚 Buch","🥄 Löffel","🧸 Teddy"],
+   answer:"🚲 Fahrrad",
+   hint:"Damit kann man fahren."
+  },
+  {
+   id:"emotion-happy",
+   icon:"😊",
+   title:"Gefühle erkennen",
+   age:"4–6",
+   task:"Welches Gesicht sieht fröhlich aus?",
+   options:["😊","😢","😡","😴"],
+   answer:"😊",
+   hint:"Es lächelt."
   }
  ];
  const solvedPuzzleCount=puzzleCards.filter(p=>puzzleSolved.includes(p.id)).length;
@@ -1062,7 +1234,7 @@ export default function Page(){
    </div>
 
    <div className="puzzleIntro">
-    <div><span>🎯</span><p><b>Heute trainieren wir Köpfchen & Konzentration.</b><small>Erste Mini-Rätsel für die Altersgruppe 4–7 Jahre.</small></p></div>
+    <div><span>🎯</span><p><b>Heute trainieren wir Köpfchen & Konzentration.</b><small>20 abwechslungsreiche Mini-Rätsel für die Altersgruppe 4–7 Jahre.</small></p></div>
     <button onClick={()=>setScreen("start")}>Zur Startseite</button>
    </div>
 
@@ -1103,7 +1275,7 @@ export default function Page(){
    </div>
 
    <div className="puzzleRoadmap">
-    <div><span>🚀</span><p><b>Das ist erst der Anfang.</b><small>Später können hier Rebusse, Labyrinthe, Unterschiede, Zahlen- und Buchstabenrätsel dazukommen.</small></p></div>
+    <div><span>🚀</span><p><b>20 Rätsel sind jetzt bereit!</b><small>Später können hier Rebusse, Labyrinthe, Unterschiede, Zahlen- und Buchstabenrätsel dazukommen.</small></p></div>
     <button onClick={()=>setScreen("library")}>🎨 Jetzt malen</button>
    </div>
   </section>}
