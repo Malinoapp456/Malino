@@ -256,6 +256,7 @@ export default function Page(){
  const [rewardStage,setRewardStage]=useState("closed");
  const [puzzleFeedback,setPuzzleFeedback]=useState(null);
  const [puzzleWrong,setPuzzleWrong]=useState(null);
+ const [activePuzzleId,setActivePuzzleId]=useState(null);
 
  const [profileDialog,setProfileDialog]=useState(null);
  const [profileNameInput,setProfileNameInput]=useState("");
@@ -675,6 +676,7 @@ export default function Page(){
   }
  ];
  const solvedPuzzleCount=puzzleCards.filter(p=>puzzleSolved.includes(p.id)).length;
+ const activePuzzle=activePuzzleId?puzzleCards.find(p=>p.id===activePuzzleId):null;
 
  const todayKey=new Date().toLocaleDateString("sv-SE");
  const dailySeed=[...todayKey].reduce((sum,ch)=>sum+ch.charCodeAt(0),0);
@@ -1220,42 +1222,79 @@ export default function Page(){
    </div>
   </section>}
 
-  {screen==="puzzles"&&<section className="puzzlePage">
-   <div className="puzzleHero">
+  {screen==="puzzles"&&<section className="puzzlePage puzzleSelectPage">
+   <div className="puzzleHero puzzleSelectHero">
     <div className="puzzleMascot"><img src="/malino-hero-mascot.png" alt="Malino"/></div>
     <div className="puzzleHeroCopy">
-     <span className="eyebrow">Neuer Malino-Welt</span>
+     <span className="eyebrow">Rätselwelt</span>
      <h1>Rätsel & Rebusse 🧩</h1>
-     <p>Schau genau hin, finde die Lösung und sammle beim ersten Lösen <b>3 Sterne</b>.</p>
+     <p>Wähle ein Rätsel aus. Für jede erste richtige Lösung bekommst du <b>3 Sterne</b>.</p>
     </div>
-    <div className="puzzleProgress">
+    <div className="puzzleProgress puzzleProgressBig">
      <span>⭐</span><div><b>{solvedPuzzleCount}/{puzzleCards.length}</b><small>gelöst</small></div>
     </div>
    </div>
 
-   <div className="puzzleIntro">
-    <div><span>🎯</span><p><b>Heute trainieren wir Köpfchen & Konzentration.</b><small>20 abwechslungsreiche Mini-Rätsel für die Altersgruppe 4–7 Jahre.</small></p></div>
-    <button onClick={()=>setScreen("start")}>Zur Startseite</button>
+   <div className="puzzleProgressPanel">
+    <div>
+     <span className="eyebrow">Dein Fortschritt</span>
+     <h2>{solvedPuzzleCount} von {puzzleCards.length} Rätseln geschafft</h2>
+    </div>
+    <div className="puzzleTrack"><i style={{width:`${Math.round((solvedPuzzleCount/puzzleCards.length)*100)}%`}}/></div>
    </div>
 
-   <div className="puzzleGrid">
-    {puzzleCards.map((p,index)=>{
-     const solved=puzzleSolved.includes(p.id);
-     const feedback=puzzleFeedback?.id===p.id;
-     const wrong=puzzleWrong===p.id;
-     return <article key={p.id} className={`puzzleCard ${solved?"solved":""} ${wrong?"wrong":""}`}>
-      <div className="puzzleCardHead">
-       <div className="puzzleIcon">{p.icon}</div>
-       <div><span>Rätsel {index+1}</span><h2>{p.title}</h2></div>
-       <em>{p.age} Jahre</em>
+   {!activePuzzle&&<>
+    <div className="puzzleSelectHead">
+     <div><span className="eyebrow">Wähle eine Aufgabe</span><h2>20 Rätsel</h2><p>Gelöste Aufgaben bekommen ein grünes Häkchen.</p></div>
+     <button onClick={()=>setScreen("start")}>← Startseite</button>
+    </div>
+
+    <div className="puzzleLevelGrid">
+     {puzzleCards.map((p,index)=>{
+      const solved=puzzleSolved.includes(p.id);
+      return <button key={p.id} className={`puzzleLevelCard ${solved?"solved":""}`} onClick={()=>{
+       setPuzzleFeedback(null);
+       setPuzzleWrong(null);
+       setActivePuzzleId(p.id);
+       playSound("click");
+      }}>
+       <span className="puzzleLevelNumber">{index+1}</span>
+       <span className="puzzleLevelIcon">{p.icon}</span>
+       <b>{p.title}</b>
+       <small>{p.age} Jahre</small>
+       <em>{solved?"✓ Gelöst":"Öffnen ›"}</em>
+      </button>
+     })}
+    </div>
+   </>}
+
+   {activePuzzle&&(()=>{
+    const p=activePuzzle;
+    const solved=puzzleSolved.includes(p.id);
+    const feedback=puzzleFeedback?.id===p.id;
+    const wrong=puzzleWrong===p.id;
+    const idx=puzzleCards.findIndex(x=>x.id===p.id);
+    const prev=idx>0?puzzleCards[idx-1]:null;
+    const next=idx<puzzleCards.length-1?puzzleCards[idx+1]:null;
+    return <div className="puzzleFocusWrap">
+     <div className="puzzleFocusTop">
+      <button onClick={()=>{setActivePuzzleId(null);setPuzzleFeedback(null);setPuzzleWrong(null)}}>← Alle Rätsel</button>
+      <span>Rätsel {idx+1} / {puzzleCards.length}</span>
+      <em>{solved?"✓ Gelöst":`${p.age} Jahre`}</em>
+     </div>
+
+     <article className={`puzzleFocusCard ${solved?"solved":""} ${wrong?"wrong":""}`}>
+      <div className="puzzleFocusTitle">
+       <div className="puzzleIcon big">{p.icon}</div>
+       <div><span className="eyebrow">Aufgabe {idx+1}</span><h2>{p.title}</h2></div>
       </div>
 
-      <div className="puzzleTask">
+      <div className="puzzleTask puzzleTaskLarge">
        <p>{p.task}</p>
        {p.pattern&&<strong>{p.pattern}</strong>}
       </div>
 
-      <div className="puzzleOptions">
+      <div className="puzzleOptions puzzleOptionsLarge">
        {p.options.map(option=><button
         key={option}
         className={feedback&&option===p.answer?"correct":""}
@@ -1263,7 +1302,7 @@ export default function Page(){
        >{option}</button>)}
       </div>
 
-      <div className="puzzleFooter">
+      <div className="puzzleFooter puzzleFooterLarge">
        {feedback
         ?<div className="puzzleSuccess"><span>🎉</span><p><b>Richtig!</b><small>{puzzleFeedback.firstTime?"+3 Sterne für dich!":"Dieses Rätsel kennst du schon."}</small></p></div>
         :wrong
@@ -1271,13 +1310,14 @@ export default function Page(){
          :<div className="puzzleHint"><span>{solved?"✓":"⭐"}</span><p><b>{solved?"Schon gelöst":"Belohnung"}</b><small>{solved?"Du kannst es jederzeit wiederholen.":"3 Sterne beim ersten richtigen Lösen"}</small></p></div>}
       </div>
      </article>
-    })}
-   </div>
 
-   <div className="puzzleRoadmap">
-    <div><span>🚀</span><p><b>20 Rätsel sind jetzt bereit!</b><small>Später können hier Rebusse, Labyrinthe, Unterschiede, Zahlen- und Buchstabenrätsel dazukommen.</small></p></div>
-    <button onClick={()=>setScreen("library")}>🎨 Jetzt malen</button>
-   </div>
+     <div className="puzzleFocusNav">
+      <button disabled={!prev} onClick={()=>prev&&setActivePuzzleId(prev.id)}>‹ Vorheriges</button>
+      <button className="puzzleAllBtn" onClick={()=>{setActivePuzzleId(null);setPuzzleFeedback(null);setPuzzleWrong(null)}}>▦ Übersicht</button>
+      <button disabled={!next} onClick={()=>next&&setActivePuzzleId(next.id)}>Nächstes ›</button>
+     </div>
+    </div>
+   })()}
   </section>}
 
   {screen==="library"&&<section className="libraryPage">
