@@ -6065,3 +6065,92 @@ nav,
  .puzzleFocusNav{grid-template-columns:1fr 1fr 1fr;gap:5px}.puzzleFocusNav button{min-height:41px;padding:7px 4px;font-size:8px}
 }
 @media(max-width:380px){.puzzleLevelGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* =========================================================
+   Malino v21 — Abenteuerkarte mit 5 Rätselwelten
+   ========================================================= */
+.puzzleWorldPage{padding-top:8px;padding-bottom:165px}
+.worldMapHero{
+  position:relative;overflow:hidden;border-radius:30px;
+  background:linear-gradient(#65c9ff 0 34%,#bdefff 34% 45%,#69c978 45% 100%);
+  border:1px solid rgba(70,132,186,.22);box-shadow:0 16px 38px rgba(31,66,103,.13);
+}
+.worldMapTitle{text-align:center;padding:15px 120px 7px;position:relative;z-index:4}
+.worldMapTitle span{display:inline-block;padding:5px 13px;border-radius:999px;background:#fff4ce;color:#8b5a16;font-size:10px;font-weight:950}
+.worldMapTitle h1{display:inline-block;margin:6px 0 0;padding:8px 27px;border-radius:14px;background:linear-gradient(#a96727,#7c4317);color:#fff;font-size:31px;text-shadow:0 2px 1px rgba(0,0,0,.18);box-shadow:0 5px 0 #60320f}
+.worldMapScore{position:absolute;right:17px;top:18px;z-index:5;display:flex;gap:7px;align-items:center;padding:8px 13px;border-radius:999px;background:#fff7df;border:2px solid rgba(126,85,25,.22);color:#6d4317}
+.worldMapScore span{font-size:22px}.worldMapScore b{font-size:18px}
+.worldMapScene{position:relative;height:610px;overflow:hidden}
+.worldMapScene::before{
+ content:"";position:absolute;inset:18px 28px 25px;border-radius:48% 45% 42% 50%;
+ background:
+ radial-gradient(circle at 19% 24%,#246f34 0 5%,#3d9a4b 6% 16%,transparent 17%),
+ radial-gradient(circle at 52% 22%,#d9e7ef 0 7%,#7897ac 8% 15%,transparent 16%),
+ radial-gradient(circle at 79% 30%,#a45e36 0 4%,#7fc25e 5% 17%,transparent 18%),
+ radial-gradient(circle at 30% 72%,#f2d56b 0 8%,#55a75b 9% 18%,transparent 19%),
+ radial-gradient(circle at 69% 73%,#8b59ba 0 8%,#4e7955 9% 19%,transparent 20%),
+ linear-gradient(135deg,#54a953,#7bd26e);
+ box-shadow:inset 0 0 0 8px rgba(255,255,255,.18),0 14px 30px rgba(20,75,88,.22);
+}
+.worldMapScene::after{content:"";position:absolute;left:12%;right:12%;top:46%;height:70px;border-radius:50%;background:linear-gradient(180deg,#40b9e7,#78d6ef);transform:rotate(-5deg);box-shadow:0 0 0 5px rgba(255,255,255,.18)}
+.worldCloud{position:absolute;z-index:1;font-size:68px;opacity:.78;filter:brightness(1.15)}
+.cloudOne{top:0;left:5%}.cloudTwo{top:35px;right:6%}
+.worldPath{position:absolute;z-index:2;height:18px;background:#efd797;border:4px solid rgba(145,111,56,.18);border-radius:999px;transform-origin:left center}
+.pathOne{width:28%;left:24%;top:210px;transform:rotate(14deg)}
+.pathTwo{width:26%;left:50%;top:300px;transform:rotate(-16deg)}
+.pathThree{width:28%;left:37%;top:420px;transform:rotate(16deg)}
+.worldNode{
+ position:absolute;z-index:4;width:185px;min-height:115px;padding:42px 9px 9px;border:0;border-radius:22px;
+ background:rgba(255,255,255,.92);box-shadow:0 9px 20px rgba(26,64,78,.19);color:#173d78;
+}
+.worldNode.locked{filter:saturate(.55);opacity:.78}
+.worldNode.complete{box-shadow:0 0 0 4px rgba(78,196,87,.28),0 9px 20px rgba(26,64,78,.19)}
+.worldNode1{left:12%;top:75px}.worldNode2{left:43%;top:68px}.worldNode3{right:8%;top:185px}.worldNode4{left:27%;bottom:67px}.worldNode5{right:23%;bottom:45px}
+.worldLandscape{position:absolute;left:50%;top:-35px;transform:translateX(-50%);font-size:64px;filter:drop-shadow(0 6px 5px rgba(26,61,70,.2))}
+.worldBadge{position:absolute;left:8px;top:8px;width:29px;height:29px;display:grid;place-items:center;border-radius:50%;background:#fff4cf;color:#7c5019;font-weight:950}
+.worldNode b{display:block;font-size:15px}.worldNode small{display:block;margin-top:4px;font-size:11px;font-weight:900;color:#6d7e93}
+.worldNode em{display:inline-block;margin-top:7px;padding:5px 8px;border-radius:999px;background:#edf4ff;color:#1769d8;font-size:8px;font-style:normal;font-weight:950}
+.worldNode.complete em{background:#e6f8e9;color:#347c45}
+.worldMalino{position:absolute;left:2%;bottom:5px;z-index:6;width:155px}
+.worldMalino img{width:130px;height:150px;object-fit:contain;filter:drop-shadow(0 8px 7px rgba(22,58,73,.25))}
+.worldSpeech{position:absolute;left:85px;bottom:120px;width:150px;padding:10px;border-radius:16px;background:#fff7e4;color:#6c4c29;font-size:10px;font-weight:900;box-shadow:0 6px 14px rgba(34,54,86,.12)}
+.worldOverallProgress{position:absolute;right:2%;bottom:12px;z-index:6;width:190px;padding:13px;border-radius:17px;background:#fff5d8;color:#6c4a22;box-shadow:0 8px 18px rgba(31,65,81,.18)}
+.worldOverallProgress>b,.worldOverallProgress>strong,.worldOverallProgress>small{display:block}.worldOverallProgress strong{font-size:19px;margin:4px 0}
+.worldOverallProgress>div{height:10px;background:#e8d5a4;border-radius:999px;overflow:hidden}.worldOverallProgress i{display:block;height:100%;background:#66c63d;border-radius:inherit}
+.worldOverallProgress small{font-size:8px;margin-top:6px;font-weight:800}
+
+.worldDetailHero{display:grid;grid-template-columns:auto 85px 1fr auto;gap:15px;align-items:center;padding:18px;border-radius:27px;border:1px solid #e0e8f1;box-shadow:0 11px 27px rgba(34,54,86,.08)}
+.worldTheme1{background:linear-gradient(135deg,#e8f8df,#fff)}
+.worldTheme2{background:linear-gradient(135deg,#e4f4ff,#fff)}
+.worldTheme3{background:linear-gradient(135deg,#f1e7ff,#fff)}
+.worldTheme4{background:linear-gradient(135deg,#fff1d4,#fff)}
+.worldTheme5{background:linear-gradient(135deg,#f6e3ff,#fff1f7)}
+.worldBackBtn{border:0;border-radius:12px;padding:9px;background:rgba(255,255,255,.75);color:#54708d;font-weight:900}
+.worldDetailIcon{font-size:58px;text-align:center}.worldDetailHero h1{margin:2px 0;color:#123a7a}.worldDetailHero p{margin:0;color:#728298;font-size:11px;font-weight:700}
+.worldDetailProgress{display:grid;text-align:center;padding:11px 15px;border-radius:17px;background:#fff}.worldDetailProgress b{font-size:22px;color:#173d78}.worldDetailProgress small{font-size:8px;color:#77869a;font-weight:800}
+.worldLevelGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:18px}
+.worldLevelCard{position:relative;min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;border:1px solid #e2e8f1;border-radius:24px;background:#fff;color:#173d78;box-shadow:0 9px 22px rgba(34,54,86,.07)}
+.worldLevelCard.solved{border-color:#9bd6a6;background:linear-gradient(#f0fff2,#fff)}
+.worldLevelNo{position:absolute;left:10px;top:10px;width:30px;height:30px;display:grid;place-items:center;border-radius:10px;background:#eef4fb;font-weight:950}.worldLevelEmoji{font-size:42px}
+.worldLevelCard b{text-align:center;font-size:13px}.worldLevelCard small{font-size:9px;color:#7d8998}.worldLevelCard em{font-size:9px;font-style:normal;font-weight:950;color:#2877db;background:#edf4ff;padding:5px 8px;border-radius:999px}
+.worldLevelCard.solved em{background:#e2f7e6;color:#347c45}
+.worldTipCard{display:flex;gap:11px;align-items:center;margin-top:14px;padding:13px 16px;border-radius:18px;background:#fff8dd;color:#684d29}.worldTipCard>span{font-size:30px}.worldTipCard div{display:grid}.worldTipCard small{font-size:9px;margin-top:2px}
+
+@media(max-width:900px){
+ .worldMapScene{height:670px}.worldNode{width:155px}.worldNode1{left:8%}.worldNode2{left:42%}.worldNode3{right:5%}.worldNode4{left:25%}.worldNode5{right:17%}
+ .worldLevelGrid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .worldMapHero{border-radius:22px}.worldMapTitle{padding:11px 55px 5px}.worldMapTitle span{font-size:7px}.worldMapTitle h1{font-size:19px;padding:7px 13px}
+ .worldMapScore{right:8px;top:9px;padding:6px 8px}.worldMapScore span{font-size:16px}.worldMapScore b{font-size:13px}
+ .worldMapScene{height:650px}.worldMapScene::before{inset:15px 8px 20px}
+ .worldNode{width:128px;min-height:99px;padding:35px 5px 7px;border-radius:17px}
+ .worldLandscape{font-size:48px;top:-26px}.worldBadge{width:23px;height:23px;font-size:9px}.worldNode b{font-size:10px}.worldNode small{font-size:8px}.worldNode em{font-size:6px;padding:4px}
+ .worldNode1{left:5%;top:65px}.worldNode2{left:auto;right:5%;top:85px}.worldNode3{right:5%;top:265px}.worldNode4{left:7%;bottom:130px}.worldNode5{right:7%;bottom:55px}
+ .worldMalino{left:0;bottom:5px;width:100px}.worldMalino img{width:90px;height:110px}.worldSpeech{display:none}
+ .worldOverallProgress{left:8px;right:auto;bottom:118px;width:125px;padding:8px}.worldOverallProgress strong{font-size:13px}.worldOverallProgress small{font-size:6px}
+ .worldDetailHero{grid-template-columns:auto 55px 1fr;padding:12px;gap:8px}.worldBackBtn{grid-column:1/-1;justify-self:start;font-size:9px}.worldDetailIcon{font-size:39px}.worldDetailHero h1{font-size:20px}.worldDetailHero p{font-size:8px}.worldDetailProgress{display:none}
+ .worldLevelGrid{grid-template-columns:repeat(2,1fr);gap:8px;margin-top:11px}.worldLevelCard{min-height:145px;border-radius:19px}.worldLevelEmoji{font-size:32px}.worldLevelCard b{font-size:10px}
+}
+@media(max-width:370px){.worldNode{width:116px}.worldLevelGrid{grid-template-columns:1fr 1fr}}

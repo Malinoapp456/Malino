@@ -257,6 +257,7 @@ export default function Page(){
  const [puzzleFeedback,setPuzzleFeedback]=useState(null);
  const [puzzleWrong,setPuzzleWrong]=useState(null);
  const [activePuzzleId,setActivePuzzleId]=useState(null);
+ const [activePuzzleWorld,setActivePuzzleWorld]=useState(null);
 
  const [profileDialog,setProfileDialog]=useState(null);
  const [profileNameInput,setProfileNameInput]=useState("");
@@ -677,6 +678,18 @@ export default function Page(){
  ];
  const solvedPuzzleCount=puzzleCards.filter(p=>puzzleSolved.includes(p.id)).length;
  const activePuzzle=activePuzzleId?puzzleCards.find(p=>p.id===activePuzzleId):null;
+ const puzzleWorlds=[
+  {id:"logic",number:1,title:"Logik-Wald",icon:"🌳",emoji:"🧩",ids:["odd-one","cat-fish","bigger-animal","animal-home"],unlock:0},
+  {id:"numbers",number:2,title:"Zahlen-Berge",icon:"🏔️",emoji:"🔢",ids:["count-apples","simple-addition","simple-subtraction","sequence-numbers"],unlock:2},
+  {id:"letters",number:3,title:"Buchstaben-Dorf",icon:"🏘️",emoji:"🔤",ids:["letter-a","letter-m","opposites","emotion-happy"],unlock:5},
+  {id:"colors",number:4,title:"Farben-Insel",icon:"🏝️",emoji:"🎨",ids:["color-red","shape-circle","weather-rain","food-category"],unlock:8},
+  {id:"magic",number:5,title:"Malinos Zauberwelt",icon:"🏰",emoji:"✨",ids:["pattern","day-night","vehicle-water","logic-wheels"],unlock:12}
+ ];
+ const worldSolvedCount=world=>world.ids.filter(id=>puzzleSolved.includes(id)).length;
+ const worldUnlocked=world=>solvedPuzzleCount>=world.unlock;
+ const currentPuzzleWorld=activePuzzleWorld?puzzleWorlds.find(w=>w.id===activePuzzleWorld):null;
+ const currentWorldPuzzles=currentPuzzleWorld?currentPuzzleWorld.ids.map(id=>puzzleCards.find(p=>p.id===id)).filter(Boolean):[];
+
 
  const todayKey=new Date().toLocaleDateString("sv-SE");
  const dailySeed=[...todayKey].reduce((sum,ch)=>sum+ch.charCodeAt(0),0);
@@ -1222,49 +1235,81 @@ export default function Page(){
    </div>
   </section>}
 
-  {screen==="puzzles"&&<section className="puzzlePage puzzleSelectPage">
-   <div className="puzzleHero puzzleSelectHero">
-    <div className="puzzleMascot"><img src="/malino-hero-mascot.png" alt="Malino"/></div>
-    <div className="puzzleHeroCopy">
-     <span className="eyebrow">Rätselwelt</span>
-     <h1>Rätsel & Rebusse 🧩</h1>
-     <p>Wähle ein Rätsel aus. Für jede erste richtige Lösung bekommst du <b>3 Sterne</b>.</p>
-    </div>
-    <div className="puzzleProgress puzzleProgressBig">
-     <span>⭐</span><div><b>{solvedPuzzleCount}/{puzzleCards.length}</b><small>gelöst</small></div>
-    </div>
-   </div>
+  {screen==="puzzles"&&<section className="puzzlePage puzzleWorldPage">
+   {!activePuzzleWorld&&!activePuzzle&&<>
+    <div className="worldMapHero">
+     <div className="worldMapTitle">
+      <span>⭐ Entdecke 5 zauberhafte Welten! ⭐</span>
+      <h1>Rätsel & Rebusse</h1>
+     </div>
+     <div className="worldMapScore"><span>⭐</span><b>{stars}</b></div>
 
-   <div className="puzzleProgressPanel">
-    <div>
-     <span className="eyebrow">Dein Fortschritt</span>
-     <h2>{solvedPuzzleCount} von {puzzleCards.length} Rätseln geschafft</h2>
-    </div>
-    <div className="puzzleTrack"><i style={{width:`${Math.round((solvedPuzzleCount/puzzleCards.length)*100)}%`}}/></div>
-   </div>
+     <div className="worldMapScene">
+      <div className="worldCloud cloudOne">☁️</div><div className="worldCloud cloudTwo">☁️</div>
+      <div className="worldPath pathOne"/><div className="worldPath pathTwo"/><div className="worldPath pathThree"/>
 
-   {!activePuzzle&&<>
-    <div className="puzzleSelectHead">
-     <div><span className="eyebrow">Wähle eine Aufgabe</span><h2>20 Rätsel</h2><p>Gelöste Aufgaben bekommen ein grünes Häkchen.</p></div>
-     <button onClick={()=>setScreen("start")}>← Startseite</button>
+      {puzzleWorlds.map(world=>{
+       const solved=worldSolvedCount(world);
+       const unlocked=worldUnlocked(world);
+       return <button key={world.id}
+        className={`worldNode worldNode${world.number} ${unlocked?"unlocked":"locked"} ${solved===world.ids.length?"complete":""}`}
+        onClick={()=>{
+         if(!unlocked){playSound("click");return}
+         setActivePuzzleWorld(world.id);setActivePuzzleId(null);setPuzzleFeedback(null);setPuzzleWrong(null);playSound("click");
+        }}>
+        <span className="worldLandscape">{world.icon}</span>
+        <span className="worldBadge">{world.number}</span>
+        <b>{world.title}</b>
+        <small>{world.emoji} {solved}/{world.ids.length}</small>
+        <em>{!unlocked?`🔒 ${world.unlock} Rätsel nötig`:solved===world.ids.length?"✓ Geschafft":"Öffnen ›"}</em>
+       </button>
+      })}
+
+      <div className="worldMalino">
+       <div className="worldSpeech">Wähle eine Welt und los geht’s! ❤️</div>
+       <img src="/malino-hero-mascot.png" alt="Malino"/>
+      </div>
+
+      <div className="worldOverallProgress">
+       <b>Dein Fortschritt</b>
+       <strong>⭐ {solvedPuzzleCount}/{puzzleCards.length}</strong>
+       <div><i style={{width:`${Math.round((solvedPuzzleCount/puzzleCards.length)*100)}%`}}/></div>
+       <small>{solvedPuzzleCount===20?"Fantastisch! Alle Rätsel geschafft!":"Weiter so! Du bist auf einem tollen Weg!"}</small>
+      </div>
+     </div>
+    </div>
+   </>}
+
+   {activePuzzleWorld&&!activePuzzle&&currentPuzzleWorld&&<>
+    <div className={`worldDetailHero worldTheme${currentPuzzleWorld.number}`}>
+     <button className="worldBackBtn" onClick={()=>setActivePuzzleWorld(null)}>← Weltkarte</button>
+     <div className="worldDetailIcon">{currentPuzzleWorld.icon}</div>
+     <div>
+      <span className="eyebrow">Welt {currentPuzzleWorld.number} von 5</span>
+      <h1>{currentPuzzleWorld.title}</h1>
+      <p>Löse alle 4 Aufgaben und sammle Sterne.</p>
+     </div>
+     <div className="worldDetailProgress"><b>{worldSolvedCount(currentPuzzleWorld)}/4</b><small>gelöst</small></div>
     </div>
 
-    <div className="puzzleLevelGrid">
-     {puzzleCards.map((p,index)=>{
+    <div className="worldLevelGrid">
+     {currentWorldPuzzles.map((p,index)=>{
       const solved=puzzleSolved.includes(p.id);
-      return <button key={p.id} className={`puzzleLevelCard ${solved?"solved":""}`} onClick={()=>{
-       setPuzzleFeedback(null);
-       setPuzzleWrong(null);
-       setActivePuzzleId(p.id);
-       playSound("click");
+      const globalIndex=puzzleCards.findIndex(x=>x.id===p.id);
+      return <button key={p.id} className={`worldLevelCard ${solved?"solved":""}`} onClick={()=>{
+       setPuzzleFeedback(null);setPuzzleWrong(null);setActivePuzzleId(p.id);playSound("click");
       }}>
-       <span className="puzzleLevelNumber">{index+1}</span>
-       <span className="puzzleLevelIcon">{p.icon}</span>
+       <span className="worldLevelNo">{index+1}</span>
+       <span className="worldLevelEmoji">{p.icon}</span>
        <b>{p.title}</b>
-       <small>{p.age} Jahre</small>
-       <em>{solved?"✓ Gelöst":"Öffnen ›"}</em>
+       <small>Aufgabe {globalIndex+1}</small>
+       <em>{solved?"✓ Gelöst":"+3 ⭐"}</em>
       </button>
      })}
+    </div>
+
+    <div className="worldTipCard">
+     <span>🦁</span><div><b>Malinos Tipp</b><small>Du kannst jedes gelöste Rätsel jederzeit wiederholen. Sterne gibt es beim ersten richtigen Lösen.</small></div>
     </div>
    </>}
 
@@ -1273,35 +1318,28 @@ export default function Page(){
     const solved=puzzleSolved.includes(p.id);
     const feedback=puzzleFeedback?.id===p.id;
     const wrong=puzzleWrong===p.id;
-    const idx=puzzleCards.findIndex(x=>x.id===p.id);
-    const prev=idx>0?puzzleCards[idx-1]:null;
-    const next=idx<puzzleCards.length-1?puzzleCards[idx+1]:null;
+    const list=currentWorldPuzzles.length?currentWorldPuzzles:puzzleCards;
+    const idx=list.findIndex(x=>x.id===p.id);
+    const prev=idx>0?list[idx-1]:null;
+    const next=idx<list.length-1?list[idx+1]:null;
     return <div className="puzzleFocusWrap">
      <div className="puzzleFocusTop">
-      <button onClick={()=>{setActivePuzzleId(null);setPuzzleFeedback(null);setPuzzleWrong(null)}}>← Alle Rätsel</button>
-      <span>Rätsel {idx+1} / {puzzleCards.length}</span>
+      <button onClick={()=>{setActivePuzzleId(null);setPuzzleFeedback(null);setPuzzleWrong(null)}}>← {currentPuzzleWorld?.title||"Alle Rätsel"}</button>
+      <span>Aufgabe {idx+1} / {list.length}</span>
       <em>{solved?"✓ Gelöst":`${p.age} Jahre`}</em>
      </div>
 
      <article className={`puzzleFocusCard ${solved?"solved":""} ${wrong?"wrong":""}`}>
       <div className="puzzleFocusTitle">
        <div className="puzzleIcon big">{p.icon}</div>
-       <div><span className="eyebrow">Aufgabe {idx+1}</span><h2>{p.title}</h2></div>
+       <div><span className="eyebrow">{currentPuzzleWorld?.title||"Rätsel"}</span><h2>{p.title}</h2></div>
       </div>
-
       <div className="puzzleTask puzzleTaskLarge">
-       <p>{p.task}</p>
-       {p.pattern&&<strong>{p.pattern}</strong>}
+       <p>{p.task}</p>{p.pattern&&<strong>{p.pattern}</strong>}
       </div>
-
       <div className="puzzleOptions puzzleOptionsLarge">
-       {p.options.map(option=><button
-        key={option}
-        className={feedback&&option===p.answer?"correct":""}
-        onClick={()=>answerPuzzle(p,option)}
-       >{option}</button>)}
+       {p.options.map(option=><button key={option} className={feedback&&option===p.answer?"correct":""} onClick={()=>answerPuzzle(p,option)}>{option}</button>)}
       </div>
-
       <div className="puzzleFooter puzzleFooterLarge">
        {feedback
         ?<div className="puzzleSuccess"><span>🎉</span><p><b>Richtig!</b><small>{puzzleFeedback.firstTime?"+3 Sterne für dich!":"Dieses Rätsel kennst du schon."}</small></p></div>
@@ -1313,7 +1351,7 @@ export default function Page(){
 
      <div className="puzzleFocusNav">
       <button disabled={!prev} onClick={()=>prev&&setActivePuzzleId(prev.id)}>‹ Vorheriges</button>
-      <button className="puzzleAllBtn" onClick={()=>{setActivePuzzleId(null);setPuzzleFeedback(null);setPuzzleWrong(null)}}>▦ Übersicht</button>
+      <button className="puzzleAllBtn" onClick={()=>{setActivePuzzleId(null);setPuzzleFeedback(null);setPuzzleWrong(null)}}>▦ Welt</button>
       <button disabled={!next} onClick={()=>next&&setActivePuzzleId(next.id)}>Nächstes ›</button>
      </div>
     </div>
