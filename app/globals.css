@@ -6154,3 +6154,24 @@ nav,
  .worldLevelGrid{grid-template-columns:repeat(2,1fr);gap:8px;margin-top:11px}.worldLevelCard{min-height:145px;border-radius:19px}.worldLevelEmoji{font-size:32px}.worldLevelCard b{font-size:10px}
 }
 @media(max-width:370px){.worldNode{width:116px}.worldLevelGrid{grid-template-columns:1fr 1fr}}
+
+
+/* Malino v21.1 — osobna poza maskotki dla Rätselwelt */
+.worldMalino{
+  width:175px;
+}
+.worldMalino img{
+  width:155px;
+  height:180px;
+  object-fit:contain;
+  object-position:center bottom;
+}
+@media(max-width:650px){
+  .worldMalino{
+    width:112px;
+  }
+  .worldMalino img{
+    width:102px;
+    height:126px;
+  }
+}

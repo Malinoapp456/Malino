@@ -1267,7 +1267,7 @@ export default function Page(){
 
       <div className="worldMalino">
        <div className="worldSpeech">Wähle eine Welt und los geht’s! ❤️</div>
-       <img src="/malino-hero-mascot.png" alt="Malino"/>
+       <img src="/malino-raetsel-mascot.png" alt="Malino"/>
       </div>
 
       <div className="worldOverallProgress">
