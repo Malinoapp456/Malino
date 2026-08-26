@@ -287,7 +287,7 @@ export default function Page(){
    const base=soundPool.current[type];
    if(!base)return;
    const audio=base.cloneNode();
-   audio.volume=type==="click"?0.35:0.55;
+   audio.volume=type==="click"?0.35:(type==="premium-reward-fanfare"?0.92:(type==="premium-chest-open"?0.72:0.55));
    audio.currentTime=0;
    const p=audio.play();
    if(p?.catch)p.catch(()=>{});
