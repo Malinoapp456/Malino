@@ -253,6 +253,7 @@ export default function Page(){
  const [profileData,setProfileData]=useState({default:emptyProfileData()});
  const [profilesReady,setProfilesReady]=useState(false);
  const [rewardPopup,setRewardPopup]=useState(null);
+ const [rewardStage,setRewardStage]=useState("closed");
  const [profileDialog,setProfileDialog]=useState(null);
  const [profileNameInput,setProfileNameInput]=useState("");
  const [profileAvatarInput,setProfileAvatarInput]=useState("lion");
@@ -337,7 +338,7 @@ export default function Page(){
 
  useEffect(()=>{
   if(typeof window==="undefined")return;
-  const types=["click","color","success","stars","reward","streak"];
+  const types=["click","color","success","stars","reward","streak","chest-creak","reward-boom","reward-fanfare"];
   const pool={};
   types.forEach(type=>{
    try{
@@ -742,23 +743,28 @@ export default function Page(){
  const profileStatsRewards=Array.isArray(profileStatsData.rewards)?profileStatsData.rewards:[];
  const profileStatsStars=Number(profileStatsData.stars ?? 0);
  const paintColors=hasChest50?[...colors,...chest50Colors.map(x=>x.value)]:colors;
+ const startRewardSequence=type=>{
+  setRewardPopup(type);
+  setRewardStage("opening");
+  playSound("chest-creak");
+  setTimeout(()=>{setRewardStage("boom");playSound("reward-boom")},900);
+  setTimeout(()=>{setRewardStage("reveal");playSound("reward-fanfare")},1120);
+ };
+
  const openChest50=()=>{
   if(stars<50||hasChest50)return;
-  playSound("reward");
   setUnlockedRewards([...unlockedRewards,"chest50"]);
-  setRewardPopup("chest50");
+  startRewardSequence("chest50");
  };
  const openChest100=()=>{
   if(stars<100||hasChest100)return;
-  playSound("reward");
   setUnlockedRewards([...unlockedRewards,"chest100"]);
-  setRewardPopup("chest100");
+  startRewardSequence("chest100");
  };
  const openChest200=()=>{
   if(stars<200||hasChest200)return;
-  playSound("reward");
   setUnlockedRewards([...unlockedRewards,"chest200"]);
-  setRewardPopup("chest200");
+  startRewardSequence("chest200");
  };
  const open=it=>{setCurrent(it);setFills({});setHistory([]);setTool("fill");setFillFeedback(null);setScreen("paint")};
  const showFillFeedback=kind=>{clearTimeout(feedbackTimer.current);setFillFeedback(kind);feedbackTimer.current=setTimeout(()=>setFillFeedback(null),1100)};
@@ -1159,9 +1165,18 @@ export default function Page(){
     </div>}
   </section>}
 
-  {rewardPopup&&<div className={`rewardUnlockOverlay ${rewardPopup==="chest200"?"goldenUnlockOverlay":""}`} role="dialog" aria-modal="true" aria-label="Belohnung freigeschaltet">
+  {rewardPopup&&<div className={`rewardUnlockOverlay rewardStage-${rewardStage} ${rewardPopup==="chest200"?"goldenUnlockOverlay":""}`} role="dialog" aria-modal="true" aria-label="Belohnung freigeschaltet">
    <div className={`rewardUnlockCard ${rewardPopup==="chest200"?"goldenUnlockCard":""}`}>
-    <button className="rewardClose" onClick={()=>setRewardPopup(null)} aria-label="Schließen">×</button>
+    <button className="rewardClose" onClick={()=>{setRewardPopup(null);setRewardStage("closed")}} aria-label="Schließen">×</button>
+
+    {rewardStage!=="reveal"&&<div className="chestCeremony" aria-hidden="true">
+     <div className="chestGlowRing"/>
+     <div className="chestLid">✨</div>
+     <div className="chestBody">🎁</div>
+     {rewardStage==="opening"&&<span className="chestHint">Die Schatzkiste öffnet sich…</span>}
+     {rewardStage==="boom"&&<div className="rewardBoomBurst"><i>★</i><i>✦</i><i>★</i><i>✧</i><i>★</i></div>}
+    </div>}
+    <div className={`rewardRevealContent ${rewardStage==="reveal"?"show":""}`}>
 
     {rewardPopup==="chest50"&&<>
      <div className="unlockBurst">🎁✨</div>
@@ -1199,6 +1214,7 @@ export default function Page(){
      <button className="unlockPaintBtn goldenPaintNow" onClick={()=>{setRewardPopup(null);open(secretMalinoItem)}}>✨ Jetzt entdecken</button>
      <small>Das Geheimbild bleibt dauerhaft für dieses Profil freigeschaltet.</small>
     </>}
+    </div>
    </div>
   </div>}
 
