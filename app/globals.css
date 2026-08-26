@@ -5370,3 +5370,104 @@ main{
     animation:none !important;
   }
 }
+
+
+/* =========================================================
+   Malino v18.6 — Premium Chest Ceremony
+   ========================================================= */
+.premiumChestCeremony{
+  min-height:340px;
+}
+.premiumChestWrap{
+  position:relative;
+  z-index:5;
+  width:min(430px,82vw);
+  display:grid;
+  place-items:center;
+  transform-origin:50% 78%;
+}
+.premiumChestImg{
+  width:100%;
+  height:auto;
+  display:block;
+  filter:drop-shadow(0 24px 20px rgba(65,38,10,.28));
+  user-select:none;
+  pointer-events:none;
+}
+.premiumChestLight{
+  position:absolute;
+  left:50%;
+  top:56%;
+  width:58%;
+  height:44%;
+  transform:translate(-50%,-50%) scale(.45);
+  border-radius:50%;
+  background:
+    radial-gradient(circle,rgba(255,255,217,.98) 0 10%,rgba(255,223,91,.90) 20%,rgba(255,175,20,.44) 46%,transparent 70%);
+  opacity:0;
+  mix-blend-mode:screen;
+}
+.rewardStage-opening .premiumChestWrap{
+  animation:premiumChestCreak 1.02s cubic-bezier(.32,.06,.18,1) both;
+}
+.rewardStage-opening .premiumChestImg{
+  animation:premiumChestMicroShake .92s ease-in-out both;
+}
+.rewardStage-opening .premiumChestLight{
+  animation:premiumLightBuild 1.0s ease-in both;
+}
+.rewardStage-boom .premiumChestWrap{
+  animation:premiumChestBoom .34s cubic-bezier(.16,.94,.2,1.18) both;
+}
+.rewardStage-boom .premiumChestLight{
+  animation:premiumLightBurst .42s ease-out both;
+}
+.rewardStage-boom .rewardBoomBurst strong{
+  font-size:38px;
+  letter-spacing:.04em;
+  color:#fff7bf;
+  text-shadow:0 3px 0 #c87a00,0 7px 22px rgba(88,50,0,.45);
+}
+
+@keyframes premiumChestCreak{
+  0%{transform:translateY(6px) scale(.985) rotate(0)}
+  30%{transform:translateY(0) scale(1) rotate(-.7deg)}
+  62%{transform:translateY(-5px) scale(1.01) rotate(.9deg)}
+  100%{transform:translateY(-10px) scale(1.018) rotate(0)}
+}
+@keyframes premiumChestMicroShake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-2px)}
+  40%{transform:translateX(2px)}
+  58%{transform:translateX(-1px)}
+  78%{transform:translateX(1px)}
+}
+@keyframes premiumLightBuild{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.35)}
+  65%{opacity:.45}
+  100%{opacity:.86;transform:translate(-50%,-50%) scale(1)}
+}
+@keyframes premiumChestBoom{
+  0%{transform:translateY(-10px) scale(1.018)}
+  45%{transform:translateY(-18px) scale(1.10)}
+  100%{transform:translateY(-8px) scale(1.025)}
+}
+@keyframes premiumLightBurst{
+  0%{opacity:.9;transform:translate(-50%,-50%) scale(.8)}
+  55%{opacity:1;transform:translate(-50%,-50%) scale(1.7)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(2.35)}
+}
+
+@media(max-width:650px){
+  .premiumChestCeremony{min-height:285px}
+  .premiumChestWrap{width:min(330px,86vw)}
+}
+@media(prefers-reduced-motion:reduce){
+  .rewardStage-opening .premiumChestWrap,
+  .rewardStage-opening .premiumChestImg,
+  .rewardStage-opening .premiumChestLight,
+  .rewardStage-boom .premiumChestWrap,
+  .rewardStage-boom .premiumChestLight{
+    animation:none !important;
+  }
+}

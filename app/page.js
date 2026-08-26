@@ -338,7 +338,7 @@ export default function Page(){
 
  useEffect(()=>{
   if(typeof window==="undefined")return;
-  const types=["click","color","success","stars","reward","streak","chest-creak","reward-boom","reward-fanfare"];
+  const types=["click","color","success","stars","reward","streak","chest-creak","reward-boom","reward-fanfare","premium-chest-open","premium-reward-fanfare"];
   const pool={};
   types.forEach(type=>{
    try{
@@ -803,9 +803,12 @@ export default function Page(){
  const startRewardSequence=type=>{
   setRewardPopup(type);
   setRewardStage("opening");
-  playChestCeremony();
-  setTimeout(()=>setRewardStage("boom"),900);
-  setTimeout(()=>setRewardStage("reveal"),1230);
+  playSound("premium-chest-open");
+  setTimeout(()=>{
+   setRewardStage("boom");
+   playSound("premium-reward-fanfare");
+  },920);
+  setTimeout(()=>setRewardStage("reveal"),1320);
  };
 
  const openChest50=()=>{
@@ -1226,14 +1229,14 @@ export default function Page(){
    <div className={`rewardUnlockCard ${rewardPopup==="chest200"?"goldenUnlockCard":""}`}>
     <button className="rewardClose" onClick={()=>{setRewardPopup(null);setRewardStage("closed")}} aria-label="Schließen">×</button>
 
-    {rewardStage!=="reveal"&&<div className="chestCeremony" aria-hidden="true">
+    {rewardStage!=="reveal"&&<div className="chestCeremony premiumChestCeremony" aria-hidden="true">
      <div className="chestGlowRing"/>
-     <div className="realTreasureChest">
-      <div className="realChestLid"><i/><span className="chestLidBand"/><span className="chestLidLock">★</span></div>
-      <div className="realChestBody"><span className="chestBodyBand"/><span className="chestKeyhole">◆</span></div>
+     <div className="premiumChestWrap">
+      <img src="/reward-chest-premium.png" alt="" className="premiumChestImg"/>
+      <div className="premiumChestLight"/>
      </div>
      {rewardStage==="opening"&&<span className="chestHint">Die Schatzkiste öffnet sich…</span>}
-     {rewardStage==="boom"&&<div className="rewardBoomBurst"><i>★</i><i>✦</i><i>★</i><i>✧</i><i>★</i><strong>BOOM!</strong></div>}
+     {rewardStage==="boom"&&<div className="rewardBoomBurst"><i>★</i><i>✦</i><i>★</i><i>✧</i><i>★</i><strong>WOW!</strong></div>}
     </div>}
     <div className={`rewardRevealContent ${rewardStage==="reveal"?"show":""}`}>
 
