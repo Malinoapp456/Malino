@@ -258,6 +258,11 @@ export default function Page(){
  const [puzzleWrong,setPuzzleWrong]=useState(null);
  const [activePuzzleId,setActivePuzzleId]=useState(null);
  const [activePuzzleWorld,setActivePuzzleWorld]=useState(null);
+ const [craftImageId,setCraftImageId]=useState(null);
+ const [craftPieces,setCraftPieces]=useState(6);
+ const [craftStyle,setCraftStyle]=useState("bw");
+ const [savedCraftPuzzles,setSavedCraftPuzzles]=useState([]);
+
 
  const [profileDialog,setProfileDialog]=useState(null);
  const [profileNameInput,setProfileNameInput]=useState("");
@@ -369,6 +374,8 @@ export default function Page(){
    setScreenTimeLimit(Number.isFinite(limit)?limit:0);
    const anim=localStorage.getItem("malino:animations:v1");
    if(anim!==null)setAnimationsEnabled(anim!=="off");
+   const crafts=localStorage.getItem("malino:craftPuzzles:v1");
+   if(crafts){try{setSavedCraftPuzzles(JSON.parse(crafts)||[])}catch{}}
    const snd=localStorage.getItem("malino:sound:v1");
    if(snd!==null)setSoundEnabled(snd!=="off");
    const key=new Date().toLocaleDateString("sv-SE");
@@ -390,6 +397,10 @@ export default function Page(){
  useEffect(()=>{
   try{localStorage.setItem("malino:sound:v1",soundEnabled?"on":"off")}catch{}
  },[soundEnabled]);
+
+ useEffect(()=>{
+  try{localStorage.setItem("malino:craftPuzzles:v1",JSON.stringify(savedCraftPuzzles))}catch{}
+ },[savedCraftPuzzles]);
 
  useEffect(()=>{
   if(typeof document==="undefined")return;
@@ -689,6 +700,15 @@ export default function Page(){
  const worldUnlocked=world=>solvedPuzzleCount>=world.unlock;
  const currentPuzzleWorld=activePuzzleWorld?puzzleWorlds.find(w=>w.id===activePuzzleWorld):null;
  const currentWorldPuzzles=currentPuzzleWorld?currentPuzzleWorld.ids.map(id=>puzzleCards.find(p=>p.id===id)).filter(Boolean):[];
+ const craftTemplates=[
+  {id:"rocket",title:"Rakete",emoji:"🚀",src:"/rocket.png"},
+  {id:"pig",title:"Schwein",emoji:"🐷",src:"/pig.png"},
+  {id:"moon",title:"Mond",emoji:"🌙",src:"/moon.png"},
+  {id:"lion",title:"Malino",emoji:"🦁",src:"/malino-hero-mascot.png"}
+ ];
+ const activeCraftTemplate=craftTemplates.find(x=>x.id===craftImageId)||craftTemplates[0];
+ const craftGrid=craftPieces===4?[2,2]:craftPieces===6?[3,2]:craftPieces===9?[3,3]:[4,3];
+
 
 
  const todayKey=new Date().toLocaleDateString("sv-SE");
@@ -744,6 +764,58 @@ export default function Page(){
  const setPuzzleSolved=value=>updateProfileField("puzzleSolved",value);
  const setDailyStreak=value=>updateProfileField("dailyStreak",value);
  const setLastDailyDate=value=>updateProfileField("lastDailyDate",value);
+
+ const saveCraftPuzzle=()=>{
+  const item={
+   id:`craft-${Date.now()}`,
+   imageId:activeCraftTemplate.id,
+   title:activeCraftTemplate.title,
+   pieces:craftPieces,
+   style:craftStyle,
+   createdAt:new Date().toISOString()
+  };
+  setSavedCraftPuzzles([item,...savedCraftPuzzles].slice(0,12));
+  playSound("success");
+ };
+
+ const printCraftPuzzle=()=>{
+  if(typeof window==="undefined")return;
+  const w=window.open("","_blank","noopener,noreferrer");
+  if(!w)return;
+  const [cols,rows]=craftGrid;
+  const title=`${activeCraftTemplate.title} – ${craftPieces} Teile`;
+  const img=activeCraftTemplate.src;
+  const bw=craftStyle==="bw";
+  w.document.write(`<!doctype html><html><head><title>${title}</title><style>
+    @page{size:A4;margin:12mm}
+    body{font-family:system-ui,sans-serif;color:#173d78;margin:0;padding:0}
+    .sheet{min-height:270mm;display:flex;flex-direction:column;align-items:center}
+    h1{font-size:22px;margin:0 0 8px}
+    p{font-size:12px;margin:0 0 14px;color:#5c6e87}
+    .puzzle{position:relative;width:170mm;aspect-ratio:4/3;border:2px solid #173d78;overflow:hidden;background:#fff}
+    .puzzle img{width:100%;height:100%;object-fit:contain;${bw?"filter:grayscale(1) contrast(1.2);":""}}
+    .v,.h{position:absolute;z-index:3;pointer-events:none}
+    .v{top:0;bottom:0;border-left:2px dashed #1f2d3f}
+    .h{left:0;right:0;border-top:2px dashed #1f2d3f}
+    .sc{position:absolute;z-index:4;font-size:18px;background:#fff}
+    .note{margin-top:10px;font-size:11px;color:#5d6a7a}
+    .sample{margin-top:14px;display:flex;gap:8px;align-items:center}
+    .sample img{width:45mm;height:34mm;object-fit:contain;border:1px solid #ccd6e2;${bw?"filter:grayscale(1) contrast(1.2);":""}}
+  </style></head><body><div class="sheet">
+    <h1>✂️ ${title}</h1>
+    <p>Entlang der gestrichelten Linien ausschneiden.</p>
+    <div class="puzzle">
+      <img src="${img}"/>
+      ${Array.from({length:cols-1},(_,i)=>`<span class="v" style="left:${(i+1)*100/cols}%"></span>`).join("")}
+      ${Array.from({length:rows-1},(_,i)=>`<span class="h" style="top:${(i+1)*100/rows}%"></span>`).join("")}
+      <span class="sc" style="left:3px;top:3px">✂️</span>
+      <span class="sc" style="right:3px;bottom:3px">✂️</span>
+    </div>
+    <div class="sample"><img src="${img}"/><div><b>Vorlage</b><div class="note">So sieht das fertige Puzzle aus.</div></div></div>
+    <div class="note">Malino – Basteln & Spielen</div>
+  </div><script>window.onload=()=>setTimeout(()=>window.print(),250)</script></body></html>`);
+  w.document.close();
+ };
 
  const answerPuzzle=(puzzle,choice)=>{
   if(choice===puzzle.answer){
@@ -1229,9 +1301,87 @@ export default function Page(){
     <button className="featureCard featurePuzzles" onClick={()=>{setPuzzleFeedback(null);setPuzzleWrong(null);setScreen("puzzles")}}>
      <span>🧩</span><div><b>Rätsel & Rebusse</b><small>Denken, entdecken & Sterne sammeln</small></div><em>›</em>
     </button>
+    <button className="featureCard featureCrafts" onClick={()=>setScreen("crafts")}>
+     <span>✂️</span><div><b>Basteln & Spielen</b><small>Puzzle gestalten, speichern & drucken</small></div><em>›</em>
+    </button>
     <button className="featureCard featureProfile" onClick={openParentArea}>
      <span>{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><div><b>{activeProfile.name}</b><small>Kinderprofil & Fortschritt</small></div><em>›</em>
     </button>
+   </div>
+  </section>}
+
+  {screen==="crafts"&&<section className="craftPage">
+   <div className="craftHero">
+    <div className="craftMascot"><img src="/malino-raetsel-mascot.png" alt="Malino"/></div>
+    <div>
+     <span className="eyebrow">Neu in Malino</span>
+     <h1>Basteln & Spielen ✂️</h1>
+     <p>Gestalte dein eigenes Puzzle, speichere es und drucke es auf A4 aus.</p>
+    </div>
+    <div className="craftScore"><span>🧩</span><b>{savedCraftPuzzles.length}</b><small>gespeichert</small></div>
+   </div>
+
+   <div className="craftFlow">
+    <div className="craftStep craftStep1">
+     <div className="craftStepHead"><span>1</span><div><b>Bild wählen</b><small>Wähle eine Vorlage</small></div></div>
+     <div className="craftTemplateGrid">
+      {craftTemplates.map(t=><button key={t.id} className={activeCraftTemplate.id===t.id?"active":""} onClick={()=>setCraftImageId(t.id)}>
+       <img src={t.src} alt={t.title}/><b>{t.title}</b>
+      </button>)}
+     </div>
+    </div>
+
+    <div className="craftStep craftStep2">
+     <div className="craftStepHead"><span>2</span><div><b>Gestalten</b><small>Farbe & Teile wählen</small></div></div>
+     <div className="craftStyleToggle">
+      <button className={craftStyle==="bw"?"active":""} onClick={()=>setCraftStyle("bw")}>⚫ Schwarz-Weiß</button>
+      <button className={craftStyle==="color"?"active":""} onClick={()=>setCraftStyle("color")}>🌈 Bunt</button>
+     </div>
+     <div className="craftPieceTitle">Teile wählen</div>
+     <div className="craftPieceButtons">
+      {[4,6,9,12].map(n=><button key={n} className={craftPieces===n?"active":""} onClick={()=>setCraftPieces(n)}><b>{n}</b><small>Teile</small></button>)}
+     </div>
+     <p>Je mehr Teile, desto schwieriger.</p>
+    </div>
+
+    <div className="craftStep craftStep3">
+     <div className="craftStepHead"><span>3</span><div><b>Vorschau & Drucken</b><small>So sieht dein Puzzle aus</small></div></div>
+     <div className={`craftPreview ${craftStyle==="bw"?"bw":""}`}>
+      <img src={activeCraftTemplate.src} alt={activeCraftTemplate.title}/>
+      {Array.from({length:craftGrid[0]-1},(_,i)=><i key={`v${i}`} className="cutV" style={{left:`${(i+1)*100/craftGrid[0]}%`}}/>)}
+      {Array.from({length:craftGrid[1]-1},(_,i)=><i key={`h${i}`} className="cutH" style={{top:`${(i+1)*100/craftGrid[1]}%`}}/>)}
+      <span className="cutScissors cutScissorsA">✂️</span><span className="cutScissors cutScissorsB">✂️</span>
+     </div>
+     <div className="craftActions">
+      <button className="craftSaveBtn" onClick={saveCraftPuzzle}>💾 Speichern</button>
+      <button className="craftPrintBtn" onClick={printCraftPuzzle}>🖨️ Drucken</button>
+     </div>
+     <small className="craftA4">Format: A4 · zum Ausschneiden</small>
+    </div>
+   </div>
+
+   <div className="craftSavedHead">
+    <div><span className="eyebrow">Meine Sammlung</span><h2>Gespeicherte Puzzle</h2></div>
+    <span>{savedCraftPuzzles.length}</span>
+   </div>
+
+   {savedCraftPuzzles.length===0
+    ?<div className="craftEmpty"><span>🧩</span><div><b>Noch kein Puzzle gespeichert</b><small>Gestalte oben dein erstes Puzzle.</small></div></div>
+    :<div className="craftSavedGrid">
+      {savedCraftPuzzles.map(item=>{
+       const tpl=craftTemplates.find(t=>t.id===item.imageId)||craftTemplates[0];
+       return <article key={item.id}>
+        <div className={`craftSavedThumb ${item.style==="bw"?"bw":""}`}><img src={tpl.src} alt={item.title}/><span>{item.pieces}</span></div>
+        <div><b>{item.title}</b><small>{item.pieces} Teile · {item.style==="bw"?"Schwarz-Weiß":"Bunt"}</small></div>
+        <button onClick={()=>setSavedCraftPuzzles(savedCraftPuzzles.filter(x=>x.id!==item.id))}>×</button>
+       </article>
+      })}
+     </div>}
+
+   <div className="craftInfoGrid">
+    <div><span>✋</span><b>Feinmotorik</b><small>Schneiden und puzzeln trainiert die Hände.</small></div>
+    <div><span>🧠</span><b>Logisches Denken</b><small>Teile erkennen und richtig zusammensetzen.</small></div>
+    <div><span>👨‍👩‍👧</span><b>Gemeinsame Zeit</b><small>Perfekt für Eltern und Kinder zusammen.</small></div>
    </div>
   </section>}
 
