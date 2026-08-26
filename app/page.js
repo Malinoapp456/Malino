@@ -246,7 +246,7 @@ const PROFILE_AVATARS=[
 const avatarEmoji=id=>PROFILE_AVATARS.find(a=>a.id===id)?.emoji||"🦁";
 
 export default function Page(){
- const emptyProfileData=()=>({fav:[],done:[],gallery:[],stars:0,rewards:[],avatar:"lion",dailyClaims:[],dailyStreak:0,lastDailyDate:"",activeFrame:"classic"});
+ const emptyProfileData=()=>({fav:[],done:[],gallery:[],stars:0,rewards:[],avatar:"lion",dailyClaims:[],dailyStreak:0,lastDailyDate:"",activeFrame:"classic",puzzleSolved:[]});
  const [screen,setScreen]=useState("start");
  const [profiles,setProfiles]=useState([{id:"default",name:"Kind 1"}]);
  const [activeProfileId,setActiveProfileId]=useState("default");
@@ -254,6 +254,9 @@ export default function Page(){
  const [profilesReady,setProfilesReady]=useState(false);
  const [rewardPopup,setRewardPopup]=useState(null);
  const [rewardStage,setRewardStage]=useState("closed");
+ const [puzzleFeedback,setPuzzleFeedback]=useState(null);
+ const [puzzleWrong,setPuzzleWrong]=useState(null);
+
  const [profileDialog,setProfileDialog]=useState(null);
  const [profileNameInput,setProfileNameInput]=useState("");
  const [profileAvatarInput,setProfileAvatarInput]=useState("lion");
@@ -465,6 +468,42 @@ export default function Page(){
  const dailyClaims=Array.isArray(activeData.dailyClaims)?activeData.dailyClaims:[];
  const dailyStreak=Number(activeData.dailyStreak||0);
  const lastDailyDate=activeData.lastDailyDate||"";
+ const puzzleSolved=Array.isArray(activeData.puzzleSolved)?activeData.puzzleSolved:[];
+ const puzzleCards=[
+  {
+   id:"odd-one",
+   icon:"🧩",
+   title:"Was passt nicht?",
+   age:"4–6",
+   task:"Welches Bild gehört nicht zu den anderen?",
+   options:["🍎","🍐","🍌","🚗"],
+   answer:"🚗",
+   hint:"Drei Dinge kann man essen."
+  },
+  {
+   id:"pattern",
+   icon:"🔎",
+   title:"Muster entdecken",
+   age:"5–7",
+   task:"Was kommt als Nächstes?",
+   pattern:"⭐ 🌙 ⭐ 🌙 ⭐ …",
+   options:["🌙","⭐","☀️","🌈"],
+   answer:"🌙",
+   hint:"Die zwei Zeichen wechseln sich ab."
+  },
+  {
+   id:"shadow",
+   icon:"🐾",
+   title:"Finde das Paar",
+   age:"4–6",
+   task:"Welche zwei Dinge gehören zusammen?",
+   options:["🐱 + 🐟","🐶 + 🌙","🚀 + 🍎","🌳 + 🚗"],
+   answer:"🐱 + 🐟",
+   hint:"Denk daran, was die Katze gern mag."
+  }
+ ];
+ const solvedPuzzleCount=puzzleCards.filter(p=>puzzleSolved.includes(p.id)).length;
+
  const todayKey=new Date().toLocaleDateString("sv-SE");
  const dailySeed=[...todayKey].reduce((sum,ch)=>sum+ch.charCodeAt(0),0);
  const dailyItem=items[dailySeed%items.length];
@@ -515,8 +554,29 @@ export default function Page(){
  const setUnlockedRewards=value=>updateProfileField("rewards",value);
  const setDailyClaims=value=>updateProfileField("dailyClaims",value);
  const setActiveFrame=value=>updateProfileField("activeFrame",value);
+ const setPuzzleSolved=value=>updateProfileField("puzzleSolved",value);
  const setDailyStreak=value=>updateProfileField("dailyStreak",value);
  const setLastDailyDate=value=>updateProfileField("lastDailyDate",value);
+
+ const answerPuzzle=(puzzle,choice)=>{
+  if(choice===puzzle.answer){
+   const firstTime=!puzzleSolved.includes(puzzle.id);
+   if(firstTime){
+    setPuzzleSolved([...puzzleSolved,puzzle.id]);
+    setStars(stars+3);
+    playSound("stars");
+   }else{
+    playSound("success");
+   }
+   setPuzzleWrong(null);
+   setPuzzleFeedback({id:puzzle.id,firstTime});
+  }else{
+   playSound("click");
+   setPuzzleFeedback(null);
+   setPuzzleWrong(puzzle.id);
+   setTimeout(()=>setPuzzleWrong(current=>current===puzzle.id?null:current),650);
+  }
+ };
 
  const openParentTool=tool=>{
   setParentToolNotice("");
@@ -899,8 +959,8 @@ export default function Page(){
    </div>
 
    <div className="homeQuickStats premiumQuickStats">
-    <button className="statCard statStars" onClick={()=>setScreen("rewards")}><span>⭐</span><b>{stars}</b><small>Sterne</small><i>Mehr sammeln ›</i></button>
-    <button className="statCard statBadges" onClick={()=>setScreen("rewards")}><span>🏅</span><b>{unlockedBadgeCount}/{achievementBadges.length}</b><small>Abzeichen</small><i>Ziele ansehen ›</i></button>
+    <button className="statCard statStars" onClick={()=>setScreen("reward")}><span>⭐</span><b>{stars}</b><small>Sterne</small><i>Mehr sammeln ›</i></button>
+    <button className="statCard statBadges" onClick={()=>setScreen("reward")}><span>🏅</span><b>{unlockedBadgeCount}/{achievementBadges.length}</b><small>Abzeichen</small><i>Ziele ansehen ›</i></button>
     <button className="statCard statGallery" onClick={()=>setScreen("gallery")}><span>🎨</span><b>{gallery.length}</b><small>Galerie</small><i>Kunstwerke ›</i></button>
     <button className="statCard statStreak" onClick={()=>open(dailyItem)}><span>🔥</span><b>{dailyStreak}</b><small>Tage Serie</small><i>{dailyClaimed?"Heute sicher ✓":"Heute sichern ›"}</i></button>
    </div>
@@ -973,15 +1033,78 @@ export default function Page(){
     <button className="featureCard featureLibrary" onClick={()=>setScreen("library")}>
      <span>📚</span><div><b>Bibliothek</b><small>Alle Malbilder entdecken</small></div><em>›</em>
     </button>
-    <button className="featureCard featureRewards" onClick={()=>setScreen("rewards")}>
+    <button className="featureCard featureRewards" onClick={()=>setScreen("reward")}>
      <span>🎁</span><div><b>Belohnungen</b><small>Sterne, Abzeichen & Schätze</small></div><em>›</em>
     </button>
     <button className="featureCard featureGallery" onClick={()=>setScreen("gallery")}>
      <span>🎨</span><div><b>Galerie</b><small>Deine fertigen Kunstwerke</small></div><em>›</em>
     </button>
+    <button className="featureCard featurePuzzles" onClick={()=>{setPuzzleFeedback(null);setPuzzleWrong(null);setScreen("puzzles")}}>
+     <span>🧩</span><div><b>Rätsel & Rebusse</b><small>Denken, entdecken & Sterne sammeln</small></div><em>›</em>
+    </button>
     <button className="featureCard featureProfile" onClick={openParentArea}>
      <span>{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><div><b>{activeProfile.name}</b><small>Kinderprofil & Fortschritt</small></div><em>›</em>
     </button>
+   </div>
+  </section>}
+
+  {screen==="puzzles"&&<section className="puzzlePage">
+   <div className="puzzleHero">
+    <div className="puzzleMascot"><img src="/malino-hero-mascot.png" alt="Malino"/></div>
+    <div className="puzzleHeroCopy">
+     <span className="eyebrow">Neuer Malino-Welt</span>
+     <h1>Rätsel & Rebusse 🧩</h1>
+     <p>Schau genau hin, finde die Lösung und sammle beim ersten Lösen <b>3 Sterne</b>.</p>
+    </div>
+    <div className="puzzleProgress">
+     <span>⭐</span><div><b>{solvedPuzzleCount}/{puzzleCards.length}</b><small>gelöst</small></div>
+    </div>
+   </div>
+
+   <div className="puzzleIntro">
+    <div><span>🎯</span><p><b>Heute trainieren wir Köpfchen & Konzentration.</b><small>Erste Mini-Rätsel für die Altersgruppe 4–7 Jahre.</small></p></div>
+    <button onClick={()=>setScreen("start")}>Zur Startseite</button>
+   </div>
+
+   <div className="puzzleGrid">
+    {puzzleCards.map((p,index)=>{
+     const solved=puzzleSolved.includes(p.id);
+     const feedback=puzzleFeedback?.id===p.id;
+     const wrong=puzzleWrong===p.id;
+     return <article key={p.id} className={`puzzleCard ${solved?"solved":""} ${wrong?"wrong":""}`}>
+      <div className="puzzleCardHead">
+       <div className="puzzleIcon">{p.icon}</div>
+       <div><span>Rätsel {index+1}</span><h2>{p.title}</h2></div>
+       <em>{p.age} Jahre</em>
+      </div>
+
+      <div className="puzzleTask">
+       <p>{p.task}</p>
+       {p.pattern&&<strong>{p.pattern}</strong>}
+      </div>
+
+      <div className="puzzleOptions">
+       {p.options.map(option=><button
+        key={option}
+        className={feedback&&option===p.answer?"correct":""}
+        onClick={()=>answerPuzzle(p,option)}
+       >{option}</button>)}
+      </div>
+
+      <div className="puzzleFooter">
+       {feedback
+        ?<div className="puzzleSuccess"><span>🎉</span><p><b>Richtig!</b><small>{puzzleFeedback.firstTime?"+3 Sterne für dich!":"Dieses Rätsel kennst du schon."}</small></p></div>
+        :wrong
+         ?<div className="puzzleTry"><span>💡</span><p><b>Fast!</b><small>{p.hint}</small></p></div>
+         :<div className="puzzleHint"><span>{solved?"✓":"⭐"}</span><p><b>{solved?"Schon gelöst":"Belohnung"}</b><small>{solved?"Du kannst es jederzeit wiederholen.":"3 Sterne beim ersten richtigen Lösen"}</small></p></div>}
+      </div>
+     </article>
+    })}
+   </div>
+
+   <div className="puzzleRoadmap">
+    <div><span>🚀</span><p><b>Das ist erst der Anfang.</b><small>Später können hier Rebusse, Labyrinthe, Unterschiede, Zahlen- und Buchstabenrätsel dazukommen.</small></p></div>
+    <button onClick={()=>setScreen("library")}>🎨 Jetzt malen</button>
    </div>
   </section>}
 
@@ -1435,6 +1558,7 @@ export default function Page(){
     <p>Gemalte Bilder <b>{profileStatsDone.length}</b></p>
     <p>Erhaltene Sterne <b>{profileStatsStars} ⭐</b></p>
     <p>Galerie <b>{profileStatsGallery.length}</b></p>
+     <p>Rätsel gelöst <b>{solvedPuzzleCount}/{puzzleCards.length}</b></p>
     <p>Belohnungen <b>{profileStatsRewards.length}</b></p>
      <p>Schatzsammlung <b>{unlockedTreasureCount}/{treasureItems.length}</b></p>
      <p>Tages-Challenge <b>{dailyClaimed?"Heute geschafft ✓":"Offen 🌟"}</b></p>
