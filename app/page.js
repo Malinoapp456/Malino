@@ -743,12 +743,69 @@ export default function Page(){
  const profileStatsRewards=Array.isArray(profileStatsData.rewards)?profileStatsData.rewards:[];
  const profileStatsStars=Number(profileStatsData.stars ?? 0);
  const paintColors=hasChest50?[...colors,...chest50Colors.map(x=>x.value)]:colors;
+ const playChestCeremony=()=>{
+  if(!soundEnabled||typeof window==="undefined")return;
+  try{
+   const AudioCtx=window.AudioContext||window.webkitAudioContext;
+   if(!AudioCtx)return;
+   const ctx=new AudioCtx();
+   ctx.resume?.();
+
+   // Wooden creak: sliding resonant oscillators + a short filtered scrape.
+   const master=ctx.createGain();
+   master.gain.setValueAtTime(.0001,ctx.currentTime);
+   master.gain.exponentialRampToValueAtTime(.17,ctx.currentTime+.02);
+   master.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+1.02);
+   master.connect(ctx.destination);
+
+   [238,178].forEach((freq,index)=>{
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.type=index===0?"sawtooth":"triangle";
+    osc.frequency.setValueAtTime(freq,ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(freq*.52,ctx.currentTime+.92);
+    gain.gain.setValueAtTime(index===0?.24:.16,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.98);
+    osc.connect(gain);gain.connect(master);
+    osc.start();osc.stop(ctx.currentTime+1.02);
+   });
+
+   // BOOM at 0.9 s.
+   const boom=ctx.createOscillator();
+   const boomGain=ctx.createGain();
+   boom.type="sine";
+   boom.frequency.setValueAtTime(92,ctx.currentTime+.88);
+   boom.frequency.exponentialRampToValueAtTime(48,ctx.currentTime+1.24);
+   boomGain.gain.setValueAtTime(.0001,ctx.currentTime+.87);
+   boomGain.gain.exponentialRampToValueAtTime(.45,ctx.currentTime+.90);
+   boomGain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+1.30);
+   boom.connect(boomGain);boomGain.connect(ctx.destination);
+   boom.start(ctx.currentTime+.87);boom.stop(ctx.currentTime+1.31);
+
+   // Short fanfare after the burst.
+   const fanfare=[523.25,659.25,783.99,1046.5,1318.5];
+   fanfare.forEach((freq,i)=>{
+    const start=ctx.currentTime+1.10+i*.085;
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.type="triangle";
+    osc.frequency.value=freq;
+    gain.gain.setValueAtTime(.0001,start);
+    gain.gain.exponentialRampToValueAtTime(.15,start+.018);
+    gain.gain.exponentialRampToValueAtTime(.0001,start+.22);
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.start(start);osc.stop(start+.23);
+   });
+   setTimeout(()=>ctx.close?.(),2200);
+  }catch{}
+ };
+
  const startRewardSequence=type=>{
   setRewardPopup(type);
   setRewardStage("opening");
-  playSound("chest-creak");
-  setTimeout(()=>{setRewardStage("boom");playSound("reward-boom")},900);
-  setTimeout(()=>{setRewardStage("reveal");playSound("reward-fanfare")},1120);
+  playChestCeremony();
+  setTimeout(()=>setRewardStage("boom"),900);
+  setTimeout(()=>setRewardStage("reveal"),1230);
  };
 
  const openChest50=()=>{
@@ -1171,10 +1228,12 @@ export default function Page(){
 
     {rewardStage!=="reveal"&&<div className="chestCeremony" aria-hidden="true">
      <div className="chestGlowRing"/>
-     <div className="chestLid">✨</div>
-     <div className="chestBody">🎁</div>
+     <div className="realTreasureChest">
+      <div className="realChestLid"><i/><span className="chestLidBand"/><span className="chestLidLock">★</span></div>
+      <div className="realChestBody"><span className="chestBodyBand"/><span className="chestKeyhole">◆</span></div>
+     </div>
      {rewardStage==="opening"&&<span className="chestHint">Die Schatzkiste öffnet sich…</span>}
-     {rewardStage==="boom"&&<div className="rewardBoomBurst"><i>★</i><i>✦</i><i>★</i><i>✧</i><i>★</i></div>}
+     {rewardStage==="boom"&&<div className="rewardBoomBurst"><i>★</i><i>✦</i><i>★</i><i>✧</i><i>★</i><strong>BOOM!</strong></div>}
     </div>}
     <div className={`rewardRevealContent ${rewardStage==="reveal"?"show":""}`}>
 
