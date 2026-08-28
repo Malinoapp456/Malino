@@ -396,6 +396,9 @@ export default function Page(){
  const [differenceDifficulty,setDifferenceDifficulty]=useState("leicht");
  const [differenceSeed,setDifferenceSeed]=useState(2401);
  const [savedDifferences,setSavedDifferences]=useState([]);
+ const [differenceFound,setDifferenceFound]=useState([]);
+ const [differenceMiss,setDifferenceMiss]=useState(null);
+ const [differenceComplete,setDifferenceComplete]=useState(false);
  const [hiddenThemeId,setHiddenThemeId]=useState("forest");
  const [hiddenDifficulty,setHiddenDifficulty]=useState("leicht");
  const [hiddenSeed,setHiddenSeed]=useState(2501);
@@ -560,6 +563,12 @@ export default function Page(){
  useEffect(()=>{
   try{localStorage.setItem("malino:differences:v1",JSON.stringify(savedDifferences))}catch{}
  },[savedDifferences]);
+
+ useEffect(()=>{
+  setDifferenceFound([]);
+  setDifferenceMiss(null);
+  setDifferenceComplete(false);
+ },[differenceThemeId,differenceDifficulty,differenceSeed]);
 
  useEffect(()=>{
   try{localStorage.setItem("malino:hidden:v1",JSON.stringify(savedHidden))}catch{}
@@ -1046,6 +1055,26 @@ export default function Page(){
  const setHiddenSolved=value=>updateProfileField("hiddenSolved",value);
  const setDailyStreak=value=>updateProfileField("dailyStreak",value);
  const setLastDailyDate=value=>updateProfileField("lastDailyDate",value);
+
+ const tapDifference=(side,index)=>{
+  if(differenceFound.includes(index))return;
+  const correct=differenceChanges.some(change=>change.idx===index);
+  if(correct){
+   const next=[...differenceFound,index];
+   setDifferenceFound(next);
+   setDifferenceMiss(null);
+   playSound("success");
+   if(next.length>=activeDifferenceDifficulty.count){
+    setDifferenceComplete(true);
+    playSound("stars");
+   }
+   return;
+  }
+  const missId=`${side}:${index}:${Date.now()}`;
+  setDifferenceMiss(missId);
+  playSound("click");
+  setTimeout(()=>setDifferenceMiss(current=>current===missId?null:current),420);
+ };
 
  const tapHiddenTarget=(item,index)=>{
   if(hiddenFound.includes(index))return;
@@ -2175,10 +2204,23 @@ export default function Page(){
 
      <div className="differencePanel differencePreviewPanel">
       <div className="craftStepHead"><span>3</span><div><b>Vorschau & Drucken</b><small>Finde {activeDifferenceDifficulty.count} Unterschiede</small></div></div>
-      <div className="differenceCompare">
-       <div className="differenceScene"><b>Bild A</b><div>{differenceTokens.map((t,i)=><span key={i}>{t}</span>)}</div></div>
-       <div className="differenceScene"><b>Bild B</b><div>{changedDifferenceTokens.map((t,i)=><span key={i}>{t}</span>)}</div></div>
+      <div className="differencePlayHead">
+       <span>👆 Tippe auf die Unterschiede in Bild A oder Bild B.</span>
+       <b>{differenceFound.length}/{activeDifferenceDifficulty.count}</b>
       </div>
+      <div className="differenceCompare">
+       <div className="differenceScene interactive"><b>Bild A</b><div>{differenceTokens.map((t,i)=>{
+        const found=differenceFound.includes(i);
+        const miss=differenceMiss?.startsWith(`a:${i}:`);
+        return <button key={i} type="button" className={`differenceCell ${found?"found":""} ${miss?"miss":""}`} aria-label={`Bild A, Feld ${i+1}${found?", Unterschied gefunden":""}`} onClick={()=>tapDifference("a",i)}><span>{t}</span>{found&&<em>✓</em>}</button>
+       })}</div></div>
+       <div className="differenceScene interactive"><b>Bild B</b><div>{changedDifferenceTokens.map((t,i)=>{
+        const found=differenceFound.includes(i);
+        const miss=differenceMiss?.startsWith(`b:${i}:`);
+        return <button key={i} type="button" className={`differenceCell ${found?"found":""} ${miss?"miss":""}`} aria-label={`Bild B, Feld ${i+1}${found?", Unterschied gefunden":""}`} onClick={()=>tapDifference("b",i)}><span>{t}</span>{found&&<em>✓</em>}</button>
+       })}</div></div>
+      </div>
+      {differenceComplete&&<div className="differenceCompleteCard"><span>🎉</span><div><b>Geschafft!</b><small>Du hast alle {activeDifferenceDifficulty.count} Unterschiede gefunden.</small></div><button type="button" onClick={newDifferenceVariant}>Neue Runde</button></div>}
       <div className="mazeActions">
        <button className="craftSaveBtn" onClick={saveDifference}>💾 Speichern</button>
        <button className="craftPrintBtn" onClick={shareDifferencePdf}>↗️ Teilen / Drucken</button>

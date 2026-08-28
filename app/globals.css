@@ -6827,7 +6827,7 @@ nav,
   min-height:245px;
   align-content:center;
 }
-.differenceScene span{
+.differenceScene .differenceCell{
   display:grid;
   place-items:center;
   min-height:95px;
@@ -6836,6 +6836,47 @@ nav,
   font-size:42px;
   box-shadow:inset 0 0 0 1px #edf1f5;
 }
+
+.differencePlayHead{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  margin:2px 0 10px;padding:8px 10px;border-radius:12px;
+  background:#f2f8ff;color:#31577f;font-size:11px;font-weight:800;
+}
+.differencePlayHead>b{
+  flex:0 0 auto;min-width:48px;padding:6px 9px;border-radius:999px;
+  background:#173d78;color:#fff;text-align:center;font-size:12px;
+}
+.differenceScene.interactive .differenceCell{
+  position:relative;width:100%;border:0;padding:0;cursor:pointer;color:inherit;
+  font:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  transition:transform .16s ease,box-shadow .16s ease,background .16s ease;
+}
+.differenceScene.interactive .differenceCell>span{
+  display:grid;place-items:center;width:100%;height:100%;font-size:inherit;
+}
+.differenceScene.interactive .differenceCell:active{transform:scale(.96)}
+.differenceScene.interactive .differenceCell:focus-visible{outline:4px solid rgba(47,128,237,.28);outline-offset:2px}
+.differenceScene.interactive .differenceCell.found{
+  background:#effbe8;box-shadow:inset 0 0 0 3px #55b83b,0 0 0 2px rgba(85,184,59,.12);
+}
+.differenceScene.interactive .differenceCell.found:after{
+  content:"";position:absolute;inset:8px;border:3px solid #55b83b;border-radius:50%;pointer-events:none;
+}
+.differenceScene.interactive .differenceCell em{
+  position:absolute;right:5px;top:5px;width:23px;height:23px;display:grid;place-items:center;
+  border-radius:50%;background:#55b83b;color:white;font-size:14px;font-style:normal;font-weight:950;z-index:2;
+}
+.differenceScene.interactive .differenceCell.miss{animation:differenceMiss .38s ease}
+@keyframes differenceMiss{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}55%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+.differenceCompleteCard{
+  display:flex;align-items:center;gap:10px;margin-top:10px;padding:10px 12px;border-radius:14px;
+  background:#effbe8;border:2px solid #8bd274;color:#245522;
+}
+.differenceCompleteCard>span{font-size:27px}
+.differenceCompleteCard>div{min-width:0;display:grid;gap:2px;flex:1}
+.differenceCompleteCard b{font-size:13px}.differenceCompleteCard small{font-size:10px;font-weight:700;color:#567254}
+.differenceCompleteCard button{border:0;border-radius:10px;padding:8px 10px;background:#55b83b;color:#fff;font-weight:900;cursor:pointer}
+
 .differenceSavedGrid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -6884,7 +6925,7 @@ nav,
   .differenceThemeGrid span{font-size:27px}
   .differenceCompare{grid-template-columns:1fr}
   .differenceScene>div{min-height:210px}
-  .differenceScene span{min-height:70px;font-size:34px}
+  .differenceScene .differenceCell{min-height:70px;font-size:34px}
   .differenceSavedGrid{grid-template-columns:1fr}
 }
 
