@@ -6728,3 +6728,107 @@ nav,
     padding-top:1.5mm !important;
   }
 }
+
+
+/* =========================================================
+   Malino v22.7 — Safari/iPad PRINT FLOW FIX
+   Cel: całkowicie wyzerować normalny układ strony podczas druku.
+   W Safari sama obecność wysokiego kontenera aplikacji może tworzyć
+   pustą stronę 2 nawet jeśli jego dzieci są display:none.
+   ========================================================= */
+@media print{
+  @page{
+    size:A4 portrait;
+    margin:10mm;
+  }
+
+  html,
+  body{
+    margin:0 !important;
+    padding:0 !important;
+    width:190mm !important;
+    height:0 !important;
+    min-height:0 !important;
+    max-height:0 !important;
+    overflow:visible !important;
+    background:#fff !important;
+  }
+
+  body.malino-printing{
+    position:relative !important;
+  }
+
+  body.malino-printing main{
+    position:static !important;
+    display:block !important;
+    width:0 !important;
+    height:0 !important;
+    min-width:0 !important;
+    min-height:0 !important;
+    max-width:0 !important;
+    max-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:visible !important;
+  }
+
+  body.malino-printing main > *{
+    display:none !important;
+  }
+
+  body.malino-printing main > .craftPrintSheet{
+    display:flex !important;
+  }
+
+  .craftPrintSheet{
+    position:absolute !important;
+    left:0 !important;
+    top:0 !important;
+    width:190mm !important;
+    height:260mm !important;
+    min-height:260mm !important;
+    max-height:260mm !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:hidden !important;
+    z-index:999999 !important;
+
+    flex-direction:column !important;
+    align-items:center !important;
+
+    break-before:avoid !important;
+    break-after:avoid !important;
+    break-inside:avoid !important;
+    page-break-before:avoid !important;
+    page-break-after:avoid !important;
+    page-break-inside:avoid !important;
+  }
+
+  .craftPrintPuzzle{
+    width:124mm !important;
+    max-height:178mm !important;
+  }
+
+  .craftPrintBrand{
+    margin-top:0 !important;
+  }
+
+  .craftPrintSample{
+    margin-top:3mm !important;
+    padding-top:2mm !important;
+  }
+
+  .craftPrintFooter{
+    margin-top:auto !important;
+    padding-top:1mm !important;
+  }
+
+  /* Fixed/sticky elements from the normal app can otherwise affect
+     Safari's printable overflow calculation. */
+  body.malino-printing header,
+  body.malino-printing nav,
+  body.malino-printing [style*="position: fixed"],
+  body.malino-printing [style*="position:fixed"]{
+    display:none !important;
+  }
+}
