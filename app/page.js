@@ -370,6 +370,94 @@ function InteractiveMaze({maze,startEmoji,endEmoji}){
  </div>
 }
 
+
+function InteractiveCraftPuzzle({src,title,cols,rows,aspectRatio,onComplete}){
+ const count=cols*rows;
+ const [placed,setPlaced]=useState([]);
+ const [order,setOrder]=useState(()=>Array.from({length:count},(_,i)=>i));
+ const [selected,setSelected]=useState(null);
+ const [drag,setDrag]=useState(null);
+ const [miss,setMiss]=useState(null);
+ const [round,setRound]=useState(0);
+ const complete=placed.length===count;
+ const [arW,arH]=String(aspectRatio||"1/1").split("/").map(Number);
+ const pieceAspect=(arW||1)/(arH||1)*rows/cols;
+ const pieceStyle=id=>{
+  const x=id%cols,y=(id/cols)|0;
+  return {
+   backgroundImage:`url("${src}")`,
+   backgroundSize:`${cols*100}% ${rows*100}%`,
+   backgroundPosition:`${cols===1?0:(x/(cols-1))*100}% ${rows===1?0:(y/(rows-1))*100}%`
+  };
+ };
+ const shuffle=()=>{
+  const next=Array.from({length:count},(_,i)=>i);
+  for(let i=next.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[next[i],next[j]]=[next[j],next[i]]}
+  if(next.every((v,i)=>v===i)&&next.length>1)[next[0],next[1]]=[next[1],next[0]];
+  setOrder(next);
+ };
+ const reset=()=>{setPlaced([]);setSelected(null);setDrag(null);setMiss(null);setRound(v=>v+1);shuffle()};
+ useEffect(()=>{setPlaced([]);setSelected(null);setDrag(null);setMiss(null);shuffle()},[src,cols,rows]);
+ useEffect(()=>{if(complete&&count>0)onComplete?.()},[complete]);
+ const wrong=id=>{setMiss(id);setTimeout(()=>setMiss(current=>current===id?null:current),500)};
+ const place=(pieceId,slotId)=>{
+  if(pieceId==null||placed.includes(pieceId))return;
+  if(pieceId!==slotId){wrong(pieceId);return}
+  setPlaced(prev=>prev.includes(pieceId)?prev:[...prev,pieceId]);
+  setSelected(null);
+ };
+ const onPiecePointerDown=(e,id)=>{
+  if(placed.includes(id))return;
+  e.preventDefault();
+  const r=e.currentTarget.getBoundingClientRect();
+  setSelected(id);
+  setDrag({id,x:e.clientX,y:e.clientY,w:r.width,h:r.height,ox:e.clientX-r.left,oy:e.clientY-r.top,moved:false});
+ };
+ useEffect(()=>{
+  if(!drag)return;
+  const move=e=>setDrag(d=>d?{...d,x:e.clientX,y:e.clientY,moved:d.moved||Math.hypot(e.clientX-d.x,e.clientY-d.y)>4}:d);
+  const up=e=>{
+   const id=drag.id;
+   const target=document.elementFromPoint(e.clientX,e.clientY)?.closest?.("[data-puzzle-slot]");
+   if(target)place(id,Number(target.dataset.puzzleSlot));
+   setDrag(null);
+  };
+  window.addEventListener("pointermove",move,{passive:true});
+  window.addEventListener("pointerup",up,{passive:true,once:true});
+  window.addEventListener("pointercancel",up,{passive:true,once:true});
+  return()=>{window.removeEventListener("pointermove",move);window.removeEventListener("pointerup",up);window.removeEventListener("pointercancel",up)};
+ },[drag?.id,placed]);
+ const remaining=order.filter(id=>!placed.includes(id));
+ return <div className={`craftPlay ${complete?"complete":""}`} key={round}>
+  <div className="craftPlayHead">
+   <div><span>🎮 Interaktives Puzzle</span><b>{complete?"Geschafft!":`${placed.length} / ${count} Teile richtig`}</b><small>{complete?"Super gepuzzelt!":"Ziehe ein Teil an die richtige Stelle – oder tippe Teil und Feld an."}</small></div>
+   <button onClick={reset}>↺ Neu mischen</button>
+  </div>
+  <div className="craftPlayProgress" aria-label={`${placed.length} von ${count} Teilen`}><i style={{width:`${count?placed.length/count*100:0}%`}}/></div>
+  <div className="craftPlayLayout">
+   <div className="craftPuzzleBoard" style={{gridTemplateColumns:`repeat(${cols},1fr)`,gridTemplateRows:`repeat(${rows},1fr)`,aspectRatio}} aria-label={`Puzzle ${title}`}>
+    {Array.from({length:count},(_,slot)=>{
+     const isPlaced=placed.includes(slot);
+     return <button key={slot} data-puzzle-slot={slot} className={`craftPuzzleSlot ${isPlaced?"filled":""} ${selected===slot?"target":""}`} onClick={()=>!isPlaced&&selected!=null&&place(selected,slot)} aria-label={`Puzzle-Feld ${slot+1}`}>
+      {isPlaced?<span className="craftPuzzleCrop" style={pieceStyle(slot)}/>:<span className="craftPuzzleSlotNo">{slot+1}</span>}
+     </button>
+    })}
+   </div>
+   <div className="craftPuzzleTrayWrap">
+    <b>Teile</b><small>{selected!=null?"Jetzt das passende Feld antippen.":"Ziehen oder antippen."}</small>
+    <div className="craftPuzzleTray" style={{gridTemplateColumns:`repeat(${count<=4?2:count<=9?3:4},1fr)`}}>
+     {remaining.map(id=><button key={id} className={`craftPuzzlePiece ${selected===id?"selected":""} ${miss===id?"wrong":""}`} style={{aspectRatio:pieceAspect}} onPointerDown={e=>onPiecePointerDown(e,id)} onClick={()=>setSelected(id)} aria-pressed={selected===id} aria-label={`Puzzleteil ${id+1}`}>
+      <span className="craftPuzzleCrop" style={pieceStyle(id)}/>
+     </button>)}
+     {remaining.length===0&&<div className="craftTrayDone">⭐</div>}
+    </div>
+   </div>
+  </div>
+  {drag&&<div className="craftPuzzleDragGhost" style={{left:drag.x-drag.ox,top:drag.y-drag.oy,width:drag.w,height:drag.h,aspectRatio:pieceAspect}}><span className="craftPuzzleCrop" style={pieceStyle(drag.id)}/></div>}
+  {complete&&<div className="craftPuzzleSuccess"><span>🎉</span><div><b>Geschafft!</b><small>Alle {count} Teile sind am richtigen Platz.</small></div><button onClick={reset}>Noch einmal</button></div>}
+ </div>
+}
+
 export default function Page(){
  const emptyProfileData=()=>({fav:[],done:[],gallery:[],stars:0,rewards:[],avatar:"lion",dailyClaims:[],dailyStreak:0,lastDailyDate:"",activeFrame:"classic",puzzleSolved:[],hiddenSolved:[]});
  const [screen,setScreen]=useState("start");
@@ -388,6 +476,7 @@ export default function Page(){
  const [craftStyle,setCraftStyle]=useState("bw");
  const [savedCraftPuzzles,setSavedCraftPuzzles]=useState([]);
  const [craftMode,setCraftMode]=useState("puzzle");
+ const [craftPlayOpen,setCraftPlayOpen]=useState(false);
  const [mazeThemeId,setMazeThemeId]=useState("fox");
  const [mazeDifficulty,setMazeDifficulty]=useState("leicht");
  const [mazeSeed,setMazeSeed]=useState(2311);
@@ -1363,8 +1452,9 @@ export default function Page(){
   setCraftImageId(item.imageId);
   setCraftPieces(item.pieces);
   setCraftStyle(item.style);
+  setCraftPlayOpen(true);
   playSound("click");
-  setTimeout(()=>document.querySelector(".craftFlow")?.scrollIntoView({behavior:"smooth",block:"start"}),40);
+  setTimeout(()=>document.querySelector(".craftPlay")?.scrollIntoView({behavior:"smooth",block:"center"}),80);
  };
 
  const saveCraftPuzzle=()=>{
@@ -2072,7 +2162,7 @@ export default function Page(){
      </div>
 
      <div className="craftStep craftStep3">
-      <div className="craftStepHead"><span>3</span><div><b>Vorschau & Drucken</b><small>So sieht dein Puzzle aus</small></div></div>
+      <div className="craftStepHead"><span>3</span><div><b>Vorschau & Spielen</b><small>Digital puzzeln oder ausdrucken</small></div></div>
       <div className="craftPreviewStage">
        <div className={`craftPreview ${craftStyle==="bw"?"bw":""}`} style={{aspectRatio:`${activeCraftTemplate.w}/${activeCraftTemplate.h}`}}>
         <img src={activeCraftSrc} alt={activeCraftTemplate.title}/>
@@ -2081,13 +2171,23 @@ export default function Page(){
         <span className="cutScissors cutScissorsA">✂️</span><span className="cutScissors cutScissorsB">✂️</span>
        </div>
       </div>
-      <div className="craftActions">
+      <div className="craftActions craftActions3">
+       <button className="craftPlayBtn" onClick={()=>setCraftPlayOpen(v=>!v)}>{craftPlayOpen?"✕ Spiel schließen":"🎮 Jetzt spielen"}</button>
        <button className="craftSaveBtn" onClick={saveCraftPuzzle}>💾 Speichern</button>
        <button className="craftPrintBtn" onClick={printCraftPuzzle}>↗️ Teilen / Drucken</button>
       </div>
-      <small className="craftA4">Format: A4 · zum Ausschneiden</small>
+      <small className="craftA4">Am Bildschirm spielen oder als A4-Puzzle ausschneiden.</small>
      </div>
     </div>
+
+    {craftPlayOpen&&<InteractiveCraftPuzzle
+     src={activeCraftSrc}
+     title={activeCraftTemplate.title}
+     cols={craftGrid[0]}
+     rows={craftGrid[1]}
+     aspectRatio={`${activeCraftTemplate.w}/${activeCraftTemplate.h}`}
+     onComplete={()=>playSound("success")}
+    />}
 
     <div className="craftSavedHead">
      <div><span className="eyebrow">Meine Sammlung</span><h2>Gespeicherte Puzzle</h2></div>
