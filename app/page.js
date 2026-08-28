@@ -798,15 +798,9 @@ export default function Page(){
  const printCraftPuzzle=()=>{
   if(typeof window==="undefined")return;
 
-  const preview=window.open("","_blank");
-  if(preview){
-   preview.document.write('<!doctype html><html><head><title>Malino – Puzzle PDF</title><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;background:#f6f8fb;color:#173d78}div{text-align:center}b{display:block;font-size:20px;margin-bottom:8px}small{color:#6d7b8d}</style></head><body><div><b>Malino PDF wird vorbereitet…</b><small>Einen Moment bitte.</small></div></body></html>');
-   preview.document.close();
-  }
-
   const img=new Image();
   img.crossOrigin="anonymous";
-  img.onload=()=>{
+  img.onload=async()=>{
    try{
     const W=1240,H=1754;
     const canvas=document.createElement("canvas");
@@ -815,7 +809,6 @@ export default function Page(){
     if(!ctx)throw new Error("canvas");
     ctx.fillStyle="#fff";ctx.fillRect(0,0,W,H);
 
-    // Header
     ctx.textAlign="center";
     ctx.fillStyle="#6a7d96";
     ctx.font="700 24px system-ui";
@@ -827,7 +820,6 @@ export default function Page(){
     ctx.font="500 22px system-ui";
     ctx.fillText("Entlang der gestrichelten Linien ausschneiden.",W/2,145);
 
-    // Main puzzle area, sized to source ratio and guaranteed to fit one A4 canvas.
     const maxW=900,maxH=1180;
     const ratio=activeCraftTemplate.w/activeCraftTemplate.h;
     let pw=maxW,ph=pw/ratio;
@@ -836,7 +828,6 @@ export default function Page(){
 
     ctx.fillStyle="#fff";ctx.fillRect(px,py,pw,ph);
     ctx.drawImage(img,px,py,pw,ph);
-
     ctx.strokeStyle="#173d78";
     ctx.lineWidth=4;
     ctx.strokeRect(px,py,pw,ph);
@@ -860,13 +851,11 @@ export default function Page(){
     ctx.fillText("✂️",px+26,py+38);
     ctx.fillText("✂️",px+pw-28,py+ph-18);
 
-    // Meta
     const metaY=py+ph+45;
     ctx.fillStyle="#6b7787";
     ctx.font="600 20px system-ui";
     ctx.fillText(`A4   •   ${craftPieces} Teile   •   ${craftStyle==="bw"?"Schwarz-Weiß":"Bunt"}`,W/2,metaY);
 
-    // Small reference
     const sampleH=180;
     const sampleW=sampleH*ratio;
     const sy=metaY+55;
@@ -880,7 +869,6 @@ export default function Page(){
     ctx.fillText("So sieht das fertige",sx+sampleW+34,sy+94);
     ctx.fillText("Puzzle aus.",sx+sampleW+34,sy+124);
 
-    // Footer
     ctx.textAlign="center";
     ctx.fillStyle="#8a96a5";ctx.font="500 16px system-ui";
     ctx.fillText("Malino – kreative Spielzeit ohne Bildschirm",W/2,H-35);
@@ -927,20 +915,38 @@ export default function Page(){
     const pdf=new Uint8Array(total);
     let pos=0;
     chunks.forEach(c=>{pdf.set(c,pos);pos+=c.length});
-    const blob=new Blob([pdf],{type:"application/pdf"});
-    const url=URL.createObjectURL(blob);
 
-    if(preview){
-     preview.location.href=url;
-    }else{
-     window.location.href=url;
+    const blob=new Blob([pdf],{type:"application/pdf"});
+    const safeTitle=activeCraftTemplate.title.toLowerCase().replace(/[^a-z0-9äöüß]+/gi,"-").replace(/^-|-$/g,"");
+    const file=new File([blob],`malino-${safeTitle}-${craftPieces}-teile.pdf`,{type:"application/pdf"});
+
+    // iPhone/iPad: od razu systemowy arkusz udostępniania, tak jak przy zapisanej kolorowance.
+    if(navigator.share&&navigator.canShare?.({files:[file]})){
+     await navigator.share({
+      files:[file],
+      title:`Malino – ${activeCraftTemplate.title}`,
+      text:"Mein Malino-Puzzle"
+     });
+     return;
     }
+
+    // Fallback dla przeglądarek bez Web Share z plikami.
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.target="_blank";
+    a.rel="noopener";
+    a.download=file.name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),120000);
-   }catch{
-    if(preview)preview.close();
+   }catch(err){
+    if(err?.name!=="AbortError"){
+     try{playSound("click")}catch{}
+    }
    }
   };
-  img.onerror=()=>{if(preview)preview.close()};
   img.src=activeCraftSrc;
  };
 
