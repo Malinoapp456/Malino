@@ -303,7 +303,7 @@ function MazeBoard({maze,startEmoji,endEmoji,className=""}){
 }
 
 export default function Page(){
- const emptyProfileData=()=>({fav:[],done:[],gallery:[],stars:0,rewards:[],avatar:"lion",dailyClaims:[],dailyStreak:0,lastDailyDate:"",activeFrame:"classic",puzzleSolved:[]});
+ const emptyProfileData=()=>({fav:[],done:[],gallery:[],stars:0,rewards:[],avatar:"lion",dailyClaims:[],dailyStreak:0,lastDailyDate:"",activeFrame:"classic",puzzleSolved:[],hiddenSolved:[]});
  const [screen,setScreen]=useState("start");
  const [profiles,setProfiles]=useState([{id:"default",name:"Kind 1"}]);
  const [activeProfileId,setActiveProfileId]=useState("default");
@@ -332,6 +332,10 @@ export default function Page(){
  const [hiddenDifficulty,setHiddenDifficulty]=useState("leicht");
  const [hiddenSeed,setHiddenSeed]=useState(2501);
  const [savedHidden,setSavedHidden]=useState([]);
+ const [hiddenFound,setHiddenFound]=useState([]);
+ const [hiddenMiss,setHiddenMiss]=useState(null);
+ const [hiddenComplete,setHiddenComplete]=useState(false);
+
 
 
 
@@ -494,6 +498,12 @@ export default function Page(){
  },[savedHidden]);
 
  useEffect(()=>{
+  setHiddenFound([]);
+  setHiddenMiss(null);
+  setHiddenComplete(false);
+ },[hiddenThemeId,hiddenDifficulty,hiddenSeed]);
+
+ useEffect(()=>{
   if(typeof document==="undefined")return;
   let primed=false;
   const prime=()=>{
@@ -573,6 +583,7 @@ export default function Page(){
  const dailyStreak=Number(activeData.dailyStreak||0);
  const lastDailyDate=activeData.lastDailyDate||"";
  const puzzleSolved=Array.isArray(activeData.puzzleSolved)?activeData.puzzleSolved:[];
+ const hiddenSolved=Array.isArray(activeData.hiddenSolved)?activeData.hiddenSolved:[];
  const puzzleCards=[
   {
    id:"odd-one",
@@ -905,6 +916,8 @@ export default function Page(){
   });
   return out;
  },[hiddenThemeId,hiddenDifficulty,hiddenSeed]);
+ const hiddenBoardKey=`${hiddenThemeId}:${hiddenDifficulty}:${hiddenSeed}`;
+ const hiddenAlreadySolved=hiddenSolved.includes(hiddenBoardKey);
 
 
 
@@ -962,11 +975,37 @@ export default function Page(){
  const setDailyClaims=value=>updateProfileField("dailyClaims",value);
  const setActiveFrame=value=>updateProfileField("activeFrame",value);
  const setPuzzleSolved=value=>updateProfileField("puzzleSolved",value);
+ const setHiddenSolved=value=>updateProfileField("hiddenSolved",value);
  const setDailyStreak=value=>updateProfileField("dailyStreak",value);
  const setLastDailyDate=value=>updateProfileField("lastDailyDate",value);
 
+ const tapHiddenTarget=(item,index)=>{
+  if(hiddenFound.includes(index))return;
+  const next=[...hiddenFound,index];
+  setHiddenFound(next);
+  playSound("success");
+  if(next.length>=hiddenTargets.length){
+   setHiddenComplete(true);
+   const firstTime=!hiddenSolved.includes(hiddenBoardKey);
+   if(firstTime){
+    setHiddenSolved([...hiddenSolved,hiddenBoardKey]);
+    setStars(stars+3);
+    playSound("stars");
+   }
+  }
+ };
+
+ const tapHiddenMiss=e=>{
+  if(e.target?.closest?.(".hiddenObjectButton"))return;
+  const id=Date.now();
+  setHiddenMiss(id);
+  playSound("click");
+  setTimeout(()=>setHiddenMiss(current=>current===id?null:current),420);
+ };
+
  const openSavedHidden=item=>{
   setCraftMode("hidden");setHiddenThemeId(item.themeId);setHiddenDifficulty(item.difficulty);setHiddenSeed(item.seed);
+  setHiddenFound([]);setHiddenComplete(false);setHiddenMiss(null);
   playSound("click");
   setTimeout(()=>document.querySelector(".hiddenFlow")?.scrollIntoView({behavior:"smooth",block:"start"}),40);
  };
@@ -974,7 +1013,7 @@ export default function Page(){
   const item={id:`hidden-${Date.now()}`,themeId:activeHiddenTheme.id,title:activeHiddenTheme.title,difficulty:hiddenDifficulty,seed:hiddenSeed,createdAt:new Date().toISOString()};
   setSavedHidden([item,...savedHidden].slice(0,18));playSound("success");
  };
- const newHiddenVariant=()=>{setHiddenSeed(Math.floor(Date.now()%1000000000));playSound("click")};
+ const newHiddenVariant=()=>{setHiddenFound([]);setHiddenComplete(false);setHiddenMiss(null);setHiddenSeed(Math.floor(Date.now()%1000000000));playSound("click")};
  const shareHiddenPdf=()=>{
   if(typeof window==="undefined")return;
   try{
@@ -2111,7 +2150,7 @@ export default function Page(){
     <div className="hiddenFlow">
      <aside className="hiddenSide">
       <div className="craftStepHead"><span>🔍</span><div><b>Versteckte Dinge</b><small>Finde die Gegenstände</small></div></div>
-      <p>Schau dir die Szene genau an und finde alle versteckten Gegenstände aus der Liste.</p>
+      <p>Tippe die versteckten Gegenstände direkt auf der Szene an. Gefundene Dinge bekommen ein ✓.</p>
       <img src="/assets/malino-raetsel-mascot.png" alt="Malino" className="hiddenMascot"/>
      </aside>
      <div className="hiddenMain">
@@ -2120,11 +2159,28 @@ export default function Page(){
        <div><small>Schwierigkeit</small><div className="hiddenDiff">{Object.entries(hiddenDifficultyMeta).map(([id,m])=><button key={id} className={hiddenDifficulty===id?"active":""} onClick={()=>setHiddenDifficulty(id)}>{m.label}<em>{m.count}</em></button>)}</div></div>
        <button className="mazeVariantBtn" onClick={newHiddenVariant}>🎲 Neue Variante</button>
       </div>
-      <div className="hiddenScene">
+      <div className={`hiddenScene interactive ${hiddenMiss?"miss":""}`} onClick={tapHiddenMiss}>
        <div className="hiddenBg">{activeHiddenTheme.bg.split(" ").map((t,i)=><span key={i}>{t}</span>)}</div>
-       {hiddenPlacements.map((p,i)=><i key={`${p.item}-${i}`} style={{left:`${p.x}%`,top:`${p.y}%`,transform:`translate(-50%,-50%) rotate(${p.r}deg) scale(${p.s})`}}>{p.item}</i>)}
+       {hiddenPlacements.map((p,i)=>{
+        const found=hiddenFound.includes(i);
+        return <button
+         key={`${p.item}-${i}`}
+         className={`hiddenObjectButton ${found?"found":""}`}
+         aria-label={`${p.item} ${found?"gefunden":"suchen"}`}
+         onClick={e=>{e.stopPropagation();tapHiddenTarget(p.item,i)}}
+         style={{left:`${p.x}%`,top:`${p.y}%`,transform:`translate(-50%,-50%) rotate(${p.r}deg) scale(${p.s})`}}
+        ><span>{p.item}</span>{found&&<em>✓</em>}</button>
+       })}
+       <div className="hiddenCounter">{hiddenFound.length}/{hiddenTargets.length}</div>
+       {hiddenMiss&&<div className="hiddenMissPulse">✦</div>}
+       {hiddenComplete&&<div className="hiddenCompleteCard">
+        <span>🎉</span><div><b>Geschafft!</b><small>{hiddenAlreadySolved?"Du hast dieses Suchbild erneut gelöst.":"+3 Sterne für dich!"}</small></div>
+       </div>}
       </div>
-      <div className="hiddenTargets"><b>Finde diese Gegenstände:</b><div>{hiddenTargets.map((t,i)=><span key={i}>{t}</span>)}</div></div>
+      <div className="hiddenTargets"><b>Finde diese Gegenstände:</b><div>{hiddenTargets.map((t,i)=>{
+       const found=hiddenFound.includes(i);
+       return <span key={i} className={found?"found":""}>{t}{found&&<em>✓</em>}</span>
+      })}</div></div>
       <div className="mazeActions"><button className="craftSaveBtn" onClick={saveHidden}>💾 Speichern</button><button className="craftPrintBtn" onClick={shareHiddenPdf}>↗️ Teilen / Drucken (A4)</button></div>
      </div>
     </div>
