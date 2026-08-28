@@ -701,18 +701,18 @@ export default function Page(){
  const currentPuzzleWorld=activePuzzleWorld?puzzleWorlds.find(w=>w.id===activePuzzleWorld):null;
  const currentWorldPuzzles=currentPuzzleWorld?currentPuzzleWorld.ids.map(id=>puzzleCards.find(p=>p.id===id)).filter(Boolean):[];
  const craftTemplates=[
-  {id:"rakete",title:"Rakete",emoji:"🚀",src:"/puzzle-rakete.png"},
-  {id:"triceratops",title:"Triceratops",emoji:"🦕",src:"/puzzle-triceratops.png"},
-  {id:"feuerwehr",title:"Feuerwehr",emoji:"🚒",src:"/puzzle-feuerwehr.png"},
-  {id:"traktor",title:"Traktor",emoji:"🚜",src:"/puzzle-traktor.png"},
-  {id:"fuchs",title:"Fuchs",emoji:"🦊",src:"/puzzle-fuchs.png"},
-  {id:"pinguin",title:"Pinguin",emoji:"🐧",src:"/puzzle-pinguin.png"},
-  {id:"drache",title:"Drache",emoji:"🐉",src:"/puzzle-drache.png"},
-  {id:"schloss",title:"Schloss",emoji:"🏰",src:"/puzzle-schloss.png"},
-  {id:"pferd",title:"Pferd",emoji:"🐴",src:"/puzzle-pferd.png"},
-  {id:"igel",title:"Igel",emoji:"🦔",src:"/puzzle-igel.png"},
-  {id:"ziege",title:"Ziege",emoji:"🐐",src:"/puzzle-ziege.png"},
-  {id:"astronaut",title:"Astronaut",emoji:"🧑‍🚀",src:"/puzzle-astronaut.png"}
+  {id:"rakete",title:"Rakete",emoji:"🚀",src:"/puzzle-rakete.png",w:1086,h:1448},
+  {id:"triceratops",title:"Triceratops",emoji:"🦕",src:"/puzzle-triceratops.png",w:1086,h:1448},
+  {id:"feuerwehr",title:"Feuerwehr",emoji:"🚒",src:"/puzzle-feuerwehr.png",w:1122,h:1402},
+  {id:"traktor",title:"Traktor",emoji:"🚜",src:"/puzzle-traktor.png",w:1122,h:1402},
+  {id:"fuchs",title:"Fuchs",emoji:"🦊",src:"/puzzle-fuchs.png",w:1103,h:1426},
+  {id:"pinguin",title:"Pinguin",emoji:"🐧",src:"/puzzle-pinguin.png",w:1103,h:1426},
+  {id:"drache",title:"Drache",emoji:"🐉",src:"/puzzle-drache.png",w:1086,h:1448},
+  {id:"schloss",title:"Schloss",emoji:"🏰",src:"/puzzle-schloss.png",w:1086,h:1448},
+  {id:"pferd",title:"Pferd",emoji:"🐴",src:"/puzzle-pferd.png",w:1122,h:1402},
+  {id:"igel",title:"Igel",emoji:"🦔",src:"/puzzle-igel.png",w:1103,h:1426},
+  {id:"ziege",title:"Ziege",emoji:"🐐",src:"/puzzle-ziege.png",w:1122,h:1402},
+  {id:"astronaut",title:"Astronaut",emoji:"🧑‍🚀",src:"/puzzle-astronaut.png",w:1086,h:1448}
  ];
  const activeCraftTemplate=craftTemplates.find(x=>x.id===craftImageId)||craftTemplates[0];
  const craftGrid=craftPieces===4?[2,2]:craftPieces===6?[3,2]:craftPieces===9?[3,3]:[4,3];
@@ -794,34 +794,48 @@ export default function Page(){
   const title=`${activeCraftTemplate.title} – ${craftPieces} Teile`;
   const img=activeCraftTemplate.src;
   const bw=craftStyle==="bw";
-  w.document.write(`<!doctype html><html><head><title>${title}</title><style>
-    @page{size:A4;margin:12mm}
-    body{font-family:system-ui,sans-serif;color:#173d78;margin:0;padding:0}
-    .sheet{min-height:270mm;display:flex;flex-direction:column;align-items:center}
-    h1{font-size:22px;margin:0 0 8px}
-    p{font-size:12px;margin:0 0 14px;color:#5c6e87}
-    .puzzle{position:relative;width:170mm;aspect-ratio:4/3;border:2px solid #173d78;overflow:hidden;background:#fff}
-    .puzzle img{width:100%;height:100%;object-fit:contain;${bw?"filter:grayscale(1) contrast(1.2);":""}}
+  const ratio=`${activeCraftTemplate.w}/${activeCraftTemplate.h}`;
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><style>
+    @page{size:A4 portrait;margin:10mm}
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:#fff;color:#173d78;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .sheet{width:190mm;min-height:277mm;margin:0 auto;display:flex;flex-direction:column;align-items:center}
+    .brand{font-weight:900;font-size:12px;color:#6a7d96;margin-bottom:3mm}
+    h1{font-size:22px;margin:0 0 2mm}
+    .sub{font-size:11px;margin:0 0 5mm;color:#5c6e87;text-align:center}
+    .puzzle{position:relative;width:min(152mm,92%);aspect-ratio:${ratio};border:2px solid #173d78;background:#fff;overflow:hidden}
+    .puzzle img{display:block;width:100%;height:100%;object-fit:fill;${bw?"filter:grayscale(1) contrast(1.18);":""}}
     .v,.h{position:absolute;z-index:3;pointer-events:none}
-    .v{top:0;bottom:0;border-left:2px dashed #1f2d3f}
-    .h{left:0;right:0;border-top:2px dashed #1f2d3f}
-    .sc{position:absolute;z-index:4;font-size:18px;background:#fff}
-    .note{margin-top:10px;font-size:11px;color:#5d6a7a}
-    .sample{margin-top:14px;display:flex;gap:8px;align-items:center}
-    .sample img{width:45mm;height:34mm;object-fit:contain;border:1px solid #ccd6e2;${bw?"filter:grayscale(1) contrast(1.2);":""}}
+    .v{top:0;bottom:0;border-left:1.5px dashed #20344e}
+    .h{left:0;right:0;border-top:1.5px dashed #20344e}
+    .sc{position:absolute;z-index:5;padding:1mm;background:#fff;border-radius:2mm;font-size:16px;line-height:1}
+    .sc.a{left:1mm;top:1mm}.sc.b{right:1mm;bottom:1mm}
+    .meta{display:flex;gap:5mm;align-items:center;justify-content:center;margin-top:4mm;font-size:10px;color:#6b7787}
+    .sample{width:100%;margin-top:7mm;padding-top:5mm;border-top:1px solid #d7dee8;display:flex;align-items:center;justify-content:center;gap:5mm}
+    .sample img{width:34mm;aspect-ratio:${ratio};object-fit:fill;border:1px solid #ccd6e2;${bw?"filter:grayscale(1) contrast(1.18);":""}}
+    .sample div{max-width:68mm;font-size:10px;color:#65758a}
+    .sample b{display:block;color:#173d78;font-size:12px;margin-bottom:1mm}
+    .footer{margin-top:auto;padding-top:4mm;font-size:9px;color:#8a96a5}
+    @media print{.sheet{break-inside:avoid}}
   </style></head><body><div class="sheet">
+    <div class="brand">MALINO · Basteln & Spielen</div>
     <h1>✂️ ${title}</h1>
-    <p>Entlang der gestrichelten Linien ausschneiden.</p>
+    <p class="sub">Entlang der gestrichelten Linien ausschneiden.</p>
     <div class="puzzle">
-      <img src="${img}"/>
+      <img src="${img}" alt=""/>
       ${Array.from({length:cols-1},(_,i)=>`<span class="v" style="left:${(i+1)*100/cols}%"></span>`).join("")}
       ${Array.from({length:rows-1},(_,i)=>`<span class="h" style="top:${(i+1)*100/rows}%"></span>`).join("")}
-      <span class="sc" style="left:3px;top:3px">✂️</span>
-      <span class="sc" style="right:3px;bottom:3px">✂️</span>
+      <span class="sc a">✂️</span><span class="sc b">✂️</span>
     </div>
-    <div class="sample"><img src="${img}"/><div><b>Vorlage</b><div class="note">So sieht das fertige Puzzle aus.</div></div></div>
-    <div class="note">Malino – Basteln & Spielen</div>
-  </div><script>window.onload=()=>setTimeout(()=>window.print(),250)</script></body></html>`);
+    <div class="meta"><span>A4</span><span>•</span><span>${craftPieces} Teile</span><span>•</span><span>${bw?"Schwarz-Weiß":"Bunt"}</span></div>
+    <div class="sample">
+      <img src="${img}" alt="Vorlage"/>
+      <div><b>Vorlage</b>Dieses kleine Bild zeigt, wie das fertige Puzzle aussehen soll.</div>
+    </div>
+    <div class="footer">Malino – kreative Spielzeit ohne Bildschirm</div>
+  </div><script>
+    window.addEventListener("load",()=>setTimeout(()=>window.print(),350));
+  </script></body></html>`);
   w.document.close();
  };
 
@@ -1337,6 +1351,7 @@ export default function Page(){
        <img src={t.src} alt={t.title}/><b>{t.title}</b>
       </button>)}
      </div>
+     <div className="craftTemplateScrollHint">Weitere Bilder ↓</div>
     </div>
 
     <div className="craftStep craftStep2">
@@ -1354,11 +1369,13 @@ export default function Page(){
 
     <div className="craftStep craftStep3">
      <div className="craftStepHead"><span>3</span><div><b>Vorschau & Drucken</b><small>So sieht dein Puzzle aus</small></div></div>
-     <div className={`craftPreview ${craftStyle==="bw"?"bw":""}`}>
-      <img src={activeCraftTemplate.src} alt={activeCraftTemplate.title}/>
-      {Array.from({length:craftGrid[0]-1},(_,i)=><i key={`v${i}`} className="cutV" style={{left:`${(i+1)*100/craftGrid[0]}%`}}/>)}
-      {Array.from({length:craftGrid[1]-1},(_,i)=><i key={`h${i}`} className="cutH" style={{top:`${(i+1)*100/craftGrid[1]}%`}}/>)}
-      <span className="cutScissors cutScissorsA">✂️</span><span className="cutScissors cutScissorsB">✂️</span>
+     <div className="craftPreviewStage">
+      <div className={`craftPreview ${craftStyle==="bw"?"bw":""}`} style={{aspectRatio:`${activeCraftTemplate.w}/${activeCraftTemplate.h}`}}>
+       <img src={activeCraftTemplate.src} alt={activeCraftTemplate.title}/>
+       {Array.from({length:craftGrid[0]-1},(_,i)=><i key={`v${i}`} className="cutV" style={{left:`${(i+1)*100/craftGrid[0]}%`}}/>)}
+       {Array.from({length:craftGrid[1]-1},(_,i)=><i key={`h${i}`} className="cutH" style={{top:`${(i+1)*100/craftGrid[1]}%`}}/>)}
+       <span className="cutScissors cutScissorsA">✂️</span><span className="cutScissors cutScissorsB">✂️</span>
+      </div>
      </div>
      <div className="craftActions">
       <button className="craftSaveBtn" onClick={saveCraftPuzzle}>💾 Speichern</button>
