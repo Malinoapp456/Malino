@@ -328,6 +328,11 @@ export default function Page(){
  const [differenceDifficulty,setDifferenceDifficulty]=useState("leicht");
  const [differenceSeed,setDifferenceSeed]=useState(2401);
  const [savedDifferences,setSavedDifferences]=useState([]);
+ const [hiddenThemeId,setHiddenThemeId]=useState("forest");
+ const [hiddenDifficulty,setHiddenDifficulty]=useState("leicht");
+ const [hiddenSeed,setHiddenSeed]=useState(2501);
+ const [savedHidden,setSavedHidden]=useState([]);
+
 
 
 
@@ -442,6 +447,8 @@ export default function Page(){
    setScreenTimeLimit(Number.isFinite(limit)?limit:0);
    const anim=localStorage.getItem("malino:animations:v1");
    if(anim!==null)setAnimationsEnabled(anim!=="off");
+   const hidden=localStorage.getItem("malino:hidden:v1");
+   if(hidden){try{setSavedHidden(JSON.parse(hidden)||[])}catch{}}
    const diffs=localStorage.getItem("malino:differences:v1");
    if(diffs){try{setSavedDifferences(JSON.parse(diffs)||[])}catch{}}
    const mazes=localStorage.getItem("malino:mazes:v1");
@@ -481,6 +488,10 @@ export default function Page(){
  useEffect(()=>{
   try{localStorage.setItem("malino:differences:v1",JSON.stringify(savedDifferences))}catch{}
  },[savedDifferences]);
+
+ useEffect(()=>{
+  try{localStorage.setItem("malino:hidden:v1",JSON.stringify(savedHidden))}catch{}
+ },[savedHidden]);
 
  useEffect(()=>{
   if(typeof document==="undefined")return;
@@ -870,6 +881,31 @@ export default function Page(){
   return changes;
  },[differenceThemeId,differenceDifficulty,differenceSeed]);
  const changedDifferenceTokens=useMemo(()=>differenceTokens.map((t,i)=>differenceChanges.find(c=>c.idx===i)?.to||t),[differenceThemeId,differenceDifficulty,differenceSeed]);
+ const hiddenThemes=[
+  {id:"forest",title:"Waldabenteuer",icon:"🌲",bg:"🌳 🌲 🪵 🍄 🌿 🌼 🏕️ 🏡 🌲 🌳 🍂 🌿",items:["🦋","🏮","🪺","🦉","🐌","🦔","🍎","🔑","⭐"]},
+  {id:"farm",title:"Bauernhof",icon:"🚜",bg:"🌾 🏡 🌳 🚜 🐄 🐔 🌻 🌾 🐷 🌳 🪵 ☀️",items:["🥕","🔔","🪣","🐭","🍎","🧤","⭐","🦋","🔑"]},
+  {id:"ocean",title:"Unterwasserwelt",icon:"🐳",bg:"🌊 🪸 🐠 🐟 🐳 🫧 🪨 🌊 🐙 🪸 🐚 🫧",items:["🐚","⭐","🐠","🦀","⚓","💎","🐙","🐬","🔑"]},
+  {id:"space",title:"Weltraum",icon:"🚀",bg:"🌌 ⭐ 🪐 🚀 🌙 ☄️ 🌎 🛰️ ⭐ 🌌 🛸 🪐",items:["👨‍🚀","🔭","⭐","🛸","🌎","🚀","💎","🔑","🌙"]},
+  {id:"dino",title:"Dino-Welt",icon:"🦕",bg:"🌴 🌋 🦕 🪨 🌿 🦖 ☁️ 🌴 🥚 🌿 🪨 🌋",items:["🥚","🦴","🌿","⭐","🪨","🦋","🔑","🌼","🍎"]},
+  {id:"fairy",title:"Märchenwald",icon:"🏰",bg:"🏰 🌳 🌈 🦄 🌼 🧚 ☁️ 🌲 🐉 ⭐ 🌿 🌸",items:["👑","💎","🔑","⭐","🦋","🍎","🪄","🌹","🔔"]}
+ ];
+ const hiddenDifficultyMeta={
+  leicht:{label:"Leicht",age:"4–5",count:5},
+  mittel:{label:"Mittel",age:"5–7",count:7},
+  schwer:{label:"Schwer",age:"7+",count:9}
+ };
+ const activeHiddenTheme=hiddenThemes.find(x=>x.id===hiddenThemeId)||hiddenThemes[0];
+ const activeHiddenDifficulty=hiddenDifficultyMeta[hiddenDifficulty]||hiddenDifficultyMeta.leicht;
+ const hiddenTargets=activeHiddenTheme.items.slice(0,activeHiddenDifficulty.count);
+ const hiddenHash=[...`${hiddenThemeId}-${hiddenDifficulty}-${hiddenSeed}`].reduce((a,ch)=>((a*33)^ch.charCodeAt(0))>>>0,5381);
+ const hiddenPlacements=useMemo(()=>{
+  const rand=mazeRand(hiddenHash), out=[];
+  hiddenTargets.forEach((item,i)=>{
+   out.push({item,x:8+rand()*84,y:10+rand()*76,r:-18+rand()*36,s:.72+rand()*.34});
+  });
+  return out;
+ },[hiddenThemeId,hiddenDifficulty,hiddenSeed]);
+
 
 
 
@@ -928,6 +964,44 @@ export default function Page(){
  const setPuzzleSolved=value=>updateProfileField("puzzleSolved",value);
  const setDailyStreak=value=>updateProfileField("dailyStreak",value);
  const setLastDailyDate=value=>updateProfileField("lastDailyDate",value);
+
+ const openSavedHidden=item=>{
+  setCraftMode("hidden");setHiddenThemeId(item.themeId);setHiddenDifficulty(item.difficulty);setHiddenSeed(item.seed);
+  playSound("click");
+  setTimeout(()=>document.querySelector(".hiddenFlow")?.scrollIntoView({behavior:"smooth",block:"start"}),40);
+ };
+ const saveHidden=()=>{
+  const item={id:`hidden-${Date.now()}`,themeId:activeHiddenTheme.id,title:activeHiddenTheme.title,difficulty:hiddenDifficulty,seed:hiddenSeed,createdAt:new Date().toISOString()};
+  setSavedHidden([item,...savedHidden].slice(0,18));playSound("success");
+ };
+ const newHiddenVariant=()=>{setHiddenSeed(Math.floor(Date.now()%1000000000));playSound("click")};
+ const shareHiddenPdf=()=>{
+  if(typeof window==="undefined")return;
+  try{
+   const W=1240,H=1754,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");if(!x)return;
+   x.fillStyle="#fff";x.fillRect(0,0,W,H);x.textAlign="center";
+   x.fillStyle="#6a7d96";x.font="700 24px system-ui";x.fillText("MALINO · Basteln & Spielen",W/2,58);
+   x.fillStyle="#173d78";x.font="800 38px system-ui";x.fillText(`🔍 Versteckte Dinge – ${activeHiddenTheme.title}`,W/2,108);
+   x.fillStyle="#5c6e87";x.font="500 21px system-ui";x.fillText(`${activeHiddenDifficulty.label} · Finde ${activeHiddenDifficulty.count} Gegenstände.`,W/2,148);
+   const px=130,py=210,pw=980,ph=1050;
+   x.fillStyle="#f6fbf2";x.fillRect(px,py,pw,ph);x.strokeStyle="#173d78";x.lineWidth=4;x.strokeRect(px,py,pw,ph);
+   const bg=activeHiddenTheme.bg.split(" ");
+   bg.forEach((t,i)=>{const col=i%4,row=(i/4)|0;x.font="90px system-ui";x.fillText(t,px+125+col*245,py+170+row*280)});
+   hiddenPlacements.forEach(p=>{x.save();x.translate(px+p.x/100*pw,py+p.y/100*ph);x.rotate(p.r*Math.PI/180);x.font=`${58*p.s}px system-ui`;x.fillText(p.item,0,0);x.restore()});
+   x.fillStyle="#173d78";x.font="800 23px system-ui";x.fillText("Finde diese Gegenstände:",W/2,1325);
+   hiddenTargets.forEach((t,i)=>{x.font="46px system-ui";x.fillText(t,250+i*(740/Math.max(1,hiddenTargets.length-1)),1395)});
+   x.fillStyle="#8a96a5";x.font="500 16px system-ui";x.fillText("Malino – kreative Spielzeit ohne Bildschirm",W/2,H-35);
+   const data=c.toDataURL("image/jpeg",.95).split(",")[1],bin=atob(data),jpg=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)jpg[i]=bin.charCodeAt(i);
+   const enc=new TextEncoder(),chunks=[];let off=0;const ofs=[0],add=d=>{const b=typeof d==="string"?enc.encode(d):d;chunks.push(b);off+=b.length},obj=(n,b)=>{ofs[n]=off;add(`${n} 0 obj\n${b}\nendobj\n`)};
+   add("%PDF-1.4\n%\xE2\xE3\xCF\xD3\n");obj(1,"<< /Type /Catalog /Pages 2 0 R >>");obj(2,"<< /Type /Pages /Kids [3 0 R] /Count 1 >>");obj(3,"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>");
+   ofs[4]=off;add(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${W} /Height ${H} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`);add(jpg);add("\nendstream\nendobj\n");
+   const ct="q\n595.28 0 0 841.89 0 0 cm\n/Im0 Do\nQ\n";ofs[5]=off;add(`5 0 obj\n<< /Length ${ct.length} >>\nstream\n${ct}endstream\nendobj\n`);const xr=off;add("xref\n0 6\n0000000000 65535 f \n");for(let i=1;i<=5;i++)add(String(ofs[i]).padStart(10,"0")+" 00000 n \n");add(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF`);
+   const total=chunks.reduce((a,b)=>a+b.length,0),pdf=new Uint8Array(total);let pos=0;chunks.forEach(b=>{pdf.set(b,pos);pos+=b.length});
+   const blob=new Blob([pdf],{type:"application/pdf"}),file=new File([blob],`malino-versteckte-dinge-${hiddenThemeId}-${hiddenDifficulty}.pdf`,{type:"application/pdf"});
+   if(navigator.share&&navigator.canShare?.({files:[file]}))navigator.share({files:[file],title:`Malino – ${activeHiddenTheme.title}`,text:"Malino – Versteckte Dinge"}).catch(()=>{});
+   else{const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=file.name;a.target="_blank";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),120000)}
+  }catch{}
+ };
 
  const openSavedDifference=item=>{
   setCraftMode("difference");
@@ -1829,10 +1903,11 @@ export default function Page(){
     <div className="craftScore"><span>{craftMode==="maze"?"🌀":"🧩"}</span><b>{craftMode==="maze"?savedMazes.length:savedCraftPuzzles.length}</b><small>gespeichert</small></div>
    </div>
 
-   <div className="craftModeTabs craftModeTabs3" role="tablist" aria-label="Basteln & Spielen">
+   <div className="craftModeTabs craftModeTabs4" role="tablist" aria-label="Basteln & Spielen">
     <button className={craftMode==="puzzle"?"active":""} onClick={()=>setCraftMode("puzzle")}><span>🧩</span><div><b>Meine Puzzle</b><small>Ausmalen, schneiden & puzzeln</small></div></button>
     <button className={craftMode==="maze"?"active":""} onClick={()=>setCraftMode("maze")}><span>🌀</span><div><b>Labyrinthe</b><small>Weg finden, speichern & drucken</small></div></button>
     <button className={craftMode==="difference"?"active":""} onClick={()=>setCraftMode("difference")}><span>🔎</span><div><b>Unterschiede</b><small>Genau hinschauen & entdecken</small></div></button>
+    <button className={craftMode==="hidden"?"active":""} onClick={()=>setCraftMode("hidden")}><span>🔍</span><div><b>Versteckte Dinge</b><small>Suchen, finden & markieren</small></div></button>
    </div>
 
    {craftMode==="puzzle"&&<>
@@ -2031,6 +2106,31 @@ export default function Page(){
     </div>
    </>}
 
+
+   {craftMode==="hidden"&&<>
+    <div className="hiddenFlow">
+     <aside className="hiddenSide">
+      <div className="craftStepHead"><span>🔍</span><div><b>Versteckte Dinge</b><small>Finde die Gegenstände</small></div></div>
+      <p>Schau dir die Szene genau an und finde alle versteckten Gegenstände aus der Liste.</p>
+      <img src="/assets/malino-raetsel-mascot.png" alt="Malino" className="hiddenMascot"/>
+     </aside>
+     <div className="hiddenMain">
+      <div className="hiddenControls">
+       <div><small>Motiv wählen</small><select value={hiddenThemeId} onChange={e=>setHiddenThemeId(e.target.value)}>{hiddenThemes.map(t=><option key={t.id} value={t.id}>{t.title}</option>)}</select></div>
+       <div><small>Schwierigkeit</small><div className="hiddenDiff">{Object.entries(hiddenDifficultyMeta).map(([id,m])=><button key={id} className={hiddenDifficulty===id?"active":""} onClick={()=>setHiddenDifficulty(id)}>{m.label}<em>{m.count}</em></button>)}</div></div>
+       <button className="mazeVariantBtn" onClick={newHiddenVariant}>🎲 Neue Variante</button>
+      </div>
+      <div className="hiddenScene">
+       <div className="hiddenBg">{activeHiddenTheme.bg.split(" ").map((t,i)=><span key={i}>{t}</span>)}</div>
+       {hiddenPlacements.map((p,i)=><i key={`${p.item}-${i}`} style={{left:`${p.x}%`,top:`${p.y}%`,transform:`translate(-50%,-50%) rotate(${p.r}deg) scale(${p.s})`}}>{p.item}</i>)}
+      </div>
+      <div className="hiddenTargets"><b>Finde diese Gegenstände:</b><div>{hiddenTargets.map((t,i)=><span key={i}>{t}</span>)}</div></div>
+      <div className="mazeActions"><button className="craftSaveBtn" onClick={saveHidden}>💾 Speichern</button><button className="craftPrintBtn" onClick={shareHiddenPdf}>↗️ Teilen / Drucken (A4)</button></div>
+     </div>
+    </div>
+    <div className="craftSavedHead"><div><span className="eyebrow">Meine Sammlung</span><h2>Gespeicherte Suchbilder</h2></div><span>{savedHidden.length}</span></div>
+    {savedHidden.length===0?<div className="craftEmpty"><span>🔍</span><div><b>Noch kein Suchbild gespeichert</b><small>Erstelle oben deine erste Variante.</small></div></div>:<div className="differenceSavedGrid">{savedHidden.map(item=>{const t=hiddenThemes.find(x=>x.id===item.themeId)||hiddenThemes[0],d=hiddenDifficultyMeta[item.difficulty]||hiddenDifficultyMeta.leicht;return <article key={item.id} className="differenceSavedCard" role="button" tabIndex={0} onClick={()=>openSavedHidden(item)}><span>{t.icon}</span><div><b>{t.title}</b><small>{d.label} · {d.count} Gegenstände</small><em>Öffnen ›</em></div><button onClick={e=>{e.stopPropagation();setSavedHidden(savedHidden.filter(x=>x.id!==item.id))}}>×</button></article>})}</div>}
+   </>}
 </section>}
 
   {screen==="puzzles"&&<section className="puzzlePage puzzleWorldPage">

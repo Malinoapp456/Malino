@@ -6859,3 +6859,22 @@ nav,
   .differenceScene span{min-height:70px;font-size:34px}
   .differenceSavedGrid{grid-template-columns:1fr}
 }
+
+/* Malino v25 — Versteckte Dinge */
+.craftModeTabs4{grid-template-columns:repeat(4,1fr)}
+.hiddenFlow{display:grid;grid-template-columns:210px 1fr;gap:12px;margin-top:14px}
+.hiddenSide,.hiddenMain{border:1px solid #e3e8ef;border-radius:24px;background:#fff;padding:15px;box-shadow:0 9px 22px rgba(34,54,86,.06)}
+.hiddenSide{background:linear-gradient(160deg,#f5f0ff,#fff)}
+.hiddenSide p{font-size:10px;line-height:1.7;color:#51657e;font-weight:700}
+.hiddenMascot{display:block;width:145px;max-height:220px;object-fit:contain;margin:10px auto 0}
+.hiddenControls{display:grid;grid-template-columns:1fr 1.25fr auto;gap:10px;align-items:end;margin-bottom:12px}
+.hiddenControls>div{display:grid;gap:5px}.hiddenControls small{font-size:8px;font-weight:900;color:#6d7b8e}
+.hiddenControls select{height:42px;border:1px solid #dfe5ed;border-radius:12px;background:#fff;padding:0 10px;font-weight:850;color:#173d78}
+.hiddenDiff{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.hiddenDiff button{height:42px;border:0;border-radius:11px;background:#edf2f7;color:#607188;font-weight:900}.hiddenDiff button.active{background:#6e45ca;color:#fff}.hiddenDiff em{display:block;font-size:7px;font-style:normal}
+.hiddenScene{position:relative;overflow:hidden;min-height:440px;border:2px solid #173d78;border-radius:20px;background:linear-gradient(#bde8ff 0 35%,#dff0c7 35% 100%)}
+.hiddenBg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr);align-items:center;justify-items:center;padding:25px}
+.hiddenBg span{font-size:58px;filter:drop-shadow(0 3px 2px rgba(0,0,0,.12))}
+.hiddenScene>i{position:absolute;font-style:normal;font-size:34px;z-index:3;filter:drop-shadow(0 2px 1px rgba(255,255,255,.7))}
+.hiddenTargets{margin-top:10px;color:#173d78}.hiddenTargets>b{font-size:10px}.hiddenTargets>div{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px}.hiddenTargets span{width:52px;height:48px;display:grid;place-items:center;border:1px solid #e1e6ed;border-radius:12px;background:#fff;font-size:27px}
+@media(max-width:900px){.craftModeTabs4{grid-template-columns:repeat(2,1fr)}.hiddenFlow{grid-template-columns:170px 1fr}.hiddenControls{grid-template-columns:1fr}.hiddenScene{min-height:400px}}
+@media(max-width:650px){.craftModeTabs4{grid-template-columns:1fr}.hiddenFlow{grid-template-columns:1fr}.hiddenSide{display:grid;grid-template-columns:1fr 90px}.hiddenMascot{width:80px;max-height:110px;margin:0}.hiddenControls{grid-template-columns:1fr}.hiddenScene{min-height:330px}.hiddenBg span{font-size:42px}.hiddenScene>i{font-size:28px}}
