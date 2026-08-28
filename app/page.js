@@ -818,12 +818,12 @@ export default function Page(){
  const mazeHash=[...`${mazeThemeId}-${mazeDifficulty}-${mazeSeed}`].reduce((a,ch)=>((a*31)+ch.charCodeAt(0))>>>0,2166136261);
  const activeMaze=useMemo(()=>buildMaze(activeMazeDifficulty.cols,activeMazeDifficulty.rows,mazeHash),[mazeThemeId,mazeDifficulty,mazeSeed]);
  const differenceThemes=[
-  {id:"farm",title:"Bauernhof",icon:"🚜",scene:"🌳 🏠 🚜 🐄 ☀️ 🌼"},
-  {id:"space",title:"Weltraum",icon:"🚀",scene:"🚀 🪐 ⭐ 👨‍🚀 🌙 🛸"},
-  {id:"forest",title:"Wald",icon:"🦊",scene:"🌲 🦊 🍄 🐿️ 🌼 🪵"},
-  {id:"castle",title:"Märchen",icon:"🏰",scene:"🏰 🐉 ⭐ 👑 🌈 🦄"},
-  {id:"ocean",title:"Meer",icon:"🐳",scene:"🐳 🐠 🐚 ⭐ 🐙 🌊"},
-  {id:"dino",title:"Dino-Welt",icon:"🦕",scene:"🦕 🌋 🥚 🌴 🦖 ☁️"}
+  {id:"farm",title:"Bauernhof",icon:"🚜",scene:"🌳 🏠 🚜 🐄 ☀️ 🌼 🐔 🌾 🐷"},
+  {id:"space",title:"Weltraum",icon:"🚀",scene:"🚀 🪐 ⭐ 👨‍🚀 🌙 🛸 ☄️ 🌎 🛰️"},
+  {id:"forest",title:"Wald",icon:"🦊",scene:"🌲 🦊 🍄 🐿️ 🌼 🪵 🦉 🌰 🐰"},
+  {id:"castle",title:"Märchen",icon:"🏰",scene:"🏰 🐉 ⭐ 👑 🌈 🦄 🧚 💎 ☁️"},
+  {id:"ocean",title:"Meer",icon:"🐳",scene:"🐳 🐠 🐚 ⭐ 🐙 🌊 🐬 🦀 🐟"},
+  {id:"dino",title:"Dino-Welt",icon:"🦕",scene:"🦕 🌋 🥚 🌴 🦖 ☁️ 🪨 🌿 🦴"}
  ];
  const differenceDifficultyMeta={
   leicht:{label:"Leicht",age:"4–5",count:3},
@@ -856,7 +856,10 @@ export default function Page(){
   ];
   const changes=[];
   const used=new Set();
-  while(changes.length<activeDifferenceDifficulty.count){
+  const target=Math.min(activeDifferenceDifficulty.count,differenceTokens.length);
+  let guard=0;
+  while(changes.length<target&&guard<200){
+   guard++;
    const idx=Math.floor(rand()*differenceTokens.length);
    if(used.has(idx))continue;
    used.add(idx);
