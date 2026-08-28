@@ -6421,3 +6421,46 @@ nav,
     bottom:112px;
   }
 }
+
+
+/* =========================================================
+   Malino v22.4 — funkcje Puzzle: otwieranie, druk, tryb Bunt
+   ========================================================= */
+
+/* Bunt now uses a real colored image, so no filter is needed */
+.craftPreview.bw img,
+.craftSavedThumb.bw img{
+  filter:none !important;
+}
+
+/* Saved projects are now interactive */
+.craftSavedCard{
+  cursor:pointer;
+  transition:transform .14s ease,box-shadow .16s ease,border-color .16s ease;
+}
+.craftSavedCard:active{
+  transform:scale(.98);
+}
+.craftSavedCard:focus-visible{
+  outline:3px solid rgba(38,121,237,.32);
+  outline-offset:3px;
+}
+.craftSavedCard em{
+  margin-top:3px;
+  color:#2679ed;
+  font-size:8px;
+  font-style:normal;
+  font-weight:900;
+}
+@media(hover:hover){
+  .craftSavedCard:hover{
+    transform:translateY(-2px);
+    border-color:#b8cbe2;
+    box-shadow:0 11px 24px rgba(34,54,86,.10);
+  }
+}
+
+/* Hidden print iframe */
+#malino-print-frame{
+  pointer-events:none !important;
+}
