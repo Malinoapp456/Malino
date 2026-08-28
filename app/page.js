@@ -245,6 +245,63 @@ const PROFILE_AVATARS=[
 ];
 const avatarEmoji=id=>PROFILE_AVATARS.find(a=>a.id===id)?.emoji||"🦁";
 
+
+function mazeRand(seed){
+ let x=(seed>>>0)||123456789;
+ return()=>{
+  x^=x<<13;x^=x>>>17;x^=x<<5;
+  return((x>>>0)%1000000)/1000000;
+ };
+}
+
+function buildMaze(cols,rows,seed){
+ const rand=mazeRand(seed);
+ const cells=Array.from({length:cols*rows},()=>({t:1,r:1,b:1,l:1}));
+ const visited=new Uint8Array(cols*rows);
+ const stack=[0];
+ visited[0]=1;
+ const index=(x,y)=>y*cols+x;
+ while(stack.length){
+  const cur=stack[stack.length-1],x=cur%cols,y=(cur/cols)|0;
+  const opts=[];
+  if(y>0&&!visited[index(x,y-1)])opts.push([x,y-1,"t","b"]);
+  if(x<cols-1&&!visited[index(x+1,y)])opts.push([x+1,y,"r","l"]);
+  if(y<rows-1&&!visited[index(x,y+1)])opts.push([x,y+1,"b","t"]);
+  if(x>0&&!visited[index(x-1,y)])opts.push([x-1,y,"l","r"]);
+  if(!opts.length){stack.pop();continue}
+  const pick=opts[Math.floor(rand()*opts.length)];
+  const [nx,ny,wall,opposite]=pick,ni=index(nx,ny);
+  cells[cur][wall]=0;cells[ni][opposite]=0;
+  visited[ni]=1;stack.push(ni);
+ }
+ cells[0].l=0;
+ cells[cells.length-1].r=0;
+ return{cols,rows,cells};
+}
+
+function MazeBoard({maze,startEmoji,endEmoji,className=""}){
+ if(!maze)return null;
+ const cell=50,w=maze.cols*cell,h=maze.rows*cell;
+ return <svg className={`mazeBoard ${className}`} viewBox={`0 0 ${w} ${h}`} role="img" aria-label="Labyrinth">
+  <rect x="0" y="0" width={w} height={h} rx="12" fill="#fff"/>
+  <g stroke="#173d78" strokeWidth="5" strokeLinecap="round">
+   {maze.cells.map((c,i)=>{
+    const x=(i%maze.cols)*cell,y=((i/maze.cols)|0)*cell;
+    return <g key={i}>
+     {c.t?<line x1={x} y1={y} x2={x+cell} y2={y}/>:null}
+     {c.r?<line x1={x+cell} y1={y} x2={x+cell} y2={y+cell}/>:null}
+     {c.b?<line x1={x} y1={y+cell} x2={x+cell} y2={y+cell}/>:null}
+     {c.l?<line x1={x} y1={y} x2={x} y2={y+cell}/>:null}
+    </g>
+   })}
+  </g>
+  <circle cx={cell*.5} cy={cell*.5} r={cell*.32} fill="#eaf7ff"/>
+  <circle cx={w-cell*.5} cy={h-cell*.5} r={cell*.32} fill="#fff1c8"/>
+  <text x={cell*.5} y={cell*.66} textAnchor="middle" fontSize={cell*.46}>{startEmoji}</text>
+  <text x={w-cell*.5} y={h-cell*.34} textAnchor="middle" fontSize={cell*.46}>{endEmoji}</text>
+ </svg>
+}
+
 export default function Page(){
  const emptyProfileData=()=>({fav:[],done:[],gallery:[],stars:0,rewards:[],avatar:"lion",dailyClaims:[],dailyStreak:0,lastDailyDate:"",activeFrame:"classic",puzzleSolved:[]});
  const [screen,setScreen]=useState("start");
@@ -262,6 +319,12 @@ export default function Page(){
  const [craftPieces,setCraftPieces]=useState(6);
  const [craftStyle,setCraftStyle]=useState("bw");
  const [savedCraftPuzzles,setSavedCraftPuzzles]=useState([]);
+ const [craftMode,setCraftMode]=useState("puzzle");
+ const [mazeThemeId,setMazeThemeId]=useState("fox");
+ const [mazeDifficulty,setMazeDifficulty]=useState("leicht");
+ const [mazeSeed,setMazeSeed]=useState(2311);
+ const [savedMazes,setSavedMazes]=useState([]);
+
 
 
  const [profileDialog,setProfileDialog]=useState(null);
@@ -374,6 +437,8 @@ export default function Page(){
    setScreenTimeLimit(Number.isFinite(limit)?limit:0);
    const anim=localStorage.getItem("malino:animations:v1");
    if(anim!==null)setAnimationsEnabled(anim!=="off");
+   const mazes=localStorage.getItem("malino:mazes:v1");
+   if(mazes){try{setSavedMazes(JSON.parse(mazes)||[])}catch{}}
    const crafts=localStorage.getItem("malino:craftPuzzles:v1");
    if(crafts){try{setSavedCraftPuzzles(JSON.parse(crafts)||[])}catch{}}
    const snd=localStorage.getItem("malino:sound:v1");
@@ -401,6 +466,10 @@ export default function Page(){
  useEffect(()=>{
   try{localStorage.setItem("malino:craftPuzzles:v1",JSON.stringify(savedCraftPuzzles))}catch{}
  },[savedCraftPuzzles]);
+
+ useEffect(()=>{
+  try{localStorage.setItem("malino:mazes:v1",JSON.stringify(savedMazes))}catch{}
+ },[savedMazes]);
 
  useEffect(()=>{
   if(typeof document==="undefined")return;
@@ -717,6 +786,27 @@ export default function Page(){
  const activeCraftTemplate=craftTemplates.find(x=>x.id===craftImageId)||craftTemplates[0];
  const activeCraftSrc=craftStyle==="color"?activeCraftTemplate.srcColor:activeCraftTemplate.srcBw;
  const craftGrid=craftPieces===4?[2,2]:craftPieces===6?[3,2]:craftPieces===9?[3,3]:[4,3];
+ const mazeThemes=[
+  {id:"fox",title:"Fuchs zum Häuschen",icon:"🦊",start:"🦊",end:"🏠"},
+  {id:"rocket",title:"Rakete zum Planeten",icon:"🚀",start:"🚀",end:"🪐"},
+  {id:"dragon",title:"Drache zum Schloss",icon:"🐉",start:"🐉",end:"🏰"},
+  {id:"penguin",title:"Pinguin zum Fisch",icon:"🐧",start:"🐧",end:"🐟"},
+  {id:"tractor",title:"Traktor zur Scheune",icon:"🚜",start:"🚜",end:"🏚️"},
+  {id:"firetruck",title:"Feuerwehr zum Einsatz",icon:"🚒",start:"🚒",end:"🔥"},
+  {id:"bee",title:"Biene zur Blume",icon:"🐝",start:"🐝",end:"🌻"},
+  {id:"pirate",title:"Pirat zum Schatz",icon:"🏴‍☠️",start:"🏴‍☠️",end:"💰"},
+  {id:"dino",title:"Dino zum Ei",icon:"🦖",start:"🦖",end:"🥚"}
+ ];
+ const mazeDifficultyMeta={
+  leicht:{label:"Leicht",age:"4–5",cols:7,rows:5},
+  mittel:{label:"Mittel",age:"5–7",cols:10,rows:7},
+  schwer:{label:"Schwer",age:"7+",cols:14,rows:10}
+ };
+ const activeMazeTheme=mazeThemes.find(x=>x.id===mazeThemeId)||mazeThemes[0];
+ const activeMazeDifficulty=mazeDifficultyMeta[mazeDifficulty]||mazeDifficultyMeta.leicht;
+ const mazeHash=[...`${mazeThemeId}-${mazeDifficulty}-${mazeSeed}`].reduce((a,ch)=>((a*31)+ch.charCodeAt(0))>>>0,2166136261);
+ const activeMaze=useMemo(()=>buildMaze(activeMazeDifficulty.cols,activeMazeDifficulty.rows,mazeHash),[mazeThemeId,mazeDifficulty,mazeSeed]);
+
 
 
 
@@ -773,6 +863,117 @@ export default function Page(){
  const setPuzzleSolved=value=>updateProfileField("puzzleSolved",value);
  const setDailyStreak=value=>updateProfileField("dailyStreak",value);
  const setLastDailyDate=value=>updateProfileField("lastDailyDate",value);
+
+ const openSavedMaze=item=>{
+  setCraftMode("maze");
+  setMazeThemeId(item.themeId);
+  setMazeDifficulty(item.difficulty);
+  setMazeSeed(item.seed);
+  playSound("click");
+  setTimeout(()=>document.querySelector(".mazeFlow")?.scrollIntoView({behavior:"smooth",block:"start"}),40);
+ };
+
+ const saveMaze=()=>{
+  const item={
+   id:`maze-${Date.now()}`,
+   themeId:activeMazeTheme.id,
+   title:activeMazeTheme.title,
+   difficulty:mazeDifficulty,
+   seed:mazeSeed,
+   createdAt:new Date().toISOString()
+  };
+  setSavedMazes([item,...savedMazes].slice(0,18));
+  playSound("success");
+ };
+
+ const newMazeVariant=()=>{
+  setMazeSeed(Math.floor(Date.now()%1000000000));
+  playSound("click");
+ };
+
+ const shareMazePdf=()=>{
+  if(typeof window==="undefined")return;
+  try{
+   const W=1240,H=1754;
+   const canvas=document.createElement("canvas");
+   canvas.width=W;canvas.height=H;
+   const ctx=canvas.getContext("2d");
+   if(!ctx)return;
+   ctx.fillStyle="#fff";ctx.fillRect(0,0,W,H);
+
+   ctx.textAlign="center";
+   ctx.fillStyle="#6a7d96";ctx.font="700 24px system-ui";
+   ctx.fillText("MALINO · Basteln & Spielen",W/2,58);
+   ctx.fillStyle="#173d78";ctx.font="800 38px system-ui";
+   ctx.fillText(`🌀 ${activeMazeTheme.title}`,W/2,108);
+   ctx.fillStyle="#5c6e87";ctx.font="500 21px system-ui";
+   ctx.fillText(`${activeMazeDifficulty.label} · ${activeMazeDifficulty.age} Jahre · Finde den Weg vom Start zum Ziel.`,W/2,148);
+
+   const cols=activeMaze.cols,rows=activeMaze.rows;
+   const maxW=980,maxH=1160;
+   const cell=Math.min(maxW/cols,maxH/rows);
+   const mw=cols*cell,mh=rows*cell;
+   const mx=(W-mw)/2,my=205;
+
+   ctx.fillStyle="#fff";ctx.fillRect(mx,my,mw,mh);
+   ctx.strokeStyle="#173d78";ctx.lineWidth=Math.max(3,cell*.08);ctx.lineCap="round";
+   activeMaze.cells.forEach((c,i)=>{
+    const x=mx+(i%cols)*cell,y=my+((i/cols)|0)*cell;
+    if(c.t){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+cell,y);ctx.stroke()}
+    if(c.r){ctx.beginPath();ctx.moveTo(x+cell,y);ctx.lineTo(x+cell,y+cell);ctx.stroke()}
+    if(c.b){ctx.beginPath();ctx.moveTo(x,y+cell);ctx.lineTo(x+cell,y+cell);ctx.stroke()}
+    if(c.l){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+cell);ctx.stroke()}
+   });
+
+   ctx.textAlign="center";
+   ctx.font=`${Math.max(28,cell*.5)}px system-ui`;
+   ctx.fillText(activeMazeTheme.start,mx+cell*.5,my+cell*.68);
+   ctx.fillText(activeMazeTheme.end,mx+mw-cell*.5,my+mh-cell*.28);
+
+   const infoY=my+mh+55;
+   ctx.fillStyle="#6b7787";ctx.font="600 20px system-ui";
+   ctx.fillText(`A4   •   ${activeMazeDifficulty.label}   •   Variante ${String(mazeSeed).slice(-4)}`,W/2,infoY);
+
+   ctx.fillStyle="#173d78";ctx.font="800 24px system-ui";
+   ctx.fillText(`${activeMazeTheme.start}  START      →      ZIEL  ${activeMazeTheme.end}`,W/2,infoY+55);
+
+   ctx.fillStyle="#8a96a5";ctx.font="500 16px system-ui";
+   ctx.fillText("Malino – kreative Spielzeit ohne Bildschirm",W/2,H-35);
+
+   const jpegData=canvas.toDataURL("image/jpeg",0.95);
+   const b64=jpegData.split(",")[1],bin=atob(b64),jpg=new Uint8Array(bin.length);
+   for(let i=0;i<bin.length;i++)jpg[i]=bin.charCodeAt(i);
+
+   const enc=new TextEncoder(),chunks=[];let offset=0;const offsets=[0];
+   const add=data=>{const bytes=typeof data==="string"?enc.encode(data):data;chunks.push(bytes);offset+=bytes.length};
+   const obj=(n,body)=>{offsets[n]=offset;add(`${n} 0 obj\n${body}\nendobj\n`)};
+
+   add("%PDF-1.4\n%\xE2\xE3\xCF\xD3\n");
+   obj(1,"<< /Type /Catalog /Pages 2 0 R >>");
+   obj(2,"<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
+   obj(3,"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>");
+   offsets[4]=offset;
+   add(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${W} /Height ${H} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`);
+   add(jpg);add("\nendstream\nendobj\n");
+   const content="q\n595.28 0 0 841.89 0 0 cm\n/Im0 Do\nQ\n";
+   offsets[5]=offset;add(`5 0 obj\n<< /Length ${content.length} >>\nstream\n${content}endstream\nendobj\n`);
+   const xref=offset;add("xref\n0 6\n0000000000 65535 f \n");
+   for(let i=1;i<=5;i++)add(String(offsets[i]).padStart(10,"0")+" 00000 n \n");
+   add(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
+   const total=chunks.reduce((sum,c)=>sum+c.length,0),pdf=new Uint8Array(total);let pos=0;
+   chunks.forEach(c=>{pdf.set(c,pos);pos+=c.length});
+
+   const blob=new Blob([pdf],{type:"application/pdf"});
+   const file=new File([blob],`malino-labyrinth-${activeMazeTheme.id}-${mazeDifficulty}.pdf`,{type:"application/pdf"});
+   if(navigator.share&&navigator.canShare?.({files:[file]})){
+    navigator.share({files:[file],title:`Malino – ${activeMazeTheme.title}`,text:"Mein Malino-Labyrinth"}).catch(()=>{});
+   }else{
+    const url=URL.createObjectURL(blob),a=document.createElement("a");
+    a.href=url;a.download=file.name;a.target="_blank";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),120000);
+   }
+  }catch{}
+ };
 
  const openSavedCraftPuzzle=item=>{
   setCraftImageId(item.imageId);
@@ -1435,7 +1636,7 @@ export default function Page(){
      <span>🧩</span><div><b>Rätsel & Rebusse</b><small>Denken, entdecken & Sterne sammeln</small></div><em>›</em>
     </button>
     <button className="featureCard featureCrafts" onClick={()=>setScreen("crafts")}>
-     <span>✂️</span><div><b>Basteln & Spielen</b><small>Puzzle gestalten, speichern & drucken</small></div><em>›</em>
+     <span>✂️</span><div><b>Basteln & Spielen</b><small>Puzzle & Labyrinthe zum Drucken</small></div><em>›</em>
     </button>
     <button className="featureCard featureProfile" onClick={openParentArea}>
      <span>{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><div><b>{activeProfile.name}</b><small>Kinderprofil & Fortschritt</small></div><em>›</em>
@@ -1447,81 +1648,152 @@ export default function Page(){
    <div className="craftHero">
     <div className="craftMascot"><img src="/malino-raetsel-mascot.png" alt="Malino"/></div>
     <div>
-     <span className="eyebrow">Neu in Malino</span>
+     <span className="eyebrow">Kreativ ohne Bildschirm</span>
      <h1>Basteln & Spielen ✂️</h1>
-     <p>Gestalte dein eigenes Puzzle, speichere es und drucke es auf A4 aus.</p>
+     <p>Gestalte Puzzle oder Labyrinthe, speichere sie und teile sie als A4-PDF zum Drucken.</p>
     </div>
-    <div className="craftScore"><span>🧩</span><b>{savedCraftPuzzles.length}</b><small>gespeichert</small></div>
+    <div className="craftScore"><span>{craftMode==="maze"?"🌀":"🧩"}</span><b>{craftMode==="maze"?savedMazes.length:savedCraftPuzzles.length}</b><small>gespeichert</small></div>
    </div>
 
-   <div className="craftFlow">
-    <div className="craftStep craftStep1">
-     <div className="craftStepHead"><span>1</span><div><b>Bild wählen</b><small>Wähle eine Vorlage</small></div></div>
-     <div className="craftTemplateGrid">
-      {craftTemplates.map(t=><button key={t.id} className={activeCraftTemplate.id===t.id?"active":""} onClick={()=>setCraftImageId(t.id)}>
-       <img src={t.srcBw} alt={t.title}/><b>{t.title}</b>
-      </button>)}
+   <div className="craftModeTabs" role="tablist" aria-label="Basteln & Spielen">
+    <button className={craftMode==="puzzle"?"active":""} onClick={()=>setCraftMode("puzzle")}><span>🧩</span><div><b>Meine Puzzle</b><small>Ausmalen, schneiden & puzzeln</small></div></button>
+    <button className={craftMode==="maze"?"active":""} onClick={()=>setCraftMode("maze")}><span>🌀</span><div><b>Labyrinthe</b><small>Weg finden, speichern & drucken</small></div></button>
+   </div>
+
+   {craftMode==="puzzle"&&<>
+    <div className="craftFlow">
+     <div className="craftStep craftStep1">
+      <div className="craftStepHead"><span>1</span><div><b>Bild wählen</b><small>Wähle eine Vorlage</small></div></div>
+      <div className="craftTemplateGrid">
+       {craftTemplates.map(t=><button key={t.id} className={activeCraftTemplate.id===t.id?"active":""} onClick={()=>setCraftImageId(t.id)}>
+        <img src={t.srcBw} alt={t.title}/><b>{t.title}</b>
+       </button>)}
+      </div>
+      <div className="craftTemplateScrollHint">Weitere Bilder ↓</div>
      </div>
-     <div className="craftTemplateScrollHint">Weitere Bilder ↓</div>
+
+     <div className="craftStep craftStep2">
+      <div className="craftStepHead"><span>2</span><div><b>Gestalten</b><small>Farbe & Teile wählen</small></div></div>
+      <div className="craftStyleToggle">
+       <button className={craftStyle==="bw"?"active":""} onClick={()=>setCraftStyle("bw")}>⚫ Schwarz-Weiß</button>
+       <button className={craftStyle==="color"?"active":""} onClick={()=>setCraftStyle("color")}>🌈 Bunt</button>
+      </div>
+      <div className="craftPieceTitle">Teile wählen</div>
+      <div className="craftPieceButtons">
+       {[4,6,9,12].map(n=><button key={n} className={craftPieces===n?"active":""} onClick={()=>setCraftPieces(n)}><b>{n}</b><small>Teile</small></button>)}
+      </div>
+      <p>Je mehr Teile, desto schwieriger.</p>
+     </div>
+
+     <div className="craftStep craftStep3">
+      <div className="craftStepHead"><span>3</span><div><b>Vorschau & Drucken</b><small>So sieht dein Puzzle aus</small></div></div>
+      <div className="craftPreviewStage">
+       <div className={`craftPreview ${craftStyle==="bw"?"bw":""}`} style={{aspectRatio:`${activeCraftTemplate.w}/${activeCraftTemplate.h}`}}>
+        <img src={activeCraftSrc} alt={activeCraftTemplate.title}/>
+        {Array.from({length:craftGrid[0]-1},(_,i)=><i key={`v${i}`} className="cutV" style={{left:`${(i+1)*100/craftGrid[0]}%`}}/>)}
+        {Array.from({length:craftGrid[1]-1},(_,i)=><i key={`h${i}`} className="cutH" style={{top:`${(i+1)*100/craftGrid[1]}%`}}/>)}
+        <span className="cutScissors cutScissorsA">✂️</span><span className="cutScissors cutScissorsB">✂️</span>
+       </div>
+      </div>
+      <div className="craftActions">
+       <button className="craftSaveBtn" onClick={saveCraftPuzzle}>💾 Speichern</button>
+       <button className="craftPrintBtn" onClick={printCraftPuzzle}>↗️ Teilen / Drucken</button>
+      </div>
+      <small className="craftA4">Format: A4 · zum Ausschneiden</small>
+     </div>
     </div>
 
-    <div className="craftStep craftStep2">
-     <div className="craftStepHead"><span>2</span><div><b>Gestalten</b><small>Farbe & Teile wählen</small></div></div>
-     <div className="craftStyleToggle">
-      <button className={craftStyle==="bw"?"active":""} onClick={()=>setCraftStyle("bw")}>⚫ Schwarz-Weiß</button>
-      <button className={craftStyle==="color"?"active":""} onClick={()=>setCraftStyle("color")}>🌈 Bunt</button>
-     </div>
-     <div className="craftPieceTitle">Teile wählen</div>
-     <div className="craftPieceButtons">
-      {[4,6,9,12].map(n=><button key={n} className={craftPieces===n?"active":""} onClick={()=>setCraftPieces(n)}><b>{n}</b><small>Teile</small></button>)}
-     </div>
-     <p>Je mehr Teile, desto schwieriger.</p>
+    <div className="craftSavedHead">
+     <div><span className="eyebrow">Meine Sammlung</span><h2>Gespeicherte Puzzle</h2></div>
+     <span>{savedCraftPuzzles.length}</span>
     </div>
 
-    <div className="craftStep craftStep3">
-     <div className="craftStepHead"><span>3</span><div><b>Vorschau & Drucken</b><small>So sieht dein Puzzle aus</small></div></div>
-     <div className="craftPreviewStage">
-      <div className={`craftPreview ${craftStyle==="bw"?"bw":""}`} style={{aspectRatio:`${activeCraftTemplate.w}/${activeCraftTemplate.h}`}}>
-       <img src={activeCraftSrc} alt={activeCraftTemplate.title}/>
-       {Array.from({length:craftGrid[0]-1},(_,i)=><i key={`v${i}`} className="cutV" style={{left:`${(i+1)*100/craftGrid[0]}%`}}/>)}
-       {Array.from({length:craftGrid[1]-1},(_,i)=><i key={`h${i}`} className="cutH" style={{top:`${(i+1)*100/craftGrid[1]}%`}}/>)}
-       <span className="cutScissors cutScissorsA">✂️</span><span className="cutScissors cutScissorsB">✂️</span>
+    {savedCraftPuzzles.length===0
+     ?<div className="craftEmpty"><span>🧩</span><div><b>Noch kein Puzzle gespeichert</b><small>Gestalte oben dein erstes Puzzle.</small></div></div>
+     :<div className="craftSavedGrid">
+       {savedCraftPuzzles.map(item=>{
+        const tpl=craftTemplates.find(t=>t.id===item.imageId)||craftTemplates[0];
+        const savedSrc=item.style==="color"?tpl.srcColor:tpl.srcBw;
+        return <article key={item.id} className="craftSavedCard" role="button" tabIndex={0}
+         onClick={()=>openSavedCraftPuzzle(item)}
+         onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openSavedCraftPuzzle(item)}}}>
+         <div className="craftSavedThumb"><img src={savedSrc} alt={item.title}/><span>{item.pieces}</span></div>
+         <div><b>{item.title}</b><small>{item.pieces} Teile · {item.style==="bw"?"Schwarz-Weiß":"Bunt"}</small><em>Öffnen ›</em></div>
+         <button aria-label="Löschen" onClick={e=>{e.stopPropagation();setSavedCraftPuzzles(savedCraftPuzzles.filter(x=>x.id!==item.id))}}>×</button>
+        </article>
+       })}
+      </div>}
+
+    <div className="craftInfoGrid">
+     <div><span>✋</span><b>Feinmotorik</b><small>Schneiden und puzzeln trainiert die Hände.</small></div>
+     <div><span>🧠</span><b>Logisches Denken</b><small>Teile erkennen und richtig zusammensetzen.</small></div>
+     <div><span>👨‍👩‍👧</span><b>Gemeinsame Zeit</b><small>Perfekt für Eltern und Kinder zusammen.</small></div>
+    </div>
+   </>}
+
+   {craftMode==="maze"&&<>
+    <div className="mazeFlow">
+     <div className="mazePanel mazeThemesPanel">
+      <div className="craftStepHead"><span>1</span><div><b>Abenteuer wählen</b><small>9 Labyrinth-Motive</small></div></div>
+      <div className="mazeThemeGrid">
+       {mazeThemes.map(t=><button key={t.id} className={mazeThemeId===t.id?"active":""} onClick={()=>setMazeThemeId(t.id)}>
+        <span>{t.icon}</span><b>{t.title}</b><small>{t.start} → {t.end}</small>
+       </button>)}
       </div>
      </div>
-     <div className="craftActions">
-      <button className="craftSaveBtn" onClick={saveCraftPuzzle}>💾 Speichern</button>
-      <button className="craftPrintBtn" onClick={printCraftPuzzle}>🖨️ Drucken</button>
+
+     <div className="mazePanel mazeSettingsPanel">
+      <div className="craftStepHead"><span>2</span><div><b>Schwierigkeit</b><small>Passend zum Alter</small></div></div>
+      <div className="mazeDifficultyButtons">
+       {Object.entries(mazeDifficultyMeta).map(([id,m])=><button key={id} className={mazeDifficulty===id?"active":""} onClick={()=>setMazeDifficulty(id)}>
+        <b>{m.label}</b><small>{m.age} Jahre</small><em>{m.cols}×{m.rows}</em>
+       </button>)}
+      </div>
+      <button className="mazeVariantBtn" onClick={newMazeVariant}>🎲 Neue Variante</button>
+      <div className="mazeHint"><span>💡</span><p><b>Immer wieder neu</b><small>„Neue Variante“ erzeugt einen anderen Weg mit demselben Motiv.</small></p></div>
      </div>
-     <small className="craftA4">Format: A4 · zum Ausschneiden</small>
+
+     <div className="mazePanel mazePreviewPanel">
+      <div className="craftStepHead"><span>3</span><div><b>Vorschau & Drucken</b><small>{activeMazeTheme.title}</small></div></div>
+      <div className="mazePreviewWrap">
+       <div className="mazeStartGoal"><span>{activeMazeTheme.start} START</span><span>ZIEL {activeMazeTheme.end}</span></div>
+       <MazeBoard maze={activeMaze} startEmoji={activeMazeTheme.start} endEmoji={activeMazeTheme.end}/>
+      </div>
+      <div className="mazeActions">
+       <button className="craftSaveBtn" onClick={saveMaze}>💾 Speichern</button>
+       <button className="craftPrintBtn" onClick={shareMazePdf}>↗️ Teilen / Drucken</button>
+      </div>
+      <small className="craftA4">A4 · {activeMazeDifficulty.label} · {activeMazeDifficulty.age} Jahre</small>
+     </div>
     </div>
-   </div>
 
-   <div className="craftSavedHead">
-    <div><span className="eyebrow">Meine Sammlung</span><h2>Gespeicherte Puzzle</h2></div>
-    <span>{savedCraftPuzzles.length}</span>
-   </div>
+    <div className="craftSavedHead mazeSavedHead">
+     <div><span className="eyebrow">Meine Sammlung</span><h2>Gespeicherte Labyrinthe</h2></div>
+     <span>{savedMazes.length}</span>
+    </div>
 
-   {savedCraftPuzzles.length===0
-    ?<div className="craftEmpty"><span>🧩</span><div><b>Noch kein Puzzle gespeichert</b><small>Gestalte oben dein erstes Puzzle.</small></div></div>
-    :<div className="craftSavedGrid">
-      {savedCraftPuzzles.map(item=>{
-       const tpl=craftTemplates.find(t=>t.id===item.imageId)||craftTemplates[0];
-       const savedSrc=item.style==="color"?tpl.srcColor:tpl.srcBw;
-       return <article key={item.id} className="craftSavedCard" role="button" tabIndex={0}
-        onClick={()=>openSavedCraftPuzzle(item)}
-        onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openSavedCraftPuzzle(item)}}}>
-        <div className="craftSavedThumb"><img src={savedSrc} alt={item.title}/><span>{item.pieces}</span></div>
-        <div><b>{item.title}</b><small>{item.pieces} Teile · {item.style==="bw"?"Schwarz-Weiß":"Bunt"}</small><em>Öffnen ›</em></div>
-        <button aria-label="Löschen" onClick={e=>{e.stopPropagation();setSavedCraftPuzzles(savedCraftPuzzles.filter(x=>x.id!==item.id))}}>×</button>
-       </article>
-      })}
-     </div>}
+    {savedMazes.length===0
+     ?<div className="craftEmpty"><span>🌀</span><div><b>Noch kein Labyrinth gespeichert</b><small>Wähle oben ein Abenteuer und speichere deine Variante.</small></div></div>
+     :<div className="mazeSavedGrid">
+       {savedMazes.map(item=>{
+        const theme=mazeThemes.find(t=>t.id===item.themeId)||mazeThemes[0];
+        const diff=mazeDifficultyMeta[item.difficulty]||mazeDifficultyMeta.leicht;
+        const hash=[...`${item.themeId}-${item.difficulty}-${item.seed}`].reduce((a,ch)=>((a*31)+ch.charCodeAt(0))>>>0,2166136261);
+        const mini=buildMaze(diff.cols,diff.rows,hash);
+        return <article key={item.id} className="mazeSavedCard" role="button" tabIndex={0} onClick={()=>openSavedMaze(item)}>
+         <div className="mazeSavedMini"><MazeBoard maze={mini} startEmoji={theme.start} endEmoji={theme.end} className="mini"/></div>
+         <div><b>{theme.title}</b><small>{diff.label} · {diff.age} Jahre</small><em>Öffnen ›</em></div>
+         <button aria-label="Löschen" onClick={e=>{e.stopPropagation();setSavedMazes(savedMazes.filter(x=>x.id!==item.id))}}>×</button>
+        </article>
+       })}
+      </div>}
 
-   <div className="craftInfoGrid">
-    <div><span>✋</span><b>Feinmotorik</b><small>Schneiden und puzzeln trainiert die Hände.</small></div>
-    <div><span>🧠</span><b>Logisches Denken</b><small>Teile erkennen und richtig zusammensetzen.</small></div>
-    <div><span>👨‍👩‍👧</span><b>Gemeinsame Zeit</b><small>Perfekt für Eltern und Kinder zusammen.</small></div>
-   </div>
+    <div className="craftInfoGrid mazeInfoGrid">
+     <div><span>👀</span><b>Konzentration</b><small>Den richtigen Weg aufmerksam verfolgen.</small></div>
+     <div><span>🧠</span><b>Planen</b><small>Abzweigungen prüfen und Entscheidungen treffen.</small></div>
+     <div><span>✏️</span><b>Stiftführung</b><small>Ideal zum Nachfahren auf dem Ausdruck.</small></div>
+    </div>
+   </>}
   </section>}
 
   {screen==="puzzles"&&<section className="puzzlePage puzzleWorldPage">

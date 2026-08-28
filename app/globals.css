@@ -6467,368 +6467,237 @@ nav,
 
 
 /* =========================================================
-   Malino v22.5 — iPad/Safari one-page print fix
+   Malino v23 — Basteln & Spielen: Puzzle + Labyrinthe
    ========================================================= */
-
-.craftPrintSheet{
-  display:none;
+.craftModeTabs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:13px;
+}
+.craftModeTabs button{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  min-height:72px;
+  padding:11px 14px;
+  border:1px solid #e1e7ef;
+  border-radius:20px;
+  background:#fff;
+  color:#173d78;
+  text-align:left;
+  box-shadow:0 7px 18px rgba(34,54,86,.05);
+}
+.craftModeTabs button>span{font-size:31px}
+.craftModeTabs button>div{display:grid}
+.craftModeTabs b{font-size:14px}
+.craftModeTabs small{margin-top:2px;color:#7a8799;font-size:9px;font-weight:750}
+.craftModeTabs button.active{
+  border-color:#72a9ef;
+  background:linear-gradient(135deg,#edf6ff,#fff);
+  box-shadow:0 0 0 3px rgba(38,121,237,.08),0 8px 20px rgba(34,54,86,.07);
 }
 
-@media print{
-  @page{
-    size:A4 portrait;
-    margin:10mm;
-  }
+.mazeFlow{
+  display:grid;
+  grid-template-columns:1.03fr .75fr 1.35fr;
+  gap:12px;
+  margin-top:14px;
+}
+.mazePanel{
+  min-width:0;
+  padding:15px;
+  border-radius:24px;
+  border:1px solid #e3e7ed;
+  background:#fff;
+  box-shadow:0 9px 22px rgba(34,54,86,.06);
+}
+.mazeThemesPanel{background:linear-gradient(145deg,#f2ffe9,#fff)}
+.mazeSettingsPanel{background:linear-gradient(145deg,#eaf5ff,#fff)}
+.mazePreviewPanel{background:linear-gradient(145deg,#fff3dc,#fff)}
 
-  html,
-  body{
-    width:210mm !important;
-    min-height:297mm !important;
-    margin:0 !important;
-    padding:0 !important;
-    background:#fff !important;
-    overflow:visible !important;
-  }
+.mazeThemeGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+}
+.mazeThemeGrid button{
+  min-height:96px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  padding:7px 5px;
+  border:1px solid #e1e6ec;
+  border-radius:15px;
+  background:#fff;
+  color:#4d637e;
+}
+.mazeThemeGrid button.active{
+  border-color:#65b944;
+  background:#f2ffed;
+  box-shadow:0 0 0 3px rgba(92,183,67,.10);
+}
+.mazeThemeGrid span{font-size:29px}
+.mazeThemeGrid b{font-size:9px;text-align:center;line-height:1.15}
+.mazeThemeGrid small{font-size:8px;color:#8390a0}
 
-  body.malino-printing main{
-    display:block !important;
-    width:190mm !important;
-    min-height:277mm !important;
-    margin:0 auto !important;
-    padding:0 !important;
-    background:#fff !important;
-    overflow:visible !important;
-  }
+.mazeDifficultyButtons{
+  display:grid;
+  gap:8px;
+}
+.mazeDifficultyButtons button{
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:center;
+  padding:11px 12px;
+  border:1px solid #dfe6ee;
+  border-radius:15px;
+  background:#fff;
+  color:#506982;
+  text-align:left;
+}
+.mazeDifficultyButtons button.active{
+  background:#2679ed;
+  color:#fff;
+  border-color:#2679ed;
+}
+.mazeDifficultyButtons b{font-size:12px}
+.mazeDifficultyButtons small{font-size:8px;font-weight:800;opacity:.8}
+.mazeDifficultyButtons em{
+  grid-column:2;
+  grid-row:1/3;
+  font-style:normal;
+  font-size:10px;
+  font-weight:950;
+}
+.mazeVariantBtn{
+  width:100%;
+  min-height:43px;
+  margin-top:11px;
+  border:0;
+  border-radius:13px;
+  background:#7651c4;
+  color:#fff;
+  font-weight:950;
+}
+.mazeHint{
+  display:flex;
+  gap:8px;
+  align-items:flex-start;
+  margin-top:10px;
+  padding:10px;
+  border-radius:13px;
+  background:#fff9df;
+}
+.mazeHint>span{font-size:20px}
+.mazeHint p{display:grid;margin:0}
+.mazeHint b{color:#65512e;font-size:9px}
+.mazeHint small{margin-top:2px;color:#85765f;font-size:7px}
 
-  /* Najważniejsze: aplikacja nie bierze udziału w wydruku */
-  body.malino-printing main > *{
-    display:none !important;
-  }
-
-  body.malino-printing main > .craftPrintSheet{
-    display:flex !important;
-  }
-
-  .craftPrintSheet{
-    width:190mm !important;
-    height:277mm !important;
-    min-height:277mm !important;
-    max-height:277mm !important;
-    margin:0 !important;
-    padding:0 !important;
-    flex-direction:column;
-    align-items:center;
-    background:#fff !important;
-    color:#173d78;
-    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    break-after:avoid-page;
-    break-before:avoid-page;
-    break-inside:avoid-page;
-    page-break-after:avoid;
-    page-break-before:avoid;
-    page-break-inside:avoid;
-    overflow:hidden !important;
-  }
-
-  .craftPrintBrand{
-    margin:0 0 2mm;
-    color:#6a7d96;
-    font-size:10pt;
-    font-weight:900;
-  }
-
-  .craftPrintSheet h1{
-    margin:0 0 1.5mm;
-    color:#173d78;
-    font-size:18pt;
-    line-height:1.1;
-  }
-
-  .craftPrintSub{
-    margin:0 0 4mm;
-    color:#5c6e87;
-    font-size:9pt;
-  }
-
-  .craftPrintPuzzle{
-    position:relative;
-    width:132mm;
-    max-height:190mm;
-    flex:0 0 auto;
-    overflow:hidden;
-    border:1.8px solid #173d78;
-    background:#fff;
-  }
-
-  .craftPrintPuzzle img{
-    display:block;
-    width:100%;
-    height:100%;
-    object-fit:fill;
-  }
-
-  .craftPrintV,
-  .craftPrintH{
-    position:absolute;
-    z-index:3;
-    pointer-events:none;
-  }
-
-  .craftPrintV{
-    top:0;
-    bottom:0;
-    border-left:1.4px dashed #20344e;
-  }
-
-  .craftPrintH{
-    left:0;
-    right:0;
-    border-top:1.4px dashed #20344e;
-  }
-
-  .craftPrintScissor{
-    position:absolute;
-    z-index:5;
-    padding:.7mm;
-    border-radius:1.5mm;
-    background:#fff;
-    font-size:12pt;
-    line-height:1;
-  }
-
-  .craftPrintScissorA{left:1mm;top:1mm}
-  .craftPrintScissorB{right:1mm;bottom:1mm}
-
-  .craftPrintMeta{
-    display:flex;
-    gap:4mm;
-    align-items:center;
-    justify-content:center;
-    margin-top:3mm;
-    color:#6b7787;
-    font-size:8pt;
-  }
-
-  .craftPrintSample{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:4mm;
-    width:100%;
-    margin-top:4mm;
-    padding-top:3mm;
-    border-top:1px solid #d7dee8;
-  }
-
-  .craftPrintSample img{
-    width:22mm;
-    max-height:31mm;
-    object-fit:contain;
-    border:1px solid #ccd6e2;
-    background:#fff;
-  }
-
-  .craftPrintSample div{
-    display:grid;
-    gap:.5mm;
-    color:#65758a;
-    font-size:8pt;
-  }
-
-  .craftPrintSample b{
-    color:#173d78;
-    font-size:9pt;
-  }
-
-  .craftPrintFooter{
-    margin-top:auto;
-    padding-top:2mm;
-    color:#8a96a5;
-    font-size:7pt;
-  }
+.mazePreviewWrap{
+  padding:8px;
+  border-radius:16px;
+  background:#fff;
+  border:1px solid #e3e7ed;
+}
+.mazeStartGoal{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:7px;
+  color:#5c718c;
+  font-size:9px;
+  font-weight:950;
+}
+.mazeBoard{
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:390px;
+  background:#fff;
+}
+.mazeActions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+.mazeActions button{
+  min-height:44px;
+  border:0;
+  border-radius:13px;
+  color:#fff;
+  font-weight:950;
 }
 
-
-/* =========================================================
-   Malino v22.6 — Safari A4 exact single-page fix
-   Problem: body miał 297mm wysokości WEWNĄTRZ obszaru strony po marginesach,
-   więc Safari tworzył pustą stronę 2.
-   ========================================================= */
-@media print{
-  @page{
-    size:A4 portrait;
-    margin:10mm;
-  }
-
-  html,
-  body{
-    width:auto !important;
-    min-width:0 !important;
-    height:auto !important;
-    min-height:0 !important;
-    max-height:none !important;
-    margin:0 !important;
-    padding:0 !important;
-    overflow:visible !important;
-    background:#fff !important;
-  }
-
-  body.malino-printing{
-    width:190mm !important;
-    margin:0 !important;
-    padding:0 !important;
-  }
-
-  body.malino-printing main{
-    display:block !important;
-    width:190mm !important;
-    height:auto !important;
-    min-height:0 !important;
-    max-height:none !important;
-    margin:0 !important;
-    padding:0 !important;
-    overflow:visible !important;
-  }
-
-  body.malino-printing main > *{
-    display:none !important;
-  }
-
-  body.malino-printing main > .craftPrintSheet{
-    display:flex !important;
-  }
-
-  .craftPrintSheet{
-    width:190mm !important;
-    height:270mm !important;
-    min-height:270mm !important;
-    max-height:270mm !important;
-    margin:0 !important;
-    padding:0 !important;
-    overflow:hidden !important;
-    break-inside:avoid !important;
-    page-break-inside:avoid !important;
-    break-after:avoid !important;
-    page-break-after:avoid !important;
-  }
-
-  /* Minimalnie mniejszy obraz daje Safari bezpieczny zapas */
-  .craftPrintPuzzle{
-    width:128mm !important;
-    max-height:184mm !important;
-  }
-
-  .craftPrintSample{
-    margin-top:3.5mm !important;
-    padding-top:2.5mm !important;
-  }
-
-  .craftPrintFooter{
-    margin-top:auto !important;
-    padding-top:1.5mm !important;
-  }
+.mazeSavedGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
 }
+.mazeSavedCard{
+  position:relative;
+  display:grid;
+  grid-template-columns:104px 1fr;
+  gap:9px;
+  align-items:center;
+  padding:9px;
+  border:1px solid #e3e8ef;
+  border-radius:18px;
+  background:#fff;
+  box-shadow:0 7px 17px rgba(34,54,86,.05);
+  cursor:pointer;
+}
+.mazeSavedMini{
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  min-height:86px;
+  padding:5px;
+  border-radius:12px;
+  background:#f8fbff;
+}
+.mazeSavedMini .mazeBoard{max-height:92px}
+.mazeSavedMini .mazeBoard text{font-size:18px}
+.mazeSavedCard>div:nth-child(2){display:grid}
+.mazeSavedCard b{color:#173d78;font-size:10px}
+.mazeSavedCard small{color:#7b8797;font-size:8px}
+.mazeSavedCard em{margin-top:3px;color:#2679ed;font-size:8px;font-style:normal;font-weight:900}
+.mazeSavedCard>button{
+  position:absolute;
+  right:5px;
+  bottom:5px;
+  border:0;
+  border-radius:8px;
+  background:#f2f4f7;
+  color:#7b8795;
+  font-weight:950;
+}
+.mazeInfoGrid{margin-top:13px}
 
-
-/* =========================================================
-   Malino v22.7 — Safari/iPad PRINT FLOW FIX
-   Cel: całkowicie wyzerować normalny układ strony podczas druku.
-   W Safari sama obecność wysokiego kontenera aplikacji może tworzyć
-   pustą stronę 2 nawet jeśli jego dzieci są display:none.
-   ========================================================= */
-@media print{
-  @page{
-    size:A4 portrait;
-    margin:10mm;
-  }
-
-  html,
-  body{
-    margin:0 !important;
-    padding:0 !important;
-    width:190mm !important;
-    height:0 !important;
-    min-height:0 !important;
-    max-height:0 !important;
-    overflow:visible !important;
-    background:#fff !important;
-  }
-
-  body.malino-printing{
-    position:relative !important;
-  }
-
-  body.malino-printing main{
-    position:static !important;
-    display:block !important;
-    width:0 !important;
-    height:0 !important;
-    min-width:0 !important;
-    min-height:0 !important;
-    max-width:0 !important;
-    max-height:0 !important;
-    margin:0 !important;
-    padding:0 !important;
-    overflow:visible !important;
-  }
-
-  body.malino-printing main > *{
-    display:none !important;
-  }
-
-  body.malino-printing main > .craftPrintSheet{
-    display:flex !important;
-  }
-
-  .craftPrintSheet{
-    position:absolute !important;
-    left:0 !important;
-    top:0 !important;
-    width:190mm !important;
-    height:260mm !important;
-    min-height:260mm !important;
-    max-height:260mm !important;
-    margin:0 !important;
-    padding:0 !important;
-    overflow:hidden !important;
-    z-index:999999 !important;
-
-    flex-direction:column !important;
-    align-items:center !important;
-
-    break-before:avoid !important;
-    break-after:avoid !important;
-    break-inside:avoid !important;
-    page-break-before:avoid !important;
-    page-break-after:avoid !important;
-    page-break-inside:avoid !important;
-  }
-
-  .craftPrintPuzzle{
-    width:124mm !important;
-    max-height:178mm !important;
-  }
-
-  .craftPrintBrand{
-    margin-top:0 !important;
-  }
-
-  .craftPrintSample{
-    margin-top:3mm !important;
-    padding-top:2mm !important;
-  }
-
-  .craftPrintFooter{
-    margin-top:auto !important;
-    padding-top:1mm !important;
-  }
-
-  /* Fixed/sticky elements from the normal app can otherwise affect
-     Safari's printable overflow calculation. */
-  body.malino-printing header,
-  body.malino-printing nav,
-  body.malino-printing [style*="position: fixed"],
-  body.malino-printing [style*="position:fixed"]{
-    display:none !important;
-  }
+@media(max-width:900px){
+  .mazeFlow{grid-template-columns:1fr 1fr}
+  .mazePreviewPanel{grid-column:1/-1}
+  .mazeSavedGrid{grid-template-columns:repeat(2,1fr)}
+  .mazeBoard{max-height:440px}
+}
+@media(max-width:650px){
+  .craftModeTabs{gap:7px}
+  .craftModeTabs button{min-height:62px;padding:9px}
+  .craftModeTabs button>span{font-size:25px}
+  .craftModeTabs b{font-size:11px}
+  .craftModeTabs small{font-size:7px}
+  .mazeFlow{grid-template-columns:1fr;gap:9px;margin-top:10px}
+  .mazePreviewPanel{grid-column:auto}
+  .mazePanel{padding:12px;border-radius:19px}
+  .mazeThemeGrid{grid-template-columns:repeat(3,1fr);gap:6px}
+  .mazeThemeGrid button{min-height:84px;padding:5px 3px}
+  .mazeThemeGrid span{font-size:25px}
+  .mazeThemeGrid b{font-size:8px}
+  .mazeThemeGrid small{font-size:7px}
+  .mazeBoard{max-height:340px}
+  .mazeSavedGrid{grid-template-columns:1fr}
+  .mazeSavedCard{grid-template-columns:90px 1fr}
 }
