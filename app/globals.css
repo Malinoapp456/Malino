@@ -6195,3 +6195,22 @@ nav,
 .craftInfoGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}.craftInfoGrid>div{display:grid;place-items:center;text-align:center;padding:14px;border-radius:18px;background:linear-gradient(#fffaf0,#fff);border:1px solid #eadfc7}.craftInfoGrid span{font-size:29px}.craftInfoGrid b{color:#6f4a21;font-size:11px}.craftInfoGrid small{margin-top:3px;color:#857864;font-size:8px}
 @media(max-width:900px){.craftFlow{grid-template-columns:1fr 1fr}.craftStep3{grid-column:1/-1}.craftSavedGrid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:650px){.craftHero{grid-template-columns:70px 1fr;padding:12px;gap:8px}.craftMascot{height:68px}.craftMascot img{width:70px;height:76px}.craftHero h1{font-size:21px}.craftHero p{font-size:9px}.craftScore{grid-column:1/-1;width:100%;display:flex;justify-content:center;gap:7px;min-width:0;padding:8px}.craftScore span{font-size:21px}.craftScore b{font-size:17px}.craftFlow{grid-template-columns:1fr;gap:9px;margin-top:10px}.craftStep3{grid-column:auto}.craftStep{padding:12px;border-radius:19px}.craftTemplateGrid{grid-template-columns:repeat(4,1fr)}.craftTemplateGrid img{height:64px}.craftTemplateGrid b{font-size:7px}.craftPieceButtons button{min-height:56px}.craftPreview{border-radius:11px}.craftSavedGrid{grid-template-columns:repeat(2,1fr);gap:7px}.craftInfoGrid{grid-template-columns:1fr}}
+
+
+/* Malino v22.1 — biblioteka 12 darmowych puzzli */
+.craftTemplateGrid{
+  grid-template-columns:repeat(3,1fr);
+  max-height:410px;
+  overflow:auto;
+  padding:2px;
+}
+.craftTemplateGrid img{
+  height:104px;
+}
+@media(max-width:900px){
+  .craftTemplateGrid{grid-template-columns:repeat(3,1fr);max-height:none}
+}
+@media(max-width:650px){
+  .craftTemplateGrid{grid-template-columns:repeat(3,1fr)}
+  .craftTemplateGrid img{height:78px}
+}

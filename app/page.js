@@ -701,10 +701,18 @@ export default function Page(){
  const currentPuzzleWorld=activePuzzleWorld?puzzleWorlds.find(w=>w.id===activePuzzleWorld):null;
  const currentWorldPuzzles=currentPuzzleWorld?currentPuzzleWorld.ids.map(id=>puzzleCards.find(p=>p.id===id)).filter(Boolean):[];
  const craftTemplates=[
-  {id:"rocket",title:"Rakete",emoji:"🚀",src:"/rocket.png"},
-  {id:"pig",title:"Schwein",emoji:"🐷",src:"/pig.png"},
-  {id:"moon",title:"Mond",emoji:"🌙",src:"/moon.png"},
-  {id:"lion",title:"Malino",emoji:"🦁",src:"/malino-hero-mascot.png"}
+  {id:"rakete",title:"Rakete",emoji:"🚀",src:"/puzzle-rakete.png"},
+  {id:"triceratops",title:"Triceratops",emoji:"🦕",src:"/puzzle-triceratops.png"},
+  {id:"feuerwehr",title:"Feuerwehr",emoji:"🚒",src:"/puzzle-feuerwehr.png"},
+  {id:"traktor",title:"Traktor",emoji:"🚜",src:"/puzzle-traktor.png"},
+  {id:"fuchs",title:"Fuchs",emoji:"🦊",src:"/puzzle-fuchs.png"},
+  {id:"pinguin",title:"Pinguin",emoji:"🐧",src:"/puzzle-pinguin.png"},
+  {id:"drache",title:"Drache",emoji:"🐉",src:"/puzzle-drache.png"},
+  {id:"schloss",title:"Schloss",emoji:"🏰",src:"/puzzle-schloss.png"},
+  {id:"pferd",title:"Pferd",emoji:"🐴",src:"/puzzle-pferd.png"},
+  {id:"igel",title:"Igel",emoji:"🦔",src:"/puzzle-igel.png"},
+  {id:"ziege",title:"Ziege",emoji:"🐐",src:"/puzzle-ziege.png"},
+  {id:"astronaut",title:"Astronaut",emoji:"🧑‍🚀",src:"/puzzle-astronaut.png"}
  ];
  const activeCraftTemplate=craftTemplates.find(x=>x.id===craftImageId)||craftTemplates[0];
  const craftGrid=craftPieces===4?[2,2]:craftPieces===6?[3,2]:craftPieces===9?[3,3]:[4,3];
