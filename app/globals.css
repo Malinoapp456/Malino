@@ -6647,3 +6647,84 @@ nav,
     font-size:7pt;
   }
 }
+
+
+/* =========================================================
+   Malino v22.6 — Safari A4 exact single-page fix
+   Problem: body miał 297mm wysokości WEWNĄTRZ obszaru strony po marginesach,
+   więc Safari tworzył pustą stronę 2.
+   ========================================================= */
+@media print{
+  @page{
+    size:A4 portrait;
+    margin:10mm;
+  }
+
+  html,
+  body{
+    width:auto !important;
+    min-width:0 !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:visible !important;
+    background:#fff !important;
+  }
+
+  body.malino-printing{
+    width:190mm !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+
+  body.malino-printing main{
+    display:block !important;
+    width:190mm !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:visible !important;
+  }
+
+  body.malino-printing main > *{
+    display:none !important;
+  }
+
+  body.malino-printing main > .craftPrintSheet{
+    display:flex !important;
+  }
+
+  .craftPrintSheet{
+    width:190mm !important;
+    height:270mm !important;
+    min-height:270mm !important;
+    max-height:270mm !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:hidden !important;
+    break-inside:avoid !important;
+    page-break-inside:avoid !important;
+    break-after:avoid !important;
+    page-break-after:avoid !important;
+  }
+
+  /* Minimalnie mniejszy obraz daje Safari bezpieczny zapas */
+  .craftPrintPuzzle{
+    width:128mm !important;
+    max-height:184mm !important;
+  }
+
+  .craftPrintSample{
+    margin-top:3.5mm !important;
+    padding-top:2.5mm !important;
+  }
+
+  .craftPrintFooter{
+    margin-top:auto !important;
+    padding-top:1.5mm !important;
+  }
+}
