@@ -262,7 +262,6 @@ export default function Page(){
  const [craftPieces,setCraftPieces]=useState(6);
  const [craftStyle,setCraftStyle]=useState("bw");
  const [savedCraftPuzzles,setSavedCraftPuzzles]=useState([]);
- const [craftPrintMode,setCraftPrintMode]=useState(false);
 
 
  const [profileDialog,setProfileDialog]=useState(null);
@@ -402,15 +401,6 @@ export default function Page(){
  useEffect(()=>{
   try{localStorage.setItem("malino:craftPuzzles:v1",JSON.stringify(savedCraftPuzzles))}catch{}
  },[savedCraftPuzzles]);
-
- useEffect(()=>{
-  const finishPrint=()=>{
-   document.body.classList.remove("malino-printing");
-   setCraftPrintMode(false);
-  };
-  window.addEventListener("afterprint",finishPrint);
-  return()=>window.removeEventListener("afterprint",finishPrint);
- },[]);
 
  useEffect(()=>{
   if(typeof document==="undefined")return;
@@ -807,12 +797,151 @@ export default function Page(){
 
  const printCraftPuzzle=()=>{
   if(typeof window==="undefined")return;
-  setCraftPrintMode(true);
-  document.body.classList.add("malino-printing");
-  playSound("click");
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-   try{window.print()}catch{}
-  }));
+
+  const preview=window.open("","_blank");
+  if(preview){
+   preview.document.write('<!doctype html><html><head><title>Malino – Puzzle PDF</title><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;background:#f6f8fb;color:#173d78}div{text-align:center}b{display:block;font-size:20px;margin-bottom:8px}small{color:#6d7b8d}</style></head><body><div><b>Malino PDF wird vorbereitet…</b><small>Einen Moment bitte.</small></div></body></html>');
+   preview.document.close();
+  }
+
+  const img=new Image();
+  img.crossOrigin="anonymous";
+  img.onload=()=>{
+   try{
+    const W=1240,H=1754;
+    const canvas=document.createElement("canvas");
+    canvas.width=W;canvas.height=H;
+    const ctx=canvas.getContext("2d");
+    if(!ctx)throw new Error("canvas");
+    ctx.fillStyle="#fff";ctx.fillRect(0,0,W,H);
+
+    // Header
+    ctx.textAlign="center";
+    ctx.fillStyle="#6a7d96";
+    ctx.font="700 24px system-ui";
+    ctx.fillText("MALINO · Basteln & Spielen",W/2,55);
+    ctx.fillStyle="#173d78";
+    ctx.font="800 38px system-ui";
+    ctx.fillText(`✂️ ${activeCraftTemplate.title} – ${craftPieces} Teile`,W/2,105);
+    ctx.fillStyle="#5c6e87";
+    ctx.font="500 22px system-ui";
+    ctx.fillText("Entlang der gestrichelten Linien ausschneiden.",W/2,145);
+
+    // Main puzzle area, sized to source ratio and guaranteed to fit one A4 canvas.
+    const maxW=900,maxH=1180;
+    const ratio=activeCraftTemplate.w/activeCraftTemplate.h;
+    let pw=maxW,ph=pw/ratio;
+    if(ph>maxH){ph=maxH;pw=ph*ratio}
+    const px=(W-pw)/2,py=190;
+
+    ctx.fillStyle="#fff";ctx.fillRect(px,py,pw,ph);
+    ctx.drawImage(img,px,py,pw,ph);
+
+    ctx.strokeStyle="#173d78";
+    ctx.lineWidth=4;
+    ctx.strokeRect(px,py,pw,ph);
+
+    const [cols,rows]=craftGrid;
+    ctx.save();
+    ctx.setLineDash([14,12]);
+    ctx.lineWidth=3;
+    ctx.strokeStyle="#20344e";
+    for(let i=1;i<cols;i++){
+     const x=px+pw*i/cols;
+     ctx.beginPath();ctx.moveTo(x,py);ctx.lineTo(x,py+ph);ctx.stroke();
+    }
+    for(let i=1;i<rows;i++){
+     const y=py+ph*i/rows;
+     ctx.beginPath();ctx.moveTo(px,y);ctx.lineTo(px+pw,y);ctx.stroke();
+    }
+    ctx.restore();
+
+    ctx.font="34px system-ui";
+    ctx.fillText("✂️",px+26,py+38);
+    ctx.fillText("✂️",px+pw-28,py+ph-18);
+
+    // Meta
+    const metaY=py+ph+45;
+    ctx.fillStyle="#6b7787";
+    ctx.font="600 20px system-ui";
+    ctx.fillText(`A4   •   ${craftPieces} Teile   •   ${craftStyle==="bw"?"Schwarz-Weiß":"Bunt"}`,W/2,metaY);
+
+    // Small reference
+    const sampleH=180;
+    const sampleW=sampleH*ratio;
+    const sy=metaY+55;
+    const sx=W/2-220;
+    ctx.drawImage(img,sx,sy,sampleW,sampleH);
+    ctx.strokeStyle="#cdd6e2";ctx.lineWidth=2;ctx.strokeRect(sx,sy,sampleW,sampleH);
+    ctx.textAlign="left";
+    ctx.fillStyle="#173d78";ctx.font="800 24px system-ui";
+    ctx.fillText("Vorlage",sx+sampleW+34,sy+58);
+    ctx.fillStyle="#65758a";ctx.font="500 19px system-ui";
+    ctx.fillText("So sieht das fertige",sx+sampleW+34,sy+94);
+    ctx.fillText("Puzzle aus.",sx+sampleW+34,sy+124);
+
+    // Footer
+    ctx.textAlign="center";
+    ctx.fillStyle="#8a96a5";ctx.font="500 16px system-ui";
+    ctx.fillText("Malino – kreative Spielzeit ohne Bildschirm",W/2,H-35);
+
+    const jpegData=canvas.toDataURL("image/jpeg",0.94);
+    const b64=jpegData.split(",")[1];
+    const bin=atob(b64);
+    const jpg=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++)jpg[i]=bin.charCodeAt(i);
+
+    const enc=new TextEncoder();
+    const chunks=[];
+    let offset=0;
+    const offsets=[0];
+    const add=data=>{
+     const bytes=typeof data==="string"?enc.encode(data):data;
+     chunks.push(bytes);offset+=bytes.length;
+    };
+    const obj=(n,body)=>{
+     offsets[n]=offset;
+     add(`${n} 0 obj\n${body}\nendobj\n`);
+    };
+
+    add("%PDF-1.4\n%\xE2\xE3\xCF\xD3\n");
+    obj(1,"<< /Type /Catalog /Pages 2 0 R >>");
+    obj(2,"<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
+    obj(3,"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>");
+
+    offsets[4]=offset;
+    add(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${W} /Height ${H} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`);
+    add(jpg);
+    add("\nendstream\nendobj\n");
+
+    const content="q\n595.28 0 0 841.89 0 0 cm\n/Im0 Do\nQ\n";
+    offsets[5]=offset;
+    add(`5 0 obj\n<< /Length ${content.length} >>\nstream\n${content}endstream\nendobj\n`);
+
+    const xref=offset;
+    add("xref\n0 6\n0000000000 65535 f \n");
+    for(let i=1;i<=5;i++)add(String(offsets[i]).padStart(10,"0")+" 00000 n \n");
+    add(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
+
+    const total=chunks.reduce((sum,c)=>sum+c.length,0);
+    const pdf=new Uint8Array(total);
+    let pos=0;
+    chunks.forEach(c=>{pdf.set(c,pos);pos+=c.length});
+    const blob=new Blob([pdf],{type:"application/pdf"});
+    const url=URL.createObjectURL(blob);
+
+    if(preview){
+     preview.location.href=url;
+    }else{
+     window.location.href=url;
+    }
+    setTimeout(()=>URL.revokeObjectURL(url),120000);
+   }catch{
+    if(preview)preview.close();
+   }
+  };
+  img.onerror=()=>{if(preview)preview.close()};
+  img.src=activeCraftSrc;
  };
 
  const answerPuzzle=(puzzle,choice)=>{
@@ -2061,31 +2190,6 @@ export default function Page(){
     <button onClick={()=>{setParentPinInput("");setParentPinError("");setParentPinMode(parentPin?"locked":"setup");setScreen("parent")}}>🔐 Elternbereich öffnen</button>
    </div>
   </div>}
-
-  {craftPrintMode&&<section className="craftPrintSheet" aria-hidden="true">
-   <div className="craftPrintBrand">MALINO · Basteln & Spielen</div>
-   <h1>✂️ {activeCraftTemplate.title} – {craftPieces} Teile</h1>
-   <p className="craftPrintSub">Entlang der gestrichelten Linien ausschneiden.</p>
-
-   <div className="craftPrintPuzzle" style={{aspectRatio:`${activeCraftTemplate.w}/${activeCraftTemplate.h}`}}>
-    <img src={activeCraftSrc} alt=""/>
-    {Array.from({length:craftGrid[0]-1},(_,i)=><i key={`pv${i}`} className="craftPrintV" style={{left:`${(i+1)*100/craftGrid[0]}%`}}/>)}
-    {Array.from({length:craftGrid[1]-1},(_,i)=><i key={`ph${i}`} className="craftPrintH" style={{top:`${(i+1)*100/craftGrid[1]}%`}}/>)}
-    <span className="craftPrintScissor craftPrintScissorA">✂️</span>
-    <span className="craftPrintScissor craftPrintScissorB">✂️</span>
-   </div>
-
-   <div className="craftPrintMeta">
-    <span>A4</span><span>•</span><span>{craftPieces} Teile</span><span>•</span><span>{craftStyle==="bw"?"Schwarz-Weiß":"Bunt"}</span>
-   </div>
-
-   <div className="craftPrintSample">
-    <img src={activeCraftSrc} alt="Vorlage"/>
-    <div><b>Vorlage</b><span>So sieht das fertige Puzzle aus.</span></div>
-   </div>
-
-   <div className="craftPrintFooter">Malino – kreative Spielzeit ohne Bildschirm</div>
-  </section>}
 
   <nav>{[["start","🏠","Start"],["library","📚","Bibliothek"],["paint","🖌️","Malen"],["reward","🏆","Belohnungen"],["gallery","🎨","Galerie"]].map(([s,e,l])=><button key={s} className={(screen===s||(screen==="room"&&s==="reward"))?"active":""} onClick={()=>s==="paint"?open(current):setScreen(s)}>{e}<span>{l}</span></button>)}</nav>
  </main>
