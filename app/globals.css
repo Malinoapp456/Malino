@@ -6701,3 +6701,161 @@ nav,
   .mazeSavedGrid{grid-template-columns:1fr}
   .mazeSavedCard{grid-template-columns:90px 1fr}
 }
+
+
+/* =========================================================
+   Malino v24 — Unterschiede finden
+   ========================================================= */
+.craftModeTabs3{grid-template-columns:repeat(3,1fr)}
+.differenceFlow{
+  display:grid;
+  grid-template-columns:.8fr .75fr 1.55fr;
+  gap:12px;
+  margin-top:14px;
+}
+.differencePanel{
+  min-width:0;
+  padding:15px;
+  border-radius:24px;
+  border:1px solid #e4e8ef;
+  background:linear-gradient(145deg,#fff7eb,#fff);
+  box-shadow:0 9px 22px rgba(34,54,86,.06);
+}
+.differenceThemeGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.differenceThemeGrid button{
+  min-height:90px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  border:1px solid #e2e7ed;
+  border-radius:15px;
+  background:#fff;
+  color:#536982;
+}
+.differenceThemeGrid button.active{
+  border-color:#e69b3c;
+  background:#fff7e6;
+  box-shadow:0 0 0 3px rgba(230,155,60,.10);
+}
+.differenceThemeGrid span{font-size:31px}
+.differenceThemeGrid b{font-size:10px}
+.differenceDifficultyButtons{display:grid;gap:8px}
+.differenceDifficultyButtons button{
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:center;
+  padding:11px 12px;
+  border:1px solid #dfe6ee;
+  border-radius:15px;
+  background:#fff;
+  color:#506982;
+  text-align:left;
+}
+.differenceDifficultyButtons button.active{
+  background:#e6922e;
+  color:#fff;
+  border-color:#e6922e;
+}
+.differenceDifficultyButtons b{font-size:12px}
+.differenceDifficultyButtons small{font-size:8px;font-weight:800;opacity:.82}
+.differenceDifficultyButtons em{
+  grid-column:2;
+  grid-row:1/3;
+  width:30px;height:30px;
+  display:grid;place-items:center;
+  border-radius:10px;
+  background:rgba(255,255,255,.22);
+  font-style:normal;
+  font-weight:950;
+}
+.differenceCompare{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.differenceScene{
+  padding:10px;
+  border:2px solid #173d78;
+  border-radius:16px;
+  background:#fff;
+}
+.differenceScene>b{
+  display:block;
+  margin-bottom:8px;
+  color:#173d78;
+  text-align:center;
+  font-size:11px;
+}
+.differenceScene>div{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  min-height:245px;
+  align-content:center;
+}
+.differenceScene span{
+  display:grid;
+  place-items:center;
+  min-height:95px;
+  border-radius:15px;
+  background:linear-gradient(#f8fbff,#fff);
+  font-size:42px;
+  box-shadow:inset 0 0 0 1px #edf1f5;
+}
+.differenceSavedGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.differenceSavedCard{
+  position:relative;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:10px;
+  align-items:center;
+  padding:11px;
+  border:1px solid #e3e8ef;
+  border-radius:18px;
+  background:#fff;
+  box-shadow:0 7px 17px rgba(34,54,86,.05);
+  cursor:pointer;
+}
+.differenceSavedCard>span{font-size:34px}
+.differenceSavedCard>div{display:grid}
+.differenceSavedCard b{color:#173d78;font-size:10px}
+.differenceSavedCard small{color:#7b8797;font-size:8px}
+.differenceSavedCard em{margin-top:3px;color:#e18820;font-size:8px;font-style:normal;font-weight:900}
+.differenceSavedCard>button{
+  position:absolute;
+  right:5px;
+  bottom:5px;
+  border:0;
+  border-radius:8px;
+  background:#f2f4f7;
+  color:#7b8795;
+  font-weight:950;
+}
+@media(max-width:900px){
+  .differenceFlow{grid-template-columns:1fr 1fr}
+  .differencePreviewPanel{grid-column:1/-1}
+  .differenceSavedGrid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+  .craftModeTabs3{grid-template-columns:1fr}
+  .differenceFlow{grid-template-columns:1fr;gap:9px}
+  .differencePreviewPanel{grid-column:auto}
+  .differencePanel{padding:12px;border-radius:19px}
+  .differenceThemeGrid{grid-template-columns:repeat(3,1fr)}
+  .differenceThemeGrid button{min-height:78px}
+  .differenceThemeGrid span{font-size:27px}
+  .differenceCompare{grid-template-columns:1fr}
+  .differenceScene>div{min-height:210px}
+  .differenceScene span{min-height:70px;font-size:34px}
+  .differenceSavedGrid{grid-template-columns:1fr}
+}
