@@ -279,15 +279,23 @@ function buildMaze(cols,rows,seed){
  return{cols,rows,cells};
 }
 
-function MazeBoard({maze,startEmoji,endEmoji,className=""}){
+function MazeBoard({maze,startEmoji,endEmoji,className="",playerIndex=null,trail=[],onCellClick}){
  if(!maze)return null;
  const cell=50,w=maze.cols*cell,h=maze.rows*cell;
+ const playerX=playerIndex==null?null:(playerIndex%maze.cols)*cell+cell*.5;
+ const playerY=playerIndex==null?null:((playerIndex/maze.cols)|0)*cell+cell*.5;
  return <svg className={`mazeBoard ${className}`} viewBox={`0 0 ${w} ${h}`} role="img" aria-label="Labyrinth">
   <rect x="0" y="0" width={w} height={h} rx="12" fill="#fff"/>
+  {trail.length>1&&<polyline
+   className="mazeTrail"
+   points={trail.map(i=>`${(i%maze.cols)*cell+cell*.5},${((i/maze.cols)|0)*cell+cell*.5}`).join(" ")}
+   fill="none" stroke="#8bd85c" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" opacity=".38"
+  />}
   <g stroke="#173d78" strokeWidth="5" strokeLinecap="round">
    {maze.cells.map((c,i)=>{
     const x=(i%maze.cols)*cell,y=((i/maze.cols)|0)*cell;
     return <g key={i}>
+     {onCellClick&&<rect x={x+4} y={y+4} width={cell-8} height={cell-8} fill="transparent" stroke="none" onClick={()=>onCellClick(i)} className="mazeHitCell"/>}
      {c.t?<line x1={x} y1={y} x2={x+cell} y2={y}/>:null}
      {c.r?<line x1={x+cell} y1={y} x2={x+cell} y2={y+cell}/>:null}
      {c.b?<line x1={x} y1={y+cell} x2={x+cell} y2={y+cell}/>:null}
@@ -297,9 +305,69 @@ function MazeBoard({maze,startEmoji,endEmoji,className=""}){
   </g>
   <circle cx={cell*.5} cy={cell*.5} r={cell*.32} fill="#eaf7ff"/>
   <circle cx={w-cell*.5} cy={h-cell*.5} r={cell*.32} fill="#fff1c8"/>
-  <text x={cell*.5} y={cell*.66} textAnchor="middle" fontSize={cell*.46}>{startEmoji}</text>
-  <text x={w-cell*.5} y={h-cell*.34} textAnchor="middle" fontSize={cell*.46}>{endEmoji}</text>
+  {playerIndex==null&&<text x={cell*.5} y={cell*.66} textAnchor="middle" fontSize={cell*.46}>{startEmoji}</text>}
+  <text x={w-cell*.5} y={h-cell*.66} textAnchor="middle" fontSize={cell*.46}>{endEmoji}</text>
+  {playerIndex!=null&&<g className="mazePlayer" aria-hidden="true">
+   <circle cx={playerX} cy={playerY} r={cell*.34} fill="#eaf7ff" stroke="#65b944" strokeWidth="3"/>
+   <text x={playerX} y={playerY+cell*.16} textAnchor="middle" fontSize={cell*.46}>{startEmoji}</text>
+  </g>}
  </svg>
+}
+
+function InteractiveMaze({maze,startEmoji,endEmoji}){
+ const [player,setPlayer]=useState(0);
+ const [trail,setTrail]=useState([0]);
+ const [complete,setComplete]=useState(false);
+ const [bump,setBump]=useState(0);
+ const boardRef=useRef(null);
+ const goal=maze?maze.cells.length-1:0;
+ useEffect(()=>{setPlayer(0);setTrail([0]);setComplete(false);setBump(0)},[maze]);
+ if(!maze)return null;
+ const tryMove=dir=>{
+  if(complete)return;
+  const cell=maze.cells[player],x=player%maze.cols,y=(player/maze.cols)|0;
+  const moves={up:["t",0,-1],right:["r",1,0],down:["b",0,1],left:["l",-1,0]};
+  const [wall,dx,dy]=moves[dir];
+  if(cell[wall]){setBump(v=>v+1);return}
+  const nx=x+dx,ny=y+dy;
+  if(nx<0||ny<0||nx>=maze.cols||ny>=maze.rows)return;
+  const next=ny*maze.cols+nx;
+  setPlayer(next);
+  setTrail(prev=>[...prev,next]);
+  if(next===goal)setComplete(true);
+ };
+ const handleKey=e=>{
+  const map={ArrowUp:"up",w:"up",W:"up",ArrowRight:"right",d:"right",D:"right",ArrowDown:"down",s:"down",S:"down",ArrowLeft:"left",a:"left",A:"left"};
+  const dir=map[e.key];
+  if(dir){e.preventDefault();tryMove(dir)}
+ };
+ const handleCellClick=index=>{
+  if(complete||index===player)return;
+  const px=player%maze.cols,py=(player/maze.cols)|0,tx=index%maze.cols,ty=(index/maze.cols)|0;
+  if(Math.abs(px-tx)+Math.abs(py-ty)!==1){setBump(v=>v+1);return}
+  if(tx===px&&ty===py-1)tryMove("up");
+  else if(tx===px+1&&ty===py)tryMove("right");
+  else if(tx===px&&ty===py+1)tryMove("down");
+  else if(tx===px-1&&ty===py)tryMove("left");
+ };
+ const reset=()=>{setPlayer(0);setTrail([0]);setComplete(false);setBump(0);boardRef.current?.focus()};
+ return <div className={`interactiveMaze ${complete?"complete":""} ${bump?"hasBump":""}`}>
+  <div className="mazePlayStatus" aria-live="polite">
+   <span>{complete?"🎉 Geschafft! Du hast das Ziel erreicht.":"🎮 Bewege die Figur bis zum Ziel."}</span>
+   <small>Tippe auf ein Nachbarfeld oder nutze Pfeile / WASD.</small>
+  </div>
+  <div ref={boardRef} className="mazeKeyboardArea" tabIndex={0} onKeyDown={handleKey} aria-label="Interaktives Labyrinth. Mit Pfeiltasten oder WASD bewegen.">
+   <MazeBoard maze={maze} startEmoji={startEmoji} endEmoji={endEmoji} playerIndex={player} trail={trail} onCellClick={handleCellClick}/>
+  </div>
+  <div className="mazeDpad" aria-label="Labyrinth-Steuerung">
+   <button className="up" onClick={()=>tryMove("up")} aria-label="Nach oben">↑</button>
+   <button className="left" onClick={()=>tryMove("left")} aria-label="Nach links">←</button>
+   <button className="down" onClick={()=>tryMove("down")} aria-label="Nach unten">↓</button>
+   <button className="right" onClick={()=>tryMove("right")} aria-label="Nach rechts">→</button>
+   <button className="reset" onClick={reset} aria-label="Labyrinth neu starten">↺ Neu</button>
+  </div>
+  {complete&&<div className="mazeSuccessCard"><span>⭐</span><div><b>Ziel erreicht!</b><small>Super gemacht. Du kannst neu starten oder eine neue Variante erzeugen.</small></div></div>}
+ </div>
 }
 
 export default function Page(){
@@ -2046,7 +2114,7 @@ export default function Page(){
       <div className="craftStepHead"><span>3</span><div><b>Vorschau & Drucken</b><small>{activeMazeTheme.title}</small></div></div>
       <div className="mazePreviewWrap">
        <div className="mazeStartGoal"><span>{activeMazeTheme.start} START</span><span>ZIEL {activeMazeTheme.end}</span></div>
-       <MazeBoard maze={activeMaze} startEmoji={activeMazeTheme.start} endEmoji={activeMazeTheme.end}/>
+       <InteractiveMaze maze={activeMaze} startEmoji={activeMazeTheme.start} endEmoji={activeMazeTheme.end}/>
       </div>
       <div className="mazeActions">
        <button className="craftSaveBtn" onClick={saveMaze}>💾 Speichern</button>
