@@ -6316,3 +6316,108 @@ nav,
     padding-bottom:105px !important;
   }
 }
+
+
+/* =========================================================
+   Malino v22.3 — iPad polish dla Basteln & Spielen
+   ========================================================= */
+@media (min-width:761px) and (max-width:1180px){
+
+  /* Więcej bezpiecznej przestrzeni nad stałą nawigacją */
+  .craftPage{
+    padding-bottom:190px !important;
+    scroll-padding-bottom:160px;
+  }
+
+  /* Główne trzy kolumny nie wchodzą wizualnie pod dolny pasek */
+  .craftFlow{
+    margin-bottom:28px;
+  }
+
+  .craftStep{
+    min-height:0;
+  }
+
+  /* Biblioteka obrazków: wygodniejszy scroll na iPadzie */
+  .craftTemplateGrid{
+    max-height:420px !important;
+    padding-bottom:18px !important;
+    scroll-padding-bottom:26px;
+  }
+
+  /* Podgląd nie jest za duży i nie spycha akcji pod nawigację */
+  .craftPreviewStage{
+    min-height:360px !important;
+    padding:6px 8px 8px;
+  }
+
+  .craftPreview{
+    height:min(350px,32vw) !important;
+    max-height:350px;
+  }
+
+  /* Speichern / Drucken pozostają nad dolną nawigacją,
+     gdy użytkownik przewija trzeci panel */
+  .craftStep3{
+    display:flex;
+    flex-direction:column;
+  }
+
+  .craftActions{
+    position:sticky;
+    bottom:118px;
+    z-index:15;
+    margin-top:10px;
+    padding:7px;
+    border-radius:17px;
+    background:rgba(255,255,255,.94);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    box-shadow:0 10px 24px rgba(41,54,79,.12);
+  }
+
+  .craftA4{
+    position:relative;
+    z-index:16;
+    margin-top:7px;
+  }
+
+  /* Dolne menu trochę niżej i z większą separacją od treści */
+  nav{
+    bottom:max(10px,env(safe-area-inset-bottom)) !important;
+    box-shadow:0 14px 34px rgba(31,50,82,.16) !important;
+  }
+
+  /* Zapisane puzzle i kafelki informacyjne nie dotykają nawigacji */
+  .craftSavedHead{
+    margin-top:24px !important;
+  }
+
+  .craftInfoGrid{
+    margin-bottom:32px !important;
+  }
+}
+
+/* iPad w orientacji poziomej */
+@media (min-width:900px) and (max-width:1180px) and (orientation:landscape){
+  .craftFlow{
+    grid-template-columns:1.03fr .84fr 1.28fr;
+    gap:11px;
+  }
+
+  .craftTemplateGrid{
+    max-height:390px !important;
+  }
+
+  .craftPreviewStage{
+    min-height:330px !important;
+  }
+
+  .craftPreview{
+    height:min(325px,29vw) !important;
+  }
+
+  .craftActions{
+    bottom:112px;
+  }
+}
