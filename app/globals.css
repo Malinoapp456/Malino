@@ -6908,3 +6908,13 @@ nav,
 .numberProgress{position:relative;overflow:hidden;height:28px;max-width:620px;margin:10px auto;border-radius:999px;background:#edf1f5}.numberProgress>span{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#ef9c45,#6fbe67);transition:width .25s}.numberProgress>b{position:relative;z-index:2;display:grid;place-items:center;height:100%;color:#173d78;font-size:10px}
 @media(max-width:1000px){.craftModeTabs5{grid-template-columns:repeat(3,1fr)}.numberFlow{grid-template-columns:170px 1fr}.numberThemes{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:650px){.craftModeTabs5{grid-template-columns:1fr}.numberFlow{grid-template-columns:1fr}.numberSide{display:grid;grid-template-columns:1fr 90px}.numberControls{grid-template-columns:1fr}.numberCanvas{max-width:100%}.numberCenterIcon{font-size:52px}}
+
+/* Malino v26.1 — real Malino paint-by-number board */
+.numberLegend button{width:46px;height:46px;display:grid;place-items:center;border:3px solid transparent;border-radius:50%;box-shadow:0 3px 9px rgba(0,0,0,.12);transition:transform .15s,border-color .15s}
+.numberLegend button.active{border-color:#173d78;transform:scale(1.08)}
+.numberLegend button b{display:grid;place-items:center;width:23px;height:23px;border-radius:50%;background:#fff;color:#173d78;font-size:11px}
+.realNumberBoardWrap{position:relative;max-width:660px;margin:0 auto}
+.realNumberBoard{display:block;width:100%;height:auto;background:linear-gradient(#e7f5ff,#fff8e8);border-radius:22px;box-shadow:0 12px 28px rgba(34,54,86,.09)}
+.numberRegion{cursor:pointer;touch-action:manipulation}.numberRegion path{transition:fill .18s ease,filter .18s ease}.numberRegion:active path{filter:brightness(.94)}
+.numberRegionLabel{font-size:18px;font-weight:950;fill:#173d78;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+@media(max-width:650px){.realNumberBoardWrap{max-width:100%}.numberRegionLabel{font-size:16px}.numberLegend button{width:42px;height:42px}}

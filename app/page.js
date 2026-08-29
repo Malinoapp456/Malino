@@ -339,6 +339,7 @@ export default function Page(){
  const [numberDifficulty,setNumberDifficulty]=useState("leicht");
  const [numberPainted,setNumberPainted]=useState([]);
  const [savedNumberArt,setSavedNumberArt]=useState([]);
+ const [selectedNumber,setSelectedNumber]=useState(1);
 
 
 
@@ -512,7 +513,7 @@ export default function Page(){
   setHiddenComplete(false);
  },[hiddenThemeId,hiddenDifficulty,hiddenSeed]);
 
- useEffect(()=>{setNumberPainted([])},[numberThemeId,numberDifficulty]);
+ useEffect(()=>{setNumberPainted([]);setSelectedNumber(1)},[numberThemeId,numberDifficulty]);
 
  useEffect(()=>{
   if(typeof document==="undefined")return;
@@ -952,6 +953,28 @@ export default function Page(){
   return Array.from({length:cols*rows},(_,i)=>({id:i,n:1+Math.floor(rand()*colors)}));
  },[numberThemeId,numberDifficulty]);
  const numberDone=numberPainted.length===numberCells.length;
+ const malinoLeichtRegions=[
+  {id:"sky1",n:3,label:[410,110],d:"M18 18 H482 V142 C440 118 402 116 362 134 C328 149 295 147 258 128 C222 110 182 112 146 132 C106 154 66 154 18 140 Z"},
+  {id:"grass1",n:4,label:[80,430],d:"M18 336 C70 318 118 320 162 334 C213 351 263 352 314 333 C362 315 415 316 482 338 V482 H18 Z"},
+  {id:"treeCrown",n:4,label:[90,72],d:"M22 62 C42 24 84 28 96 53 C114 22 156 29 162 62 C186 37 218 50 216 82 C239 82 245 113 225 125 C201 139 185 130 171 116 C157 141 118 142 100 119 C78 143 38 134 33 106 C9 104 4 79 22 62 Z"},
+  {id:"treeTrunk",n:2,label:[110,230],d:"M83 108 C105 116 128 116 146 108 L139 329 H78 Z"},
+  {id:"mane",n:2,label:[290,145],d:"M205 147 C217 120 246 113 267 127 C283 101 321 104 335 128 C363 114 392 132 389 160 C414 166 424 195 407 215 C428 235 417 266 392 274 C397 301 371 322 347 314 C331 341 296 346 276 325 C249 342 216 326 213 298 C185 294 173 265 188 243 C166 225 174 193 198 183 C191 168 194 156 205 147 Z"},
+  {id:"face",n:1,label:[288,188],d:"M242 160 C263 141 302 140 326 158 C350 176 354 217 335 240 C316 264 276 268 250 248 C224 228 220 184 242 160 Z"},
+  {id:"earL",n:1,label:[221,135],d:"M218 160 C201 147 194 126 206 113 C218 100 241 111 250 131"},
+  {id:"earR",n:1,label:[356,132],d:"M327 132 C340 108 367 101 377 117 C387 134 372 154 354 163"},
+  {id:"belly",n:1,label:[290,332],d:"M250 269 C270 255 310 254 332 272 C352 289 356 326 347 360 C339 390 315 411 287 412 C258 412 236 391 229 359 C221 324 226 287 250 269 Z"},
+  {id:"armL",n:1,label:[214,330],d:"M238 278 C210 286 192 309 188 336 C186 356 199 372 216 367 C232 362 238 340 246 321"},
+  {id:"armR",n:1,label:[365,330],d:"M343 280 C371 290 387 314 389 340 C390 358 376 372 360 366 C345 360 341 339 334 320"},
+  {id:"legL",n:1,label:[252,438],d:"M248 389 C230 401 222 428 228 450 C235 474 267 479 278 455 C287 435 278 407 264 394"},
+  {id:"legR",n:1,label:[316,438],d:"M323 392 C339 407 347 432 340 454 C332 477 300 480 290 456 C282 434 291 407 306 394"},
+  {id:"tail",n:2,label:[420,348],d:"M347 340 C397 345 423 321 432 287 C437 269 453 264 464 276 C476 289 465 304 452 310 C445 357 410 385 359 380"},
+  {id:"cloud1",n:3,label:[407,95],d:"M356 68 C368 47 395 47 405 66 C423 52 446 61 448 81 C470 80 477 103 463 116 H350 C331 108 334 82 356 68 Z"},
+  {id:"flower1",n:4,label:[96,387],d:"M64 383 C51 365 62 348 79 355 C84 336 108 336 113 355 C131 346 144 365 132 380 C148 392 138 414 118 409 C113 429 87 428 83 409 C63 416 49 397 64 383 Z"},
+  {id:"flower2",n:4,label:[442,394],d:"M409 391 C396 373 407 356 424 363 C429 344 453 344 458 363 C476 354 489 373 477 388 C493 400 483 422 463 417 C458 437 432 436 428 417 C408 424 394 405 409 391 Z"}
+ ];
+ const useRealNumberBoard=numberThemeId==="malino"&&numberDifficulty==="leicht";
+ const realNumberDone=useRealNumberBoard&&numberPainted.length===malinoLeichtRegions.length;
+
 
 
 
@@ -1014,11 +1037,14 @@ export default function Page(){
  const setDailyStreak=value=>updateProfileField("dailyStreak",value);
  const setLastDailyDate=value=>updateProfileField("lastDailyDate",value);
 
- const paintNumberCell=(cell)=>{
+ const paintNumberCell=(cell,totalOverride)=>{
   if(numberPainted.includes(cell.id))return;
-  setNumberPainted([...numberPainted,cell.id]);
+  if(cell.n!==selectedNumber){playSound("click");return}
+  const next=[...numberPainted,cell.id];
+  setNumberPainted(next);
   playSound("success");
-  if(numberPainted.length+1===numberCells.length){setStars(stars+3);playSound("stars")}
+  const total=totalOverride||numberCells.length;
+  if(next.length===total){setStars(stars+3);playSound("stars")}
  };
  const saveNumberArt=()=>{
   const item={id:`number-${Date.now()}`,themeId:numberThemeId,difficulty:numberDifficulty,painted:numberPainted,createdAt:new Date().toISOString()};
@@ -2270,13 +2296,34 @@ export default function Page(){
        <div><small>Bild wählen</small><div className="numberThemes">{numberThemes.map(t=><button key={t.id} className={numberThemeId===t.id?"active":""} onClick={()=>setNumberThemeId(t.id)}><span>{t.icon}</span><b>{t.title}</b></button>)}</div></div>
        <div><small>Schwierigkeit</small><div className="hiddenDiff">{Object.entries(numberDifficultyMeta).map(([id,m])=><button key={id} className={numberDifficulty===id?"active":""} onClick={()=>setNumberDifficulty(id)}>{m.label}<em>{m.colors} Farben</em></button>)}</div></div>
       </div>
-      <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><span key={i} style={{background:numberPalette[i]}}><b>{i+1}</b></span>)}</div>
-      <div className="numberCanvas" style={{gridTemplateColumns:`repeat(${activeNumberDifficulty.cols},1fr)`}}>
-       {numberCells.map(cell=>{const painted=numberPainted.includes(cell.id);return <button key={cell.id} onClick={()=>paintNumberCell(cell)} className={painted?"painted":""} style={painted?{background:numberPalette[cell.n-1]}:{}}><b>{painted?"✓":cell.n}</b></button>})}
-       <div className="numberCenterIcon">{activeNumberTheme.icon}</div>
-       {numberDone&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
-      </div>
-      <div className="numberProgress"><span style={{width:`${Math.round(numberPainted.length/numberCells.length*100)}%`}}/><b>{numberPainted.length}/{numberCells.length}</b></div>
+      <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
+      {useRealNumberBoard
+       ?<div className="realNumberBoardWrap">
+         <svg className="realNumberBoard" viewBox="0 0 500 500" aria-label="Malino Malen nach Zahlen">
+          <rect x="8" y="8" width="484" height="484" rx="24" fill="#fff" stroke="#173d78" strokeWidth="5"/>
+          {malinoLeichtRegions.map(region=>{
+           const painted=numberPainted.includes(region.id);
+           return <g key={region.id} className={`numberRegion ${painted?"painted":""}`} onClick={()=>paintNumberCell(region,malinoLeichtRegions.length)}>
+            <path d={region.d} fill={painted?numberPalette[region.n-1]:"#fff"} stroke="#173d78" strokeWidth="4" strokeLinejoin="round"/>
+            {!painted&&<text x={region.label[0]} y={region.label[1]} className="numberRegionLabel">{region.n}</text>}
+           </g>
+          })}
+          <g className="malinoFaceDetails" pointerEvents="none">
+           <ellipse cx="270" cy="195" rx="10" ry="14" fill="#fff" stroke="#173d78" strokeWidth="4"/>
+           <ellipse cx="314" cy="195" rx="10" ry="14" fill="#fff" stroke="#173d78" strokeWidth="4"/>
+           <circle cx="273" cy="199" r="4" fill="#173d78"/><circle cx="311" cy="199" r="4" fill="#173d78"/>
+           <path d="M283 217 Q292 225 301 217" fill="none" stroke="#173d78" strokeWidth="4" strokeLinecap="round"/>
+           <path d="M275 235 Q292 247 309 234" fill="none" stroke="#173d78" strokeWidth="4" strokeLinecap="round"/>
+          </g>
+         </svg>
+         {realNumberDone&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
+        </div>
+       :<div className="numberCanvas" style={{gridTemplateColumns:`repeat(${activeNumberDifficulty.cols},1fr)`}}>
+         {numberCells.map(cell=>{const painted=numberPainted.includes(cell.id);return <button key={cell.id} onClick={()=>paintNumberCell(cell)} className={painted?"painted":""} style={painted?{background:numberPalette[cell.n-1]}:{}}><b>{painted?"✓":cell.n}</b></button>})}
+         <div className="numberCenterIcon">{activeNumberTheme.icon}</div>
+         {numberDone&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
+        </div>}
+      <div className="numberProgress"><span style={{width:`${Math.round(numberPainted.length/(useRealNumberBoard?malinoLeichtRegions.length:numberCells.length)*100)}%`}}/><b>{numberPainted.length}/{useRealNumberBoard?malinoLeichtRegions.length:numberCells.length}</b></div>
       <div className="mazeActions"><button className="craftSaveBtn" onClick={saveNumberArt}>💾 Speichern</button><button className="craftPrintBtn" onClick={shareNumberPdf}>↗️ Teilen / Drucken (A4)</button></div>
      </main>
     </div>
