@@ -2758,7 +2758,7 @@ export default function Page(){
     <style jsx global>{`
      .imageNumberBoardWrap{position:relative;max-width:660px;margin:0 auto}
      .imageNumberBoard{position:relative;overflow:hidden;border:3px solid #173d78;border-radius:22px;background:#fff;box-shadow:0 12px 28px rgba(34,54,86,.12)}
-     .imageNumberBase{display:block;width:100%;height:auto;filter:grayscale(1) brightness(1.22) contrast(.86);opacity:.92}
+     .imageNumberBase{display:block;width:100%;height:auto;filter:none;opacity:1}
      .imageNumberOverlay{position:absolute;inset:0;width:100%;height:100%;display:block}
      .imageNumberRegion path{cursor:pointer;touch-action:manipulation;pointer-events:all}
      .imageNumberRegion image{pointer-events:none}
@@ -2783,13 +2783,13 @@ export default function Page(){
       {useImageNumberBoard
        ?<div className="imageNumberBoardWrap">
          <div className="imageNumberBoard">
-          <img src="/assets/malino-2-0-board.png" alt="Malino 2.0" className="imageNumberBase"/>
+          <img src="/assets/malino-simple-number-board.png" alt="Malino 2.0" className="imageNumberBase"/>
           <svg className="imageNumberOverlay" viewBox="0 0 720 803" aria-label="Malino 2.0 Malen nach Zahlen">
            <defs>{activeImageNumberMasks.map(mask=><clipPath id={`mask-${mask.id}`} key={`clip-${mask.id}`}><path d={mask.d}/></clipPath>)}</defs>
            {activeImageNumberMasks.map(mask=>{
             const painted=numberPainted.includes(mask.id);
             return <g key={mask.id} className={`imageNumberRegion ${painted?"painted":""}`}>
-             {painted&&<image href="/assets/malino-2-0-board.png" x="0" y="0" width="720" height="803" clipPath={`url(#mask-${mask.id})`}/>}
+             {painted&&<image href="/assets/malino-simple-number-board.png" x="0" y="0" width="720" height="803" clipPath={`url(#mask-${mask.id})`}/>}
              <path d={mask.d} fill="rgba(255,255,255,0.001)" stroke="transparent" strokeWidth="0" onClick={()=>paintNumberCell(mask,activeImageNumberMasks.length)}/>
             </g>
            })}
