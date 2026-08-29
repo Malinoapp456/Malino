@@ -957,18 +957,31 @@ export default function Page(){
   malino:{
    title:"Malino 2.0",
    regions:[
-    {id:"sky",n:3,label:[420,95],d:"M18 18 H482 V145 C430 124 390 122 350 137 C308 153 270 151 230 134 C180 113 130 116 82 139 C58 150 38 151 18 145 Z"},
-    {id:"grass",n:4,label:[78,440],d:"M18 338 C82 320 140 326 190 344 C240 362 292 360 340 342 C390 323 438 326 482 340 V482 H18 Z"},
-    {id:"mane",n:2,label:[287,150],d:"M199 151 C210 120 241 110 264 126 C281 96 320 100 337 126 C366 111 397 132 393 161 C422 168 428 200 409 219 C431 243 416 273 390 279 C396 307 368 329 343 317 C325 344 292 348 271 327 C245 344 212 328 209 300 C181 295 169 266 184 244 C163 223 171 191 197 181 C190 168 191 159 199 151 Z"},
-    {id:"face",n:1,label:[287,198],d:"M241 159 C263 140 303 140 328 159 C352 178 356 218 337 242 C317 267 276 270 249 249 C223 229 219 183 241 159 Z"},
-    {id:"shirt",n:1,label:[286,292],d:"M238 263 C265 250 310 251 338 270 L349 333 C330 349 248 349 227 332 Z"},
-    {id:"overalls",n:4,label:[287,350],d:"M246 286 H329 L340 395 C326 418 249 419 233 395 Z"},
-    {id:"pawBadge",n:1,label:[287,335],d:"M270 342 C270 330 279 322 288 322 C297 322 306 330 306 342 C306 352 298 359 288 359 C278 359 270 352 270 342 Z M263 319 C263 313 267 309 272 309 C277 309 281 313 281 319 C281 325 277 329 272 329 C267 329 263 325 263 319 Z M282 312 C282 306 286 302 291 302 C296 302 300 306 300 312 C300 318 296 322 291 322 C286 322 282 318 282 312 Z M302 319 C302 313 306 309 311 309 C316 309 320 313 320 319 C320 325 316 329 311 329 C306 329 302 325 302 319 Z"},
-    {id:"arms",n:1,label:[205,330],d:"M239 280 C208 289 188 314 187 342 C186 361 201 374 218 367 C233 361 239 341 246 321 Z M340 281 C371 292 390 317 390 343 C390 361 375 373 359 366 C345 360 340 340 333 321 Z"},
-    {id:"legs",n:1,label:[286,438],d:"M247 389 C227 404 222 433 230 454 C239 477 269 478 279 454 C287 434 278 407 264 394 Z M322 392 C340 407 348 434 340 455 C331 478 301 479 291 456 C282 435 291 407 306 394 Z"},
-    {id:"tail",n:2,label:[420,350],d:"M347 340 C395 344 421 322 431 290 C437 269 453 264 465 276 C478 289 466 306 452 311 C444 357 408 385 359 380 Z"},
-    {id:"tree",n:4,label:[90,78],d:"M20 64 C42 30 78 29 94 52 C108 26 147 28 157 56 C181 35 211 46 212 76 C235 75 245 100 231 117 C214 136 185 133 169 113 C153 139 116 140 98 118 C78 142 40 134 34 107 C10 104 4 82 20 64 Z M82 108 C104 116 128 116 147 108 L140 337 H78 Z"},
-    {id:"flowers",n:4,label:[95,390],d:"M64 384 C52 366 63 349 80 356 C85 337 108 337 113 356 C131 347 145 366 133 381 C148 394 138 414 118 410 C113 430 87 429 83 410 C63 417 49 398 64 384 Z M409 392 C396 374 407 357 424 364 C429 345 453 345 458 364 C476 355 489 374 477 389 C493 401 483 423 463 418 C458 438 432 437 428 418 C408 425 394 406 409 392 Z"}
+    {id:"sky",n:4,label:[420,80],d:"M18 18 H482 V300 C430 285 382 287 340 301 C292 317 244 315 200 301 C150 285 96 284 18 302 Z"},
+    {id:"treeCrown",n:3,label:[82,80],d:"M18 18 H190 C206 42 203 72 184 91 C203 113 189 143 162 148 C149 173 113 177 94 156 C69 174 34 160 31 132 C10 124 7 97 25 84 C9 62 14 35 18 18 Z"},
+    {id:"treeTrunk",n:4,label:[72,225],d:"M49 121 C68 128 91 127 108 119 L105 322 H44 Z"},
+    {id:"bushLeft",n:3,label:[85,335],d:"M18 295 C41 271 73 275 87 298 C108 277 143 284 151 311 C178 301 198 322 193 346 H18 Z"},
+    {id:"bushRight",n:3,label:[420,338],d:"M321 306 C345 283 376 286 391 309 C413 286 447 295 454 322 C474 315 486 331 482 352 H317 Z"},
+    {id:"ground",n:4,label:[88,440],d:"M18 346 C92 332 154 345 210 363 C270 382 332 381 389 364 C427 352 458 349 482 354 V482 H18 Z"},
+
+    {id:"maneTopL",n:3,label:[222,145],d:"M197 145 C207 112 236 103 257 120 C271 91 307 94 324 117 C348 103 377 117 380 143 C405 146 418 169 406 190 C426 210 415 238 392 247 C397 272 373 293 350 286 C335 309 305 314 285 295 C260 311 231 299 225 274 C199 271 184 246 195 224 C175 207 180 178 201 167 C194 158 194 151 197 145 Z"},
+    {id:"maneTopR",n:3,label:[354,166],d:"M308 117 C330 95 362 101 377 123 C402 112 427 129 426 154 C447 161 456 184 443 201 C456 223 443 247 421 251 C419 274 394 288 374 276 C357 294 332 289 319 271 C302 248 298 216 303 184 Z"},
+    {id:"face",n:1,label:[290,210],d:"M244 157 C266 140 303 140 326 157 C350 175 354 215 336 239 C318 262 281 266 255 248 C228 229 224 181 244 157 Z"},
+    {id:"earL",n:1,label:[221,160],d:"M218 178 C199 165 195 142 208 129 C222 115 244 127 251 148 C245 164 234 175 218 178 Z"},
+    {id:"earR",n:1,label:[356,160],d:"M329 148 C337 126 360 116 374 130 C387 143 381 166 363 178 C347 176 336 166 329 148 Z"},
+
+    {id:"shirt",n:4,label:[289,292],d:"M244 263 C268 251 309 252 333 266 L345 324 C323 339 256 339 233 324 Z"},
+    {id:"overallBib",n:2,label:[289,340],d:"M249 286 H328 L337 380 C317 395 261 395 241 380 Z"},
+    {id:"armL",n:1,label:[210,325],d:"M242 278 C216 286 198 306 194 330 C191 348 203 361 219 357 C234 353 239 337 246 319 Z"},
+    {id:"armR",n:1,label:[366,325],d:"M339 279 C366 288 383 308 386 331 C388 348 375 361 359 357 C345 353 340 337 334 319 Z"},
+    {id:"legL",n:1,label:[252,426],d:"M252 374 C235 389 229 415 236 438 C243 459 270 462 280 440 C288 421 279 396 267 380 Z"},
+    {id:"legR",n:1,label:[320,426],d:"M320 377 C336 392 343 417 336 439 C329 461 301 462 292 441 C284 420 293 396 306 380 Z"},
+    {id:"tail",n:2,label:[414,350],d:"M344 335 C387 339 414 321 424 294 C431 275 446 269 457 280 C469 292 459 307 447 312 C438 349 409 373 366 372 C356 361 350 348 344 335 Z"},
+    {id:"tailTip",n:3,label:[455,278],d:"M431 276 C438 258 455 250 469 260 C482 270 477 289 462 299 C447 308 432 298 429 285 Z"},
+    {id:"flowerL",n:1,label:[91,390],d:"M68 390 C55 373 66 356 82 363 C87 344 109 344 114 363 C132 355 144 373 131 388 C146 401 136 420 117 414 C111 433 88 433 83 414 C64 421 53 401 68 390 Z"},
+    {id:"flowerR",n:1,label:[431,395],d:"M407 395 C394 378 405 361 421 368 C426 349 449 349 454 368 C472 360 483 378 471 393 C486 406 476 425 457 419 C452 438 429 438 424 419 C405 426 394 406 407 395 Z"},
+    {id:"rockL",n:4,label:[133,445],d:"M95 457 C101 425 123 406 149 410 C176 414 190 435 183 459 Z"},
+    {id:"rockR",n:4,label:[402,445],d:"M366 458 C373 428 394 411 419 414 C444 418 457 438 451 459 Z"}
    ]
   },
   rocket:{
@@ -1362,7 +1375,7 @@ export default function Page(){
  const activeRealNumberRegions=activeRealNumberBoard.regions;
  const useRealNumberBoard=numberDifficulty==="leicht"||useMittelRealNumberBoard||useSchwerRealNumberBoard;
  const realNumberDone=useRealNumberBoard&&numberPainted.length===activeRealNumberRegions.length;
- const useImageNumberBoard=numberThemeId==="malino";
+ const useImageNumberBoard=false;
  const malinoImageMasks=[
   // Tło — osobne, nie nachodzi na postać
   {id:"treeCrown",baseN:8,label:[100,80],d:"M0 0 H260 C270 70 238 132 176 153 C120 171 54 155 0 124 Z"},
@@ -2769,7 +2782,7 @@ export default function Page(){
      <aside className="numberSide">
       <div className="craftStepHead"><span>🎨</span><div><b>Malen nach Zahlen</b><small>Interaktiv & zum Drucken</small></div></div>
       <img src="/assets/malino-raetsel-mascot.png" alt="Malino" className="hiddenMascot"/>
-      <p>Tippe auf die nummerierten Felder. Jede Nummer hat ihre eigene Farbe.</p>
+      <p>Wähle eine Nummer und tippe auf ein Feld mit derselben Zahl.</p>
      </aside>
      <main className="numberMain">
       <div className="numberControls">
@@ -2778,8 +2791,7 @@ export default function Page(){
       </div>
             {numberDifficulty==="mittel"&&<div className="numberMittelNote">{"✨ Mittel: echte Felder · 6 Farben"}</div>}
       {numberDifficulty==="schwer"&&<div className="numberSchwerNote">🔥 Schwer: echte Felder · 8 Farben</div>}
-      {useImageNumberBoard&&<div className="numberImageNote">✨ Malino 2.0 · Tippe direkt auf die nummerierten Flächen</div>}
-<div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
+      <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
       {useImageNumberBoard
        ?<div className="imageNumberBoardWrap">
          <div className="imageNumberBoard">
