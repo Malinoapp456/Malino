@@ -2718,9 +2718,23 @@ export default function Page(){
           })}
           <g className="realNumberDetails" pointerEvents="none" fill="none" stroke="#173d78" strokeWidth="4" strokeLinecap="round">
            {numberThemeId==="malino"&&<>
-            <ellipse cx="270" cy="195" rx="10" ry="14" fill="#fff"/><ellipse cx="314" cy="195" rx="10" ry="14" fill="#fff"/>
-            <circle cx="273" cy="199" r="4" fill="#173d78"/><circle cx="311" cy="199" r="4" fill="#173d78"/>
-            <path d="M283 217 Q292 225 301 217"/><path d="M275 235 Q292 247 309 234"/>
+            {/* Malino 2.0 — richer mascot line art, kept non-interactive so mechanics stay stable */}
+            <ellipse cx="269" cy="193" rx="13" ry="17" fill="#fff"/><ellipse cx="315" cy="193" rx="13" ry="17" fill="#fff"/>
+            <ellipse cx="272" cy="197" rx="6" ry="8" fill="#173d78"/><ellipse cx="312" cy="197" rx="6" ry="8" fill="#173d78"/>
+            <circle cx="274" cy="194" r="2.2" fill="#fff" stroke="none"/><circle cx="314" cy="194" r="2.2" fill="#fff" stroke="none"/>
+            <path d="M282 214 Q292 207 302 214 Q299 224 292 225 Q285 224 282 214 Z" fill="#173d78"/>
+            <path d="M273 229 Q292 249 312 229"/><path d="M281 238 Q292 244 303 238"/>
+            <path d="M254 216 Q263 220 270 218 M314 218 Q322 220 331 216"/>
+            <path d="M253 180 Q266 170 279 176 M304 176 Q318 169 331 180"/>
+            <path d="M245 206 Q232 202 224 207 M245 216 Q231 216 222 222 M338 206 Q351 202 359 207 M338 216 Q352 216 361 222"/>
+            <path d="M250 286 Q286 300 325 286 M245 362 Q287 375 331 362"/>
+            <path d="M258 282 L258 319 M317 282 L317 319"/>
+            <circle cx="258" cy="287" r="5"/><circle cx="317" cy="287" r="5"/>
+            <path d="M252 395 Q268 404 282 397 M296 397 Q311 405 326 395"/>
+            <path d="M238 447 q12 9 24 0 M306 449 q12 9 24 0"/>
+            <path d="M219 155 Q232 136 250 130 M244 128 Q261 108 280 111 M278 111 Q298 94 316 107 M315 111 Q337 101 351 119 M348 124 Q370 119 381 139"/>
+            <path d="M84 122 Q106 131 139 119 M88 156 Q113 165 139 153 M91 192 Q112 199 138 190"/>
+            <path d="M36 351 Q64 342 90 350 M54 427 Q80 416 108 425 M388 428 Q420 414 455 424"/>
            </>}
            {numberThemeId==="rocket"&&<>
             <circle cx="250" cy="190" r="20"/><path d="M218 275 H282"/><path d="M235 405 Q250 430 265 405"/>
