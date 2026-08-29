@@ -1362,6 +1362,46 @@ export default function Page(){
  const activeRealNumberRegions=activeRealNumberBoard.regions;
  const useRealNumberBoard=numberDifficulty==="leicht"||useMittelRealNumberBoard||useSchwerRealNumberBoard;
  const realNumberDone=useRealNumberBoard&&numberPainted.length===activeRealNumberRegions.length;
+ const useImageNumberBoard=numberThemeId==="malino";
+ const malinoImageMasks=[
+  {id:"skyL",baseN:7,label:[115,145],d:"M0 0 H360 V245 C300 220 245 220 190 238 C125 260 65 250 0 235 Z"},
+  {id:"skyR",baseN:7,label:[625,150],d:"M360 0 H720 V265 C655 250 600 250 540 268 C470 286 415 274 360 245 Z"},
+  {id:"treeCrown",baseN:8,label:[105,85],d:"M0 0 H260 C270 45 245 92 210 118 C172 148 117 158 64 144 C34 137 14 120 0 102 Z"},
+  {id:"treeTrunk",baseN:4,label:[42,275],d:"M0 108 C42 114 84 125 116 151 L105 430 L0 420 Z"},
+  {id:"bushL",baseN:3,label:[86,410],d:"M0 335 C48 310 102 318 137 347 C173 323 222 339 239 378 C218 419 169 446 110 444 C60 442 26 425 0 403 Z"},
+  {id:"bushR",baseN:3,label:[628,415],d:"M493 350 C535 322 580 329 608 358 C644 331 690 346 720 376 V520 C677 500 635 497 596 510 C548 527 507 511 480 477 Z"},
+  {id:"groundL",baseN:5,label:[110,668],d:"M0 480 C115 455 215 478 286 535 C253 612 224 685 205 803 H0 Z"},
+  {id:"path",baseN:6,label:[395,690],d:"M246 533 C320 496 404 504 472 548 C538 591 584 680 610 803 H183 C214 714 232 621 246 533 Z"},
+  {id:"groundR",baseN:5,label:[650,670],d:"M476 520 C555 473 647 474 720 507 V803 H603 C578 690 536 594 476 520 Z"},
+  {id:"maneOrange",baseN:4,label:[286,88],d:"M236 58 C276 14 330 11 365 45 C341 73 319 108 298 145 C264 136 239 107 236 58 Z"},
+  {id:"maneYellow",baseN:1,label:[382,82],d:"M324 12 C366 0 405 16 421 48 C403 75 390 103 378 135 C344 125 322 87 324 12 Z"},
+  {id:"manePink",baseN:2,label:[455,91],d:"M391 18 C434 5 475 19 492 53 C477 83 461 113 447 144 C412 131 391 89 391 18 Z"},
+  {id:"manePurple",baseN:3,label:[515,115],d:"M458 40 C503 27 548 43 567 82 C550 112 532 142 514 169 C478 154 455 112 458 40 Z"},
+  {id:"maneBlue",baseN:3,label:[565,180],d:"M516 90 C565 80 606 102 621 145 C602 180 584 211 565 239 C530 221 512 177 516 90 Z"},
+  {id:"maneLeft",baseN:3,label:[237,330],d:"M183 161 C225 126 264 142 283 184 C276 232 255 281 228 330 C194 375 154 365 145 322 C151 264 165 210 183 161 Z"},
+  {id:"maneRight",baseN:3,label:[561,345],d:"M502 199 C543 168 591 188 607 231 C608 288 596 346 570 397 C531 425 494 398 487 356 C493 300 498 246 502 199 Z"},
+  {id:"face",baseN:1,label:[382,260],d:"M260 144 C310 96 421 102 469 160 C511 211 501 313 444 361 C390 408 300 399 248 344 C200 294 205 198 260 144 Z"},
+  {id:"shirt",baseN:6,label:[360,445],d:"M255 383 C296 361 424 360 465 385 L493 468 C442 497 285 497 232 468 Z"},
+  {id:"overallBib",baseN:2,label:[366,500],d:"M278 430 H454 L471 620 C423 651 306 649 258 618 Z"},
+  {id:"overallLegL",baseN:2,label:[300,650],d:"M258 590 C298 575 343 584 362 610 L350 735 C321 755 275 752 246 730 Z"},
+  {id:"overallLegR",baseN:2,label:[435,650],d:"M359 610 C386 581 435 578 475 597 L497 728 C466 755 415 757 386 735 Z"},
+  {id:"armL",baseN:1,label:[228,500],d:"M178 425 C215 392 267 412 282 454 C287 499 263 552 220 564 C180 565 151 535 156 494 C159 466 165 445 178 425 Z"},
+  {id:"armR",baseN:1,label:[505,505],d:"M448 451 C462 411 518 396 554 430 C572 449 583 477 577 506 C567 551 526 570 487 550 C459 532 445 490 448 451 Z"},
+  {id:"footL",baseN:1,label:[290,760],d:"M214 704 C249 679 306 681 336 712 C353 747 331 793 287 802 H224 C192 782 188 735 214 704 Z"},
+  {id:"footR",baseN:1,label:[457,760],d:"M386 710 C418 678 477 681 510 712 C535 746 512 792 468 803 H404 C370 782 363 741 386 710 Z"},
+  {id:"tailStem",baseN:1,label:[610,590],d:"M492 534 C537 568 576 576 609 552 C632 533 635 500 648 469 C659 442 684 432 705 447 C719 462 713 488 697 503 C677 522 671 550 662 575 C645 623 596 652 549 637 C523 627 505 603 492 534 Z"},
+  {id:"tailTip",baseN:3,label:[654,480],d:"M614 431 C638 389 691 377 713 407 C733 438 707 477 676 502 C650 521 619 508 608 484 C600 467 603 448 614 431 Z"},
+  {id:"flowerL",baseN:6,label:[65,625],d:"M20 575 C49 546 87 551 102 579 C126 590 127 623 104 637 C91 673 50 678 29 650 C3 637 0 600 20 575 Z"},
+  {id:"flowerR",baseN:6,label:[690,620],d:"M633 568 C663 548 700 557 714 584 C733 606 721 639 695 648 C671 676 635 660 626 632 C609 610 615 584 633 568 Z"},
+  {id:"rockL",baseN:5,label:[165,610],d:"M111 578 C138 546 190 550 211 584 C229 613 211 643 180 650 H113 C88 632 89 600 111 578 Z"},
+  {id:"rockR",baseN:6,label:[671,770],d:"M622 735 C647 704 698 706 720 741 V803 H611 C598 781 604 755 622 735 Z"}
+ ];
+ const activeImageNumberMasks=useMemo(()=>{
+  const colors=activeNumberDifficulty.colors;
+  return malinoImageMasks.map(mask=>({...mask,n:((mask.baseN-1)%colors)+1}));
+ },[numberDifficulty]);
+ const imageNumberDone=useImageNumberBoard&&numberPainted.length===activeImageNumberMasks.length;
+
 
 
 
@@ -2691,6 +2731,17 @@ export default function Page(){
    </>}
 
    {craftMode==="numbers"&&<>
+    <style jsx global>{`
+     .imageNumberBoardWrap{position:relative;max-width:660px;margin:0 auto}
+     .imageNumberBoard{position:relative;overflow:hidden;border:3px solid #173d78;border-radius:22px;background:#fff;box-shadow:0 12px 28px rgba(34,54,86,.12)}
+     .imageNumberBase{display:block;width:100%;height:auto;filter:grayscale(1) brightness(1.22) contrast(.86);opacity:.92}
+     .imageNumberOverlay{position:absolute;inset:0;width:100%;height:100%;display:block}
+     .imageNumberRegion path{cursor:pointer;touch-action:manipulation}
+     .imageNumberRegion image{pointer-events:none}
+     .imageNumberLabel{fill:#173d78;font-size:18px;font-weight:950;text-anchor:middle;dominant-baseline:middle;pointer-events:none;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round}
+     .numberImageNote{max-width:660px;margin:10px auto -2px;padding:8px 11px;border-radius:12px;background:#eaf6ff;color:#326590;text-align:center;font-size:9px;font-weight:900}
+     @media(max-width:650px){.imageNumberBoardWrap{max-width:100%}.imageNumberLabel{font-size:17px}.imageNumberBoard{border-radius:18px}}
+    `}</style>
     <div className="numberFlow">
      <aside className="numberSide">
       <div className="craftStepHead"><span>🎨</span><div><b>Malen nach Zahlen</b><small>Interaktiv & zum Drucken</small></div></div>
@@ -2704,8 +2755,27 @@ export default function Page(){
       </div>
             {numberDifficulty==="mittel"&&<div className="numberMittelNote">{"✨ Mittel: echte Felder · 6 Farben"}</div>}
       {numberDifficulty==="schwer"&&<div className="numberSchwerNote">🔥 Schwer: echte Felder · 8 Farben</div>}
+      {useImageNumberBoard&&<div className="numberImageNote">✨ Malino 2.0 · Bildbasierte Malvorlage</div>}
 <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
-      {useRealNumberBoard
+      {useImageNumberBoard
+       ?<div className="imageNumberBoardWrap">
+         <div className="imageNumberBoard">
+          <img src="/assets/malino-2-0-board.png" alt="Malino 2.0" className="imageNumberBase"/>
+          <svg className="imageNumberOverlay" viewBox="0 0 720 803" aria-label="Malino 2.0 Malen nach Zahlen">
+           <defs>{activeImageNumberMasks.map(mask=><clipPath id={`mask-${mask.id}`} key={`clip-${mask.id}`}><path d={mask.d}/></clipPath>)}</defs>
+           {activeImageNumberMasks.map(mask=>{
+            const painted=numberPainted.includes(mask.id);
+            return <g key={mask.id} className={`imageNumberRegion ${painted?"painted":""}`}>
+             {painted&&<image href="/assets/malino-2-0-board.png" x="0" y="0" width="720" height="803" clipPath={`url(#mask-${mask.id})`}/>}
+             <path d={mask.d} fill="transparent" stroke={painted?"rgba(23,61,120,.16)":"rgba(23,61,120,.28)"} strokeWidth="2" onClick={()=>paintNumberCell(mask,activeImageNumberMasks.length)}/>
+             {!painted&&<text x={mask.label[0]} y={mask.label[1]} className="imageNumberLabel">{mask.n}</text>}
+            </g>
+           })}
+          </svg>
+          {imageNumberDone&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
+         </div>
+        </div>
+       :useRealNumberBoard
        ?<div className="realNumberBoardWrap">
          <svg className="realNumberBoard" viewBox="0 0 500 500" aria-label={`${activeRealNumberBoard.title} Malen nach Zahlen`}>
           <rect x="8" y="8" width="484" height="484" rx="24" fill="#fff" stroke="#173d78" strokeWidth="5"/>
@@ -2760,7 +2830,7 @@ export default function Page(){
          <div className="numberCenterIcon">{activeNumberTheme.icon}</div>
          {numberDone&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
         </div>}
-      <div className="numberProgress"><span style={{width:`${Math.round(numberPainted.length/(useRealNumberBoard?activeRealNumberRegions.length:numberCells.length)*100)}%`}}/><b>{numberPainted.length}/{useRealNumberBoard?activeRealNumberRegions.length:numberCells.length}</b></div>
+      <div className="numberProgress"><span style={{width:`${Math.round(numberPainted.length/(useImageNumberBoard?activeImageNumberMasks.length:(useRealNumberBoard?activeRealNumberRegions.length:numberCells.length))*100)}%`}}/><b>{numberPainted.length}/{useImageNumberBoard?activeImageNumberMasks.length:(useRealNumberBoard?activeRealNumberRegions.length:numberCells.length)}</b></div>
       <div className="mazeActions"><button className="craftSaveBtn" onClick={saveNumberArt}>💾 Speichern</button><button className="craftPrintBtn" onClick={shareNumberPdf}>↗️ Teilen / Drucken (A4)</button></div>
      </main>
     </div>
