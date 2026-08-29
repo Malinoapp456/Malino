@@ -6703,34 +6703,6 @@ nav,
 }
 
 
-/* Malino v25.2 — interaktywne labirynty */
-.interactiveMaze{display:grid;gap:9px}
-.mazePlayStatus{display:grid;gap:2px;padding:9px 11px;border-radius:13px;background:#eef8ff;color:#173d78}
-.mazePlayStatus span{font-size:11px;font-weight:950}
-.mazePlayStatus small{font-size:8px;color:#6e8097;font-weight:750}
-.mazeKeyboardArea{border-radius:13px;outline:none;transition:box-shadow .15s ease,transform .12s ease}
-.mazeKeyboardArea:focus-visible{box-shadow:0 0 0 4px rgba(38,121,237,.18)}
-.interactiveMaze.hasBump .mazeKeyboardArea{animation:mazeBump .14s ease}
-.mazeHitCell{cursor:pointer;pointer-events:all}
-.mazeTrail{pointer-events:none}
-.interactiveMaze .mazeBoard circle,.interactiveMaze .mazeBoard text{pointer-events:none}
-.mazePlayer{pointer-events:none;filter:drop-shadow(0 2px 2px rgba(31,83,45,.18));transition:transform .12s ease}
-.mazeDpad{display:grid;grid-template-columns:repeat(3,44px) 1fr;grid-template-areas:". up . reset" "left down right reset";gap:6px;justify-content:center;align-items:center;margin-top:1px}
-.mazeDpad button{min-width:44px;height:38px;border:0;border-radius:11px;background:#2679ed;color:#fff;font-size:20px;font-weight:950;box-shadow:0 3px 0 #175cb9;touch-action:manipulation}
-.mazeDpad button:active{transform:translateY(2px);box-shadow:0 1px 0 #175cb9}
-.mazeDpad .up{grid-area:up}.mazeDpad .left{grid-area:left}.mazeDpad .down{grid-area:down}.mazeDpad .right{grid-area:right}
-.mazeDpad .reset{grid-area:reset;width:auto;min-width:78px;height:82px;background:#7651c4;box-shadow:0 3px 0 #563797;font-size:11px}
-.mazeSuccessCard{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:14px;background:linear-gradient(135deg,#efffe9,#fff7cf);border:1px solid #b9e5a3;color:#315828}
-.mazeSuccessCard>span{font-size:30px}.mazeSuccessCard>div{display:grid}.mazeSuccessCard b{font-size:12px}.mazeSuccessCard small{margin-top:2px;font-size:8px;color:#66775f}
-@keyframes mazeBump{0%,100%{transform:translateX(0)}50%{transform:translateX(3px)}}
-@media(max-width:650px){
- .mazeDpad{grid-template-columns:repeat(3,48px) 1fr}
- .mazeDpad button{min-width:48px;height:42px}
- .mazeDpad .reset{height:90px}
- .mazePlayStatus span{font-size:10px}
-}
-
-
 /* =========================================================
    Malino v24 — Unterschiede finden
    ========================================================= */
@@ -6827,7 +6799,7 @@ nav,
   min-height:245px;
   align-content:center;
 }
-.differenceScene .differenceCell{
+.differenceScene span{
   display:grid;
   place-items:center;
   min-height:95px;
@@ -6836,47 +6808,6 @@ nav,
   font-size:42px;
   box-shadow:inset 0 0 0 1px #edf1f5;
 }
-
-.differencePlayHead{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  margin:2px 0 10px;padding:8px 10px;border-radius:12px;
-  background:#f2f8ff;color:#31577f;font-size:11px;font-weight:800;
-}
-.differencePlayHead>b{
-  flex:0 0 auto;min-width:48px;padding:6px 9px;border-radius:999px;
-  background:#173d78;color:#fff;text-align:center;font-size:12px;
-}
-.differenceScene.interactive .differenceCell{
-  position:relative;width:100%;border:0;padding:0;cursor:pointer;color:inherit;
-  font:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
-  transition:transform .16s ease,box-shadow .16s ease,background .16s ease;
-}
-.differenceScene.interactive .differenceCell>span{
-  display:grid;place-items:center;width:100%;height:100%;font-size:inherit;
-}
-.differenceScene.interactive .differenceCell:active{transform:scale(.96)}
-.differenceScene.interactive .differenceCell:focus-visible{outline:4px solid rgba(47,128,237,.28);outline-offset:2px}
-.differenceScene.interactive .differenceCell.found{
-  background:#effbe8;box-shadow:inset 0 0 0 3px #55b83b,0 0 0 2px rgba(85,184,59,.12);
-}
-.differenceScene.interactive .differenceCell.found:after{
-  content:"";position:absolute;inset:8px;border:3px solid #55b83b;border-radius:50%;pointer-events:none;
-}
-.differenceScene.interactive .differenceCell em{
-  position:absolute;right:5px;top:5px;width:23px;height:23px;display:grid;place-items:center;
-  border-radius:50%;background:#55b83b;color:white;font-size:14px;font-style:normal;font-weight:950;z-index:2;
-}
-.differenceScene.interactive .differenceCell.miss{animation:differenceMiss .38s ease}
-@keyframes differenceMiss{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}55%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
-.differenceCompleteCard{
-  display:flex;align-items:center;gap:10px;margin-top:10px;padding:10px 12px;border-radius:14px;
-  background:#effbe8;border:2px solid #8bd274;color:#245522;
-}
-.differenceCompleteCard>span{font-size:27px}
-.differenceCompleteCard>div{min-width:0;display:grid;gap:2px;flex:1}
-.differenceCompleteCard b{font-size:13px}.differenceCompleteCard small{font-size:10px;font-weight:700;color:#567254}
-.differenceCompleteCard button{border:0;border-radius:10px;padding:8px 10px;background:#55b83b;color:#fff;font-weight:900;cursor:pointer}
-
 .differenceSavedGrid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -6925,7 +6856,7 @@ nav,
   .differenceThemeGrid span{font-size:27px}
   .differenceCompare{grid-template-columns:1fr}
   .differenceScene>div{min-height:210px}
-  .differenceScene .differenceCell{min-height:70px;font-size:34px}
+  .differenceScene span{min-height:70px;font-size:34px}
   .differenceSavedGrid{grid-template-columns:1fr}
 }
 
@@ -6967,18 +6898,13 @@ nav,
 @media(max-width:650px){.hiddenObjectButton{width:48px;height:48px}.hiddenObjectButton>span{font-size:29px}.hiddenCounter{font-size:12px;padding:6px 9px}.hiddenCompleteCard{min-width:210px;max-width:82%;padding:12px 14px}}
 @media(prefers-reduced-motion:reduce){.hiddenObjectButton.found,.hiddenCompleteCard,.hiddenScene.miss,.hiddenMissPulse{animation:none!important}}
 
-/* Malino v25.4 — interaktives Meine Puzzle */
-.craftActions3{grid-template-columns:1.1fr 1fr 1fr}
-.craftPlayBtn{background:linear-gradient(135deg,#7d4fd4,#a463e5)!important;box-shadow:0 7px 16px rgba(109,68,184,.2)}
-.craftPlay{margin:16px 0 22px;padding:16px;border:1px solid #ded7f0;border-radius:26px;background:linear-gradient(145deg,#f5efff,#fff 48%,#eef9ff);box-shadow:0 12px 30px rgba(54,43,90,.08)}
-.craftPlayHead{display:flex;align-items:center;justify-content:space-between;gap:14px}.craftPlayHead>div{display:grid;gap:2px}.craftPlayHead span{font-size:11px;font-weight:950;color:#7b4cc5}.craftPlayHead b{font-size:20px;color:#173d78}.craftPlayHead small{font-size:10px;font-weight:750;color:#718096}.craftPlayHead>button{border:0;border-radius:13px;padding:10px 13px;background:#fff;color:#6842aa;font-weight:900;box-shadow:0 4px 12px rgba(70,48,100,.1)}
-.craftPlayProgress{height:8px;margin:11px 0 15px;border-radius:99px;background:#e7e2ee;overflow:hidden}.craftPlayProgress i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#76c94f,#a2dc63);transition:width .3s ease}
-.craftPlayLayout{display:grid;grid-template-columns:minmax(260px,1.15fr) minmax(220px,.85fr);gap:18px;align-items:start}.craftPuzzleBoard{display:grid;width:100%;overflow:hidden;border:3px solid #173d78;border-radius:18px;background:#fff;box-shadow:0 10px 25px rgba(23,61,120,.12)}
-.craftPuzzleSlot{position:relative;min-width:0;min-height:0;padding:0;border:1px dashed #9badc4;background:linear-gradient(135deg,#fbfcfe,#f0f4f8);overflow:hidden}.craftPuzzleSlot.target{background:#f0fbe9}.craftPuzzleSlot.filled{border:0;background:#fff}.craftPuzzleSlotNo{position:absolute;inset:0;display:grid;place-items:center;font-size:clamp(10px,2vw,17px);font-weight:950;color:#bdc6d2}.craftPuzzleCrop{position:absolute;inset:0;display:block;background-repeat:no-repeat}
-.craftPuzzleTrayWrap{padding:13px;border-radius:18px;background:#fff;border:1px solid #e3dcef}.craftPuzzleTrayWrap>b{display:block;color:#173d78;font-size:15px}.craftPuzzleTrayWrap>small{display:block;margin:2px 0 10px;color:#7e8795;font-size:9px;font-weight:750}.craftPuzzleTray{display:grid;gap:8px;align-items:start}.craftPuzzlePiece{position:relative;width:100%;padding:0;overflow:hidden;border:2px solid #d4c8e5;border-radius:12px;background:#fff;box-shadow:0 5px 11px rgba(45,35,65,.11);cursor:grab;touch-action:none;transition:transform .15s,border-color .15s,box-shadow .15s}.craftPuzzlePiece:active{cursor:grabbing}.craftPuzzlePiece.selected{border-color:#7b4cc5;box-shadow:0 0 0 3px rgba(123,76,197,.15),0 7px 14px rgba(45,35,65,.12);transform:translateY(-2px)}.craftPuzzlePiece.wrong{animation:craftPuzzleWrong .45s ease}.craftTrayDone{grid-column:1/-1;display:grid;place-items:center;min-height:130px;font-size:60px;animation:craftPuzzlePop .5s ease}
-.craftPuzzleDragGhost{position:fixed;z-index:9999;pointer-events:none;overflow:hidden;border:3px solid #7b4cc5;border-radius:12px;background:#fff;box-shadow:0 15px 35px rgba(39,28,62,.28);transform:scale(1.04);opacity:.94}
-.craftPuzzleSuccess{display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px 14px;border-radius:17px;background:#ecfae8;border:1px solid #b9e7aa;animation:craftPuzzlePop .45s ease}.craftPuzzleSuccess>span{font-size:34px}.craftPuzzleSuccess>div{display:grid;flex:1}.craftPuzzleSuccess b{color:#2d762b;font-size:15px}.craftPuzzleSuccess small{color:#54754f;font-size:9px;font-weight:750}.craftPuzzleSuccess button{border:0;border-radius:11px;padding:9px 12px;background:#55ad3e;color:#fff;font-weight:950}
-@keyframes craftPuzzleWrong{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-@keyframes craftPuzzlePop{0%{transform:scale(.94);opacity:0}100%{transform:scale(1);opacity:1}}
-@media(max-width:760px){.craftActions3{grid-template-columns:1fr 1fr}.craftPlayBtn{grid-column:1/-1}.craftPlay{padding:12px;border-radius:20px}.craftPlayLayout{grid-template-columns:1fr;gap:12px}.craftPuzzleTray{grid-template-columns:repeat(4,1fr)!important}.craftPlayHead{align-items:flex-start}.craftPlayHead b{font-size:17px}.craftPlayHead small{font-size:9px}.craftPlayHead>button{padding:8px 9px;font-size:9px}.craftPuzzlePiece{border-radius:9px}}
-@media(max-width:430px){.craftPuzzleTray{grid-template-columns:repeat(3,1fr)!important}.craftPuzzleSuccess{align-items:flex-start}.craftPuzzleSuccess button{font-size:9px}.craftPlayHead span{font-size:9px}}
+/* Malino v26 — Malen nach Zahlen */
+.craftModeTabs5{grid-template-columns:repeat(5,1fr)}
+.numberFlow{display:grid;grid-template-columns:210px 1fr;gap:12px;margin-top:14px}.numberSide,.numberMain{border:1px solid #e3e8ef;border-radius:24px;background:#fff;padding:15px;box-shadow:0 9px 22px rgba(34,54,86,.06)}.numberSide{background:linear-gradient(155deg,#fff1e5,#fff)}.numberSide p{font-size:10px;line-height:1.7;color:#596b82;font-weight:700}
+.numberControls{display:grid;grid-template-columns:1.35fr 1fr;gap:12px}.numberControls>div{display:grid;gap:6px}.numberControls small{font-size:8px;font-weight:900;color:#6d7b8e}.numberThemes{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}.numberThemes button{min-height:62px;border:1px solid #e1e6ed;border-radius:12px;background:#fff;color:#526981}.numberThemes button.active{border-color:#ef9c45;background:#fff5e8;box-shadow:0 0 0 2px rgba(239,156,69,.12)}.numberThemes span{display:block;font-size:25px}.numberThemes b{display:block;font-size:7px}
+.numberLegend{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:14px 0}.numberLegend span{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;box-shadow:0 3px 9px rgba(0,0,0,.12)}.numberLegend b{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#fff;color:#173d78;font-size:11px}
+.numberCanvas{position:relative;display:grid;gap:2px;max-width:620px;margin:auto;padding:8px;border:3px solid #173d78;border-radius:20px;background:#173d78}.numberCanvas>button{aspect-ratio:1;border:0;background:#fff;color:#56687c;font-size:16px;font-weight:950;transition:transform .15s,background .2s}.numberCanvas>button:active{transform:scale(.94)}.numberCanvas>button.painted{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.25)}.numberCenterIcon{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:72px;opacity:.16;pointer-events:none;filter:grayscale(.2)}
+.numberComplete{position:absolute;z-index:4;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;place-items:center;padding:15px 28px;border-radius:20px;background:rgba(255,255,255,.96);box-shadow:0 16px 40px rgba(34,54,86,.22);color:#24703a}.numberComplete span{font-size:35px}.numberComplete b{font-size:17px}.numberComplete small{font-weight:900;color:#d58a20}
+.numberProgress{position:relative;overflow:hidden;height:28px;max-width:620px;margin:10px auto;border-radius:999px;background:#edf1f5}.numberProgress>span{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#ef9c45,#6fbe67);transition:width .25s}.numberProgress>b{position:relative;z-index:2;display:grid;place-items:center;height:100%;color:#173d78;font-size:10px}
+@media(max-width:1000px){.craftModeTabs5{grid-template-columns:repeat(3,1fr)}.numberFlow{grid-template-columns:170px 1fr}.numberThemes{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){.craftModeTabs5{grid-template-columns:1fr}.numberFlow{grid-template-columns:1fr}.numberSide{display:grid;grid-template-columns:1fr 90px}.numberControls{grid-template-columns:1fr}.numberCanvas{max-width:100%}.numberCenterIcon{font-size:52px}}

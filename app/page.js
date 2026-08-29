@@ -279,23 +279,15 @@ function buildMaze(cols,rows,seed){
  return{cols,rows,cells};
 }
 
-function MazeBoard({maze,startEmoji,endEmoji,className="",playerIndex=null,trail=[],onCellClick}){
+function MazeBoard({maze,startEmoji,endEmoji,className=""}){
  if(!maze)return null;
  const cell=50,w=maze.cols*cell,h=maze.rows*cell;
- const playerX=playerIndex==null?null:(playerIndex%maze.cols)*cell+cell*.5;
- const playerY=playerIndex==null?null:((playerIndex/maze.cols)|0)*cell+cell*.5;
  return <svg className={`mazeBoard ${className}`} viewBox={`0 0 ${w} ${h}`} role="img" aria-label="Labyrinth">
   <rect x="0" y="0" width={w} height={h} rx="12" fill="#fff"/>
-  {trail.length>1&&<polyline
-   className="mazeTrail"
-   points={trail.map(i=>`${(i%maze.cols)*cell+cell*.5},${((i/maze.cols)|0)*cell+cell*.5}`).join(" ")}
-   fill="none" stroke="#8bd85c" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" opacity=".38"
-  />}
   <g stroke="#173d78" strokeWidth="5" strokeLinecap="round">
    {maze.cells.map((c,i)=>{
     const x=(i%maze.cols)*cell,y=((i/maze.cols)|0)*cell;
     return <g key={i}>
-     {onCellClick&&<rect x={x+4} y={y+4} width={cell-8} height={cell-8} fill="transparent" stroke="none" onClick={()=>onCellClick(i)} className="mazeHitCell"/>}
      {c.t?<line x1={x} y1={y} x2={x+cell} y2={y}/>:null}
      {c.r?<line x1={x+cell} y1={y} x2={x+cell} y2={y+cell}/>:null}
      {c.b?<line x1={x} y1={y+cell} x2={x+cell} y2={y+cell}/>:null}
@@ -305,157 +297,9 @@ function MazeBoard({maze,startEmoji,endEmoji,className="",playerIndex=null,trail
   </g>
   <circle cx={cell*.5} cy={cell*.5} r={cell*.32} fill="#eaf7ff"/>
   <circle cx={w-cell*.5} cy={h-cell*.5} r={cell*.32} fill="#fff1c8"/>
-  {playerIndex==null&&<text x={cell*.5} y={cell*.66} textAnchor="middle" fontSize={cell*.46}>{startEmoji}</text>}
-  <text x={w-cell*.5} y={h-cell*.66} textAnchor="middle" fontSize={cell*.46}>{endEmoji}</text>
-  {playerIndex!=null&&<g className="mazePlayer" aria-hidden="true">
-   <circle cx={playerX} cy={playerY} r={cell*.34} fill="#eaf7ff" stroke="#65b944" strokeWidth="3"/>
-   <text x={playerX} y={playerY+cell*.16} textAnchor="middle" fontSize={cell*.46}>{startEmoji}</text>
-  </g>}
+  <text x={cell*.5} y={cell*.66} textAnchor="middle" fontSize={cell*.46}>{startEmoji}</text>
+  <text x={w-cell*.5} y={h-cell*.34} textAnchor="middle" fontSize={cell*.46}>{endEmoji}</text>
  </svg>
-}
-
-function InteractiveMaze({maze,startEmoji,endEmoji}){
- const [player,setPlayer]=useState(0);
- const [trail,setTrail]=useState([0]);
- const [complete,setComplete]=useState(false);
- const [bump,setBump]=useState(0);
- const boardRef=useRef(null);
- const goal=maze?maze.cells.length-1:0;
- useEffect(()=>{setPlayer(0);setTrail([0]);setComplete(false);setBump(0)},[maze]);
- if(!maze)return null;
- const tryMove=dir=>{
-  if(complete)return;
-  const cell=maze.cells[player],x=player%maze.cols,y=(player/maze.cols)|0;
-  const moves={up:["t",0,-1],right:["r",1,0],down:["b",0,1],left:["l",-1,0]};
-  const [wall,dx,dy]=moves[dir];
-  if(cell[wall]){setBump(v=>v+1);return}
-  const nx=x+dx,ny=y+dy;
-  if(nx<0||ny<0||nx>=maze.cols||ny>=maze.rows)return;
-  const next=ny*maze.cols+nx;
-  setPlayer(next);
-  setTrail(prev=>[...prev,next]);
-  if(next===goal)setComplete(true);
- };
- const handleKey=e=>{
-  const map={ArrowUp:"up",w:"up",W:"up",ArrowRight:"right",d:"right",D:"right",ArrowDown:"down",s:"down",S:"down",ArrowLeft:"left",a:"left",A:"left"};
-  const dir=map[e.key];
-  if(dir){e.preventDefault();tryMove(dir)}
- };
- const handleCellClick=index=>{
-  if(complete||index===player)return;
-  const px=player%maze.cols,py=(player/maze.cols)|0,tx=index%maze.cols,ty=(index/maze.cols)|0;
-  if(Math.abs(px-tx)+Math.abs(py-ty)!==1){setBump(v=>v+1);return}
-  if(tx===px&&ty===py-1)tryMove("up");
-  else if(tx===px+1&&ty===py)tryMove("right");
-  else if(tx===px&&ty===py+1)tryMove("down");
-  else if(tx===px-1&&ty===py)tryMove("left");
- };
- const reset=()=>{setPlayer(0);setTrail([0]);setComplete(false);setBump(0);boardRef.current?.focus()};
- return <div className={`interactiveMaze ${complete?"complete":""} ${bump?"hasBump":""}`}>
-  <div className="mazePlayStatus" aria-live="polite">
-   <span>{complete?"🎉 Geschafft! Du hast das Ziel erreicht.":"🎮 Bewege die Figur bis zum Ziel."}</span>
-   <small>Tippe auf ein Nachbarfeld oder nutze Pfeile / WASD.</small>
-  </div>
-  <div ref={boardRef} className="mazeKeyboardArea" tabIndex={0} onKeyDown={handleKey} aria-label="Interaktives Labyrinth. Mit Pfeiltasten oder WASD bewegen.">
-   <MazeBoard maze={maze} startEmoji={startEmoji} endEmoji={endEmoji} playerIndex={player} trail={trail} onCellClick={handleCellClick}/>
-  </div>
-  <div className="mazeDpad" aria-label="Labyrinth-Steuerung">
-   <button className="up" onClick={()=>tryMove("up")} aria-label="Nach oben">↑</button>
-   <button className="left" onClick={()=>tryMove("left")} aria-label="Nach links">←</button>
-   <button className="down" onClick={()=>tryMove("down")} aria-label="Nach unten">↓</button>
-   <button className="right" onClick={()=>tryMove("right")} aria-label="Nach rechts">→</button>
-   <button className="reset" onClick={reset} aria-label="Labyrinth neu starten">↺ Neu</button>
-  </div>
-  {complete&&<div className="mazeSuccessCard"><span>⭐</span><div><b>Ziel erreicht!</b><small>Super gemacht. Du kannst neu starten oder eine neue Variante erzeugen.</small></div></div>}
- </div>
-}
-
-
-function InteractiveCraftPuzzle({src,title,cols,rows,aspectRatio,onComplete}){
- const count=cols*rows;
- const [placed,setPlaced]=useState([]);
- const [order,setOrder]=useState(()=>Array.from({length:count},(_,i)=>i));
- const [selected,setSelected]=useState(null);
- const [drag,setDrag]=useState(null);
- const [miss,setMiss]=useState(null);
- const [round,setRound]=useState(0);
- const complete=placed.length===count;
- const [arW,arH]=String(aspectRatio||"1/1").split("/").map(Number);
- const pieceAspect=(arW||1)/(arH||1)*rows/cols;
- const pieceStyle=id=>{
-  const x=id%cols,y=(id/cols)|0;
-  return {
-   backgroundImage:`url("${src}")`,
-   backgroundSize:`${cols*100}% ${rows*100}%`,
-   backgroundPosition:`${cols===1?0:(x/(cols-1))*100}% ${rows===1?0:(y/(rows-1))*100}%`
-  };
- };
- const shuffle=()=>{
-  const next=Array.from({length:count},(_,i)=>i);
-  for(let i=next.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[next[i],next[j]]=[next[j],next[i]]}
-  if(next.every((v,i)=>v===i)&&next.length>1)[next[0],next[1]]=[next[1],next[0]];
-  setOrder(next);
- };
- const reset=()=>{setPlaced([]);setSelected(null);setDrag(null);setMiss(null);setRound(v=>v+1);shuffle()};
- useEffect(()=>{setPlaced([]);setSelected(null);setDrag(null);setMiss(null);shuffle()},[src,cols,rows]);
- useEffect(()=>{if(complete&&count>0)onComplete?.()},[complete]);
- const wrong=id=>{setMiss(id);setTimeout(()=>setMiss(current=>current===id?null:current),500)};
- const place=(pieceId,slotId)=>{
-  if(pieceId==null||placed.includes(pieceId))return;
-  if(pieceId!==slotId){wrong(pieceId);return}
-  setPlaced(prev=>prev.includes(pieceId)?prev:[...prev,pieceId]);
-  setSelected(null);
- };
- const onPiecePointerDown=(e,id)=>{
-  if(placed.includes(id))return;
-  e.preventDefault();
-  const r=e.currentTarget.getBoundingClientRect();
-  setSelected(id);
-  setDrag({id,x:e.clientX,y:e.clientY,w:r.width,h:r.height,ox:e.clientX-r.left,oy:e.clientY-r.top,moved:false});
- };
- useEffect(()=>{
-  if(!drag)return;
-  const move=e=>setDrag(d=>d?{...d,x:e.clientX,y:e.clientY,moved:d.moved||Math.hypot(e.clientX-d.x,e.clientY-d.y)>4}:d);
-  const up=e=>{
-   const id=drag.id;
-   const target=document.elementFromPoint(e.clientX,e.clientY)?.closest?.("[data-puzzle-slot]");
-   if(target)place(id,Number(target.dataset.puzzleSlot));
-   setDrag(null);
-  };
-  window.addEventListener("pointermove",move,{passive:true});
-  window.addEventListener("pointerup",up,{passive:true,once:true});
-  window.addEventListener("pointercancel",up,{passive:true,once:true});
-  return()=>{window.removeEventListener("pointermove",move);window.removeEventListener("pointerup",up);window.removeEventListener("pointercancel",up)};
- },[drag?.id,placed]);
- const remaining=order.filter(id=>!placed.includes(id));
- return <div className={`craftPlay ${complete?"complete":""}`} key={round}>
-  <div className="craftPlayHead">
-   <div><span>🎮 Interaktives Puzzle</span><b>{complete?"Geschafft!":`${placed.length} / ${count} Teile richtig`}</b><small>{complete?"Super gepuzzelt!":"Ziehe ein Teil an die richtige Stelle – oder tippe Teil und Feld an."}</small></div>
-   <button onClick={reset}>↺ Neu mischen</button>
-  </div>
-  <div className="craftPlayProgress" aria-label={`${placed.length} von ${count} Teilen`}><i style={{width:`${count?placed.length/count*100:0}%`}}/></div>
-  <div className="craftPlayLayout">
-   <div className="craftPuzzleBoard" style={{gridTemplateColumns:`repeat(${cols},1fr)`,gridTemplateRows:`repeat(${rows},1fr)`,aspectRatio}} aria-label={`Puzzle ${title}`}>
-    {Array.from({length:count},(_,slot)=>{
-     const isPlaced=placed.includes(slot);
-     return <button key={slot} data-puzzle-slot={slot} className={`craftPuzzleSlot ${isPlaced?"filled":""} ${selected===slot?"target":""}`} onClick={()=>!isPlaced&&selected!=null&&place(selected,slot)} aria-label={`Puzzle-Feld ${slot+1}`}>
-      {isPlaced?<span className="craftPuzzleCrop" style={pieceStyle(slot)}/>:<span className="craftPuzzleSlotNo">{slot+1}</span>}
-     </button>
-    })}
-   </div>
-   <div className="craftPuzzleTrayWrap">
-    <b>Teile</b><small>{selected!=null?"Jetzt das passende Feld antippen.":"Ziehen oder antippen."}</small>
-    <div className="craftPuzzleTray" style={{gridTemplateColumns:`repeat(${count<=4?2:count<=9?3:4},1fr)`}}>
-     {remaining.map(id=><button key={id} className={`craftPuzzlePiece ${selected===id?"selected":""} ${miss===id?"wrong":""}`} style={{aspectRatio:pieceAspect}} onPointerDown={e=>onPiecePointerDown(e,id)} onClick={()=>setSelected(id)} aria-pressed={selected===id} aria-label={`Puzzleteil ${id+1}`}>
-      <span className="craftPuzzleCrop" style={pieceStyle(id)}/>
-     </button>)}
-     {remaining.length===0&&<div className="craftTrayDone">⭐</div>}
-    </div>
-   </div>
-  </div>
-  {drag&&<div className="craftPuzzleDragGhost" style={{left:drag.x-drag.ox,top:drag.y-drag.oy,width:drag.w,height:drag.h,aspectRatio:pieceAspect}}><span className="craftPuzzleCrop" style={pieceStyle(drag.id)}/></div>}
-  {complete&&<div className="craftPuzzleSuccess"><span>🎉</span><div><b>Geschafft!</b><small>Alle {count} Teile sind am richtigen Platz.</small></div><button onClick={reset}>Noch einmal</button></div>}
- </div>
 }
 
 export default function Page(){
@@ -476,7 +320,6 @@ export default function Page(){
  const [craftStyle,setCraftStyle]=useState("bw");
  const [savedCraftPuzzles,setSavedCraftPuzzles]=useState([]);
  const [craftMode,setCraftMode]=useState("puzzle");
- const [craftPlayOpen,setCraftPlayOpen]=useState(false);
  const [mazeThemeId,setMazeThemeId]=useState("fox");
  const [mazeDifficulty,setMazeDifficulty]=useState("leicht");
  const [mazeSeed,setMazeSeed]=useState(2311);
@@ -485,9 +328,6 @@ export default function Page(){
  const [differenceDifficulty,setDifferenceDifficulty]=useState("leicht");
  const [differenceSeed,setDifferenceSeed]=useState(2401);
  const [savedDifferences,setSavedDifferences]=useState([]);
- const [differenceFound,setDifferenceFound]=useState([]);
- const [differenceMiss,setDifferenceMiss]=useState(null);
- const [differenceComplete,setDifferenceComplete]=useState(false);
  const [hiddenThemeId,setHiddenThemeId]=useState("forest");
  const [hiddenDifficulty,setHiddenDifficulty]=useState("leicht");
  const [hiddenSeed,setHiddenSeed]=useState(2501);
@@ -495,6 +335,11 @@ export default function Page(){
  const [hiddenFound,setHiddenFound]=useState([]);
  const [hiddenMiss,setHiddenMiss]=useState(null);
  const [hiddenComplete,setHiddenComplete]=useState(false);
+ const [numberThemeId,setNumberThemeId]=useState("malino");
+ const [numberDifficulty,setNumberDifficulty]=useState("leicht");
+ const [numberPainted,setNumberPainted]=useState([]);
+ const [savedNumberArt,setSavedNumberArt]=useState([]);
+
 
 
 
@@ -611,6 +456,8 @@ export default function Page(){
    setScreenTimeLimit(Number.isFinite(limit)?limit:0);
    const anim=localStorage.getItem("malino:animations:v1");
    if(anim!==null)setAnimationsEnabled(anim!=="off");
+   const numberArt=localStorage.getItem("malino:numberArt:v1");
+   if(numberArt){try{setSavedNumberArt(JSON.parse(numberArt)||[])}catch{}}
    const hidden=localStorage.getItem("malino:hidden:v1");
    if(hidden){try{setSavedHidden(JSON.parse(hidden)||[])}catch{}}
    const diffs=localStorage.getItem("malino:differences:v1");
@@ -654,20 +501,18 @@ export default function Page(){
  },[savedDifferences]);
 
  useEffect(()=>{
-  setDifferenceFound([]);
-  setDifferenceMiss(null);
-  setDifferenceComplete(false);
- },[differenceThemeId,differenceDifficulty,differenceSeed]);
-
- useEffect(()=>{
   try{localStorage.setItem("malino:hidden:v1",JSON.stringify(savedHidden))}catch{}
  },[savedHidden]);
+
+ useEffect(()=>{try{localStorage.setItem("malino:numberArt:v1",JSON.stringify(savedNumberArt))}catch{}},[savedNumberArt]);
 
  useEffect(()=>{
   setHiddenFound([]);
   setHiddenMiss(null);
   setHiddenComplete(false);
  },[hiddenThemeId,hiddenDifficulty,hiddenSeed]);
+
+ useEffect(()=>{setNumberPainted([])},[numberThemeId,numberDifficulty]);
 
  useEffect(()=>{
   if(typeof document==="undefined")return;
@@ -1084,6 +929,30 @@ export default function Page(){
  },[hiddenThemeId,hiddenDifficulty,hiddenSeed]);
  const hiddenBoardKey=`${hiddenThemeId}:${hiddenDifficulty}:${hiddenSeed}`;
  const hiddenAlreadySolved=hiddenSolved.includes(hiddenBoardKey);
+ const numberThemes=[
+  {id:"malino",title:"Malino",icon:"🦁"},
+  {id:"rocket",title:"Rakete",icon:"🚀"},
+  {id:"dino",title:"Dinosaurier",icon:"🦕"},
+  {id:"unicorn",title:"Einhorn",icon:"🦄"},
+  {id:"tractor",title:"Traktor",icon:"🚜"},
+  {id:"fish",title:"Unterwasser",icon:"🐠"}
+ ];
+ const numberDifficultyMeta={
+  leicht:{label:"Leicht",age:"4–5",colors:4,cols:4,rows:4},
+  mittel:{label:"Mittel",age:"5–7",colors:6,cols:5,rows:5},
+  schwer:{label:"Schwer",age:"7+",colors:8,cols:6,rows:6}
+ };
+ const numberPalette=["#f5b642","#ef6f61","#58a6e7","#63bd72","#9b72d2","#f28fbd","#56c7c2","#8d6e63"];
+ const activeNumberTheme=numberThemes.find(x=>x.id===numberThemeId)||numberThemes[0];
+ const activeNumberDifficulty=numberDifficultyMeta[numberDifficulty]||numberDifficultyMeta.leicht;
+ const numberCells=useMemo(()=>{
+  const {cols,rows,colors}=activeNumberDifficulty;
+  const seed=[...`${numberThemeId}-${numberDifficulty}`].reduce((v,ch)=>((v*31)+ch.charCodeAt(0))>>>0,17);
+  const rand=mazeRand(seed);
+  return Array.from({length:cols*rows},(_,i)=>({id:i,n:1+Math.floor(rand()*colors)}));
+ },[numberThemeId,numberDifficulty]);
+ const numberDone=numberPainted.length===numberCells.length;
+
 
 
 
@@ -1145,24 +1014,38 @@ export default function Page(){
  const setDailyStreak=value=>updateProfileField("dailyStreak",value);
  const setLastDailyDate=value=>updateProfileField("lastDailyDate",value);
 
- const tapDifference=(side,index)=>{
-  if(differenceFound.includes(index))return;
-  const correct=differenceChanges.some(change=>change.idx===index);
-  if(correct){
-   const next=[...differenceFound,index];
-   setDifferenceFound(next);
-   setDifferenceMiss(null);
-   playSound("success");
-   if(next.length>=activeDifferenceDifficulty.count){
-    setDifferenceComplete(true);
-    playSound("stars");
-   }
-   return;
-  }
-  const missId=`${side}:${index}:${Date.now()}`;
-  setDifferenceMiss(missId);
-  playSound("click");
-  setTimeout(()=>setDifferenceMiss(current=>current===missId?null:current),420);
+ const paintNumberCell=(cell)=>{
+  if(numberPainted.includes(cell.id))return;
+  setNumberPainted([...numberPainted,cell.id]);
+  playSound("success");
+  if(numberPainted.length+1===numberCells.length){setStars(stars+3);playSound("stars")}
+ };
+ const saveNumberArt=()=>{
+  const item={id:`number-${Date.now()}`,themeId:numberThemeId,difficulty:numberDifficulty,painted:numberPainted,createdAt:new Date().toISOString()};
+  setSavedNumberArt([item,...savedNumberArt].slice(0,18));playSound("success");
+ };
+ const openSavedNumberArt=item=>{
+  setCraftMode("numbers");setNumberThemeId(item.themeId);setNumberDifficulty(item.difficulty);setNumberPainted(item.painted||[]);playSound("click");
+ };
+ const shareNumberPdf=()=>{
+  if(typeof window==="undefined")return;
+  try{
+   const W=1240,H=1754,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");if(!x)return;
+   x.fillStyle="#fff";x.fillRect(0,0,W,H);x.textAlign="center";x.fillStyle="#173d78";x.font="800 38px system-ui";x.fillText(`🎨 Malen nach Zahlen – ${activeNumberTheme.title}`,W/2,90);
+   x.fillStyle="#66778c";x.font="500 20px system-ui";x.fillText(`${activeNumberDifficulty.label} · Male jedes Feld in der Farbe seiner Nummer aus.`,W/2,135);
+   const cols=activeNumberDifficulty.cols,rows=activeNumberDifficulty.rows,size=Math.min(900/cols,1050/rows),bw=cols*size,bh=rows*size,bx=(W-bw)/2,by=220;
+   numberCells.forEach((cell,i)=>{const col=i%cols,row=(i/cols)|0,xx=bx+col*size,yy=by+row*size;x.fillStyle="#fff";x.fillRect(xx,yy,size,size);x.strokeStyle="#718096";x.lineWidth=2;x.strokeRect(xx,yy,size,size);x.fillStyle="#42546b";x.font=`700 ${Math.max(18,size*.18)}px system-ui`;x.fillText(String(cell.n),xx+size/2,yy+size/2+8)});
+   x.fillStyle="#173d78";x.font="800 22px system-ui";x.fillText("Farben:",W/2,by+bh+70);
+   const n=activeNumberDifficulty.colors;
+   for(let i=0;i<n;i++){const xx=W/2-(n-1)*55+i*110;x.fillStyle=numberPalette[i];x.beginPath();x.arc(xx,by+bh+125,30,0,Math.PI*2);x.fill();x.fillStyle="#173d78";x.font="800 18px system-ui";x.fillText(String(i+1),xx,by+bh+132)}
+   x.fillStyle="#8a96a5";x.font="500 16px system-ui";x.fillText("Malino – kreative Spielzeit ohne Bildschirm",W/2,H-35);
+   const data=c.toDataURL("image/jpeg",.95).split(",")[1],bin=atob(data),jpg=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)jpg[i]=bin.charCodeAt(i);
+   const enc=new TextEncoder(),chunks=[];let off=0;const ofs=[0],add=d=>{const b=typeof d==="string"?enc.encode(d):d;chunks.push(b);off+=b.length},obj=(n,b)=>{ofs[n]=off;add(`${n} 0 obj\n${b}\nendobj\n`)};
+   add("%PDF-1.4\n");obj(1,"<< /Type /Catalog /Pages 2 0 R >>");obj(2,"<< /Type /Pages /Kids [3 0 R] /Count 1 >>");obj(3,"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>");
+   ofs[4]=off;add(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${W} /Height ${H} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`);add(jpg);add("\nendstream\nendobj\n");const ct="q\n595.28 0 0 841.89 0 0 cm\n/Im0 Do\nQ\n";ofs[5]=off;add(`5 0 obj\n<< /Length ${ct.length} >>\nstream\n${ct}endstream\nendobj\n`);const xr=off;add("xref\n0 6\n0000000000 65535 f \n");for(let i=1;i<=5;i++)add(String(ofs[i]).padStart(10,"0")+" 00000 n \n");add(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF`);const total=chunks.reduce((q,b)=>q+b.length,0),pdf=new Uint8Array(total);let p=0;chunks.forEach(b=>{pdf.set(b,p);p+=b.length});
+   const blob=new Blob([pdf],{type:"application/pdf"}),file=new File([blob],`malino-malen-nach-zahlen-${numberThemeId}.pdf`,{type:"application/pdf"});
+   if(navigator.share&&navigator.canShare?.({files:[file]}))navigator.share({files:[file],title:"Malino – Malen nach Zahlen"}).catch(()=>{});else{const u=URL.createObjectURL(blob),aa=document.createElement("a");aa.href=u;aa.download=file.name;aa.click();setTimeout(()=>URL.revokeObjectURL(u),120000)}
+  }catch{}
  };
 
  const tapHiddenTarget=(item,index)=>{
@@ -1452,9 +1335,8 @@ export default function Page(){
   setCraftImageId(item.imageId);
   setCraftPieces(item.pieces);
   setCraftStyle(item.style);
-  setCraftPlayOpen(true);
   playSound("click");
-  setTimeout(()=>document.querySelector(".craftPlay")?.scrollIntoView({behavior:"smooth",block:"center"}),80);
+  setTimeout(()=>document.querySelector(".craftFlow")?.scrollIntoView({behavior:"smooth",block:"start"}),40);
  };
 
  const saveCraftPuzzle=()=>{
@@ -2129,11 +2011,12 @@ export default function Page(){
     <div className="craftScore"><span>{craftMode==="maze"?"🌀":"🧩"}</span><b>{craftMode==="maze"?savedMazes.length:savedCraftPuzzles.length}</b><small>gespeichert</small></div>
    </div>
 
-   <div className="craftModeTabs craftModeTabs4" role="tablist" aria-label="Basteln & Spielen">
+   <div className="craftModeTabs craftModeTabs5" role="tablist" aria-label="Basteln & Spielen">
     <button className={craftMode==="puzzle"?"active":""} onClick={()=>setCraftMode("puzzle")}><span>🧩</span><div><b>Meine Puzzle</b><small>Ausmalen, schneiden & puzzeln</small></div></button>
     <button className={craftMode==="maze"?"active":""} onClick={()=>setCraftMode("maze")}><span>🌀</span><div><b>Labyrinthe</b><small>Weg finden, speichern & drucken</small></div></button>
     <button className={craftMode==="difference"?"active":""} onClick={()=>setCraftMode("difference")}><span>🔎</span><div><b>Unterschiede</b><small>Genau hinschauen & entdecken</small></div></button>
     <button className={craftMode==="hidden"?"active":""} onClick={()=>setCraftMode("hidden")}><span>🔍</span><div><b>Versteckte Dinge</b><small>Suchen, finden & markieren</small></div></button>
+    <button className={craftMode==="numbers"?"active":""} onClick={()=>setCraftMode("numbers")}><span>🎨</span><div><b>Malen nach Zahlen</b><small>Farben nach Nummern entdecken</small></div></button>
    </div>
 
    {craftMode==="puzzle"&&<>
@@ -2162,7 +2045,7 @@ export default function Page(){
      </div>
 
      <div className="craftStep craftStep3">
-      <div className="craftStepHead"><span>3</span><div><b>Vorschau & Spielen</b><small>Digital puzzeln oder ausdrucken</small></div></div>
+      <div className="craftStepHead"><span>3</span><div><b>Vorschau & Drucken</b><small>So sieht dein Puzzle aus</small></div></div>
       <div className="craftPreviewStage">
        <div className={`craftPreview ${craftStyle==="bw"?"bw":""}`} style={{aspectRatio:`${activeCraftTemplate.w}/${activeCraftTemplate.h}`}}>
         <img src={activeCraftSrc} alt={activeCraftTemplate.title}/>
@@ -2171,23 +2054,13 @@ export default function Page(){
         <span className="cutScissors cutScissorsA">✂️</span><span className="cutScissors cutScissorsB">✂️</span>
        </div>
       </div>
-      <div className="craftActions craftActions3">
-       <button className="craftPlayBtn" onClick={()=>setCraftPlayOpen(v=>!v)}>{craftPlayOpen?"✕ Spiel schließen":"🎮 Jetzt spielen"}</button>
+      <div className="craftActions">
        <button className="craftSaveBtn" onClick={saveCraftPuzzle}>💾 Speichern</button>
        <button className="craftPrintBtn" onClick={printCraftPuzzle}>↗️ Teilen / Drucken</button>
       </div>
-      <small className="craftA4">Am Bildschirm spielen oder als A4-Puzzle ausschneiden.</small>
+      <small className="craftA4">Format: A4 · zum Ausschneiden</small>
      </div>
     </div>
-
-    {craftPlayOpen&&<InteractiveCraftPuzzle
-     src={activeCraftSrc}
-     title={activeCraftTemplate.title}
-     cols={craftGrid[0]}
-     rows={craftGrid[1]}
-     aspectRatio={`${activeCraftTemplate.w}/${activeCraftTemplate.h}`}
-     onComplete={()=>playSound("success")}
-    />}
 
     <div className="craftSavedHead">
      <div><span className="eyebrow">Meine Sammlung</span><h2>Gespeicherte Puzzle</h2></div>
@@ -2243,7 +2116,7 @@ export default function Page(){
       <div className="craftStepHead"><span>3</span><div><b>Vorschau & Drucken</b><small>{activeMazeTheme.title}</small></div></div>
       <div className="mazePreviewWrap">
        <div className="mazeStartGoal"><span>{activeMazeTheme.start} START</span><span>ZIEL {activeMazeTheme.end}</span></div>
-       <InteractiveMaze maze={activeMaze} startEmoji={activeMazeTheme.start} endEmoji={activeMazeTheme.end}/>
+       <MazeBoard maze={activeMaze} startEmoji={activeMazeTheme.start} endEmoji={activeMazeTheme.end}/>
       </div>
       <div className="mazeActions">
        <button className="craftSaveBtn" onClick={saveMaze}>💾 Speichern</button>
@@ -2304,23 +2177,10 @@ export default function Page(){
 
      <div className="differencePanel differencePreviewPanel">
       <div className="craftStepHead"><span>3</span><div><b>Vorschau & Drucken</b><small>Finde {activeDifferenceDifficulty.count} Unterschiede</small></div></div>
-      <div className="differencePlayHead">
-       <span>👆 Tippe auf die Unterschiede in Bild A oder Bild B.</span>
-       <b>{differenceFound.length}/{activeDifferenceDifficulty.count}</b>
-      </div>
       <div className="differenceCompare">
-       <div className="differenceScene interactive"><b>Bild A</b><div>{differenceTokens.map((t,i)=>{
-        const found=differenceFound.includes(i);
-        const miss=differenceMiss?.startsWith(`a:${i}:`);
-        return <button key={i} type="button" className={`differenceCell ${found?"found":""} ${miss?"miss":""}`} aria-label={`Bild A, Feld ${i+1}${found?", Unterschied gefunden":""}`} onClick={()=>tapDifference("a",i)}><span>{t}</span>{found&&<em>✓</em>}</button>
-       })}</div></div>
-       <div className="differenceScene interactive"><b>Bild B</b><div>{changedDifferenceTokens.map((t,i)=>{
-        const found=differenceFound.includes(i);
-        const miss=differenceMiss?.startsWith(`b:${i}:`);
-        return <button key={i} type="button" className={`differenceCell ${found?"found":""} ${miss?"miss":""}`} aria-label={`Bild B, Feld ${i+1}${found?", Unterschied gefunden":""}`} onClick={()=>tapDifference("b",i)}><span>{t}</span>{found&&<em>✓</em>}</button>
-       })}</div></div>
+       <div className="differenceScene"><b>Bild A</b><div>{differenceTokens.map((t,i)=><span key={i}>{t}</span>)}</div></div>
+       <div className="differenceScene"><b>Bild B</b><div>{changedDifferenceTokens.map((t,i)=><span key={i}>{t}</span>)}</div></div>
       </div>
-      {differenceComplete&&<div className="differenceCompleteCard"><span>🎉</span><div><b>Geschafft!</b><small>Du hast alle {activeDifferenceDifficulty.count} Unterschiede gefunden.</small></div><button type="button" onClick={newDifferenceVariant}>Neue Runde</button></div>}
       <div className="mazeActions">
        <button className="craftSaveBtn" onClick={saveDifference}>💾 Speichern</button>
        <button className="craftPrintBtn" onClick={shareDifferencePdf}>↗️ Teilen / Drucken</button>
@@ -2396,6 +2256,32 @@ export default function Page(){
     </div>
     <div className="craftSavedHead"><div><span className="eyebrow">Meine Sammlung</span><h2>Gespeicherte Suchbilder</h2></div><span>{savedHidden.length}</span></div>
     {savedHidden.length===0?<div className="craftEmpty"><span>🔍</span><div><b>Noch kein Suchbild gespeichert</b><small>Erstelle oben deine erste Variante.</small></div></div>:<div className="differenceSavedGrid">{savedHidden.map(item=>{const t=hiddenThemes.find(x=>x.id===item.themeId)||hiddenThemes[0],d=hiddenDifficultyMeta[item.difficulty]||hiddenDifficultyMeta.leicht;return <article key={item.id} className="differenceSavedCard" role="button" tabIndex={0} onClick={()=>openSavedHidden(item)}><span>{t.icon}</span><div><b>{t.title}</b><small>{d.label} · {d.count} Gegenstände</small><em>Öffnen ›</em></div><button onClick={e=>{e.stopPropagation();setSavedHidden(savedHidden.filter(x=>x.id!==item.id))}}>×</button></article>})}</div>}
+   </>}
+
+   {craftMode==="numbers"&&<>
+    <div className="numberFlow">
+     <aside className="numberSide">
+      <div className="craftStepHead"><span>🎨</span><div><b>Malen nach Zahlen</b><small>Interaktiv & zum Drucken</small></div></div>
+      <img src="/assets/malino-raetsel-mascot.png" alt="Malino" className="hiddenMascot"/>
+      <p>Tippe auf die nummerierten Felder. Jede Nummer hat ihre eigene Farbe.</p>
+     </aside>
+     <main className="numberMain">
+      <div className="numberControls">
+       <div><small>Bild wählen</small><div className="numberThemes">{numberThemes.map(t=><button key={t.id} className={numberThemeId===t.id?"active":""} onClick={()=>setNumberThemeId(t.id)}><span>{t.icon}</span><b>{t.title}</b></button>)}</div></div>
+       <div><small>Schwierigkeit</small><div className="hiddenDiff">{Object.entries(numberDifficultyMeta).map(([id,m])=><button key={id} className={numberDifficulty===id?"active":""} onClick={()=>setNumberDifficulty(id)}>{m.label}<em>{m.colors} Farben</em></button>)}</div></div>
+      </div>
+      <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><span key={i} style={{background:numberPalette[i]}}><b>{i+1}</b></span>)}</div>
+      <div className="numberCanvas" style={{gridTemplateColumns:`repeat(${activeNumberDifficulty.cols},1fr)`}}>
+       {numberCells.map(cell=>{const painted=numberPainted.includes(cell.id);return <button key={cell.id} onClick={()=>paintNumberCell(cell)} className={painted?"painted":""} style={painted?{background:numberPalette[cell.n-1]}:{}}><b>{painted?"✓":cell.n}</b></button>})}
+       <div className="numberCenterIcon">{activeNumberTheme.icon}</div>
+       {numberDone&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
+      </div>
+      <div className="numberProgress"><span style={{width:`${Math.round(numberPainted.length/numberCells.length*100)}%`}}/><b>{numberPainted.length}/{numberCells.length}</b></div>
+      <div className="mazeActions"><button className="craftSaveBtn" onClick={saveNumberArt}>💾 Speichern</button><button className="craftPrintBtn" onClick={shareNumberPdf}>↗️ Teilen / Drucken (A4)</button></div>
+     </main>
+    </div>
+    <div className="craftSavedHead"><div><span className="eyebrow">Meine Sammlung</span><h2>Gespeicherte Zahlenbilder</h2></div><span>{savedNumberArt.length}</span></div>
+    {savedNumberArt.length===0?<div className="craftEmpty"><span>🎨</span><div><b>Noch kein Zahlenbild gespeichert</b><small>Male oben dein erstes Bild.</small></div></div>:<div className="differenceSavedGrid">{savedNumberArt.map(item=>{const t=numberThemes.find(x=>x.id===item.themeId)||numberThemes[0],d=numberDifficultyMeta[item.difficulty]||numberDifficultyMeta.leicht;return <article key={item.id} className="differenceSavedCard" role="button" onClick={()=>openSavedNumberArt(item)}><span>{t.icon}</span><div><b>{t.title}</b><small>{d.label} · {d.colors} Farben</small><em>Öffnen ›</em></div><button onClick={e=>{e.stopPropagation();setSavedNumberArt(savedNumberArt.filter(x=>x.id!==item.id))}}>×</button></article>})}</div>}
    </>}
 </section>}
 
