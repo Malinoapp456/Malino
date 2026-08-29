@@ -2736,11 +2736,10 @@ export default function Page(){
      .imageNumberBoard{position:relative;overflow:hidden;border:3px solid #173d78;border-radius:22px;background:#fff;box-shadow:0 12px 28px rgba(34,54,86,.12)}
      .imageNumberBase{display:block;width:100%;height:auto;filter:grayscale(1) brightness(1.22) contrast(.86);opacity:.92}
      .imageNumberOverlay{position:absolute;inset:0;width:100%;height:100%;display:block}
-     .imageNumberRegion path{cursor:pointer;touch-action:manipulation}
+     .imageNumberRegion path{cursor:pointer;touch-action:manipulation;pointer-events:all}
      .imageNumberRegion image{pointer-events:none}
-     .imageNumberLabel{fill:#173d78;font-size:18px;font-weight:950;text-anchor:middle;dominant-baseline:middle;pointer-events:none;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round}
      .numberImageNote{max-width:660px;margin:10px auto -2px;padding:8px 11px;border-radius:12px;background:#eaf6ff;color:#326590;text-align:center;font-size:9px;font-weight:900}
-     @media(max-width:650px){.imageNumberBoardWrap{max-width:100%}.imageNumberLabel{font-size:17px}.imageNumberBoard{border-radius:18px}}
+     @media(max-width:650px){.imageNumberBoardWrap{max-width:100%}.imageNumberBoard{border-radius:18px}}
     `}</style>
     <div className="numberFlow">
      <aside className="numberSide">
@@ -2755,7 +2754,7 @@ export default function Page(){
       </div>
             {numberDifficulty==="mittel"&&<div className="numberMittelNote">{"✨ Mittel: echte Felder · 6 Farben"}</div>}
       {numberDifficulty==="schwer"&&<div className="numberSchwerNote">🔥 Schwer: echte Felder · 8 Farben</div>}
-      {useImageNumberBoard&&<div className="numberImageNote">✨ Malino 2.0 · Bildbasierte Malvorlage</div>}
+      {useImageNumberBoard&&<div className="numberImageNote">✨ Malino 2.0 · Tippe direkt auf die nummerierten Flächen</div>}
 <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
       {useImageNumberBoard
        ?<div className="imageNumberBoardWrap">
@@ -2767,8 +2766,7 @@ export default function Page(){
             const painted=numberPainted.includes(mask.id);
             return <g key={mask.id} className={`imageNumberRegion ${painted?"painted":""}`}>
              {painted&&<image href="/assets/malino-2-0-board.png" x="0" y="0" width="720" height="803" clipPath={`url(#mask-${mask.id})`}/>}
-             <path d={mask.d} fill="transparent" stroke={painted?"rgba(23,61,120,.16)":"rgba(23,61,120,.28)"} strokeWidth="2" onClick={()=>paintNumberCell(mask,activeImageNumberMasks.length)}/>
-             {!painted&&<text x={mask.label[0]} y={mask.label[1]} className="imageNumberLabel">{mask.n}</text>}
+             <path d={mask.d} fill="rgba(255,255,255,0.001)" stroke="transparent" strokeWidth="0" onClick={()=>paintNumberCell(mask,activeImageNumberMasks.length)}/>
             </g>
            })}
           </svg>
