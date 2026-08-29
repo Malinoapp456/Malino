@@ -1108,9 +1108,92 @@ export default function Page(){
     {id:"starR",n:2,label:[405,82],d:"M405 50 L414 72 L438 74 L419 89 L425 113 L405 100 L385 113 L391 89 L372 74 L396 72 Z"},
     {id:"moon",n:5,label:[95,95],d:"M75 64 C99 49 124 60 129 82 C111 74 94 81 89 99 C84 116 91 130 106 139 C82 144 58 128 54 105 C51 87 58 74 75 64 Z"}
    ]
+  },
+  dino:{
+   title:"Dinosaurier",
+   regions:[
+    {id:"skyA",n:3,label:[80,75],d:"M18 18 H482 V150 C420 130 370 135 320 150 C260 168 210 166 160 149 C112 132 70 136 18 153 Z"},
+    {id:"skyB",n:5,label:[420,220],d:"M18 150 C90 130 150 138 210 157 C270 176 330 174 390 154 C425 142 455 143 482 151 V282 C420 263 360 276 300 290 C220 310 130 305 18 282 Z"},
+    {id:"ground",n:4,label:[85,435],d:"M18 282 C115 260 180 315 260 292 C335 270 410 260 482 288 V482 H18 Z"},
+    {id:"body",n:1,label:[270,300],d:"M180 250 C205 215 260 198 318 218 C365 235 390 278 380 330 C370 380 325 410 272 405 C220 400 177 365 170 320 C166 292 169 268 180 250 Z"},
+    {id:"belly",n:6,label:[282,340],d:"M231 278 C260 257 307 260 334 287 C357 310 355 352 326 374 C296 397 248 386 227 350 C211 323 214 297 231 278 Z"},
+    {id:"head",n:1,label:[145,205],d:"M90 166 C117 135 165 132 197 158 C229 184 229 227 200 250 C168 275 118 268 91 238 C70 214 71 188 90 166 Z"},
+    {id:"snout",n:5,label:[105,225],d:"M82 205 C105 194 139 197 157 216 C171 231 164 251 144 260 C119 271 91 260 80 242 C72 229 73 214 82 205 Z"},
+    {id:"tail",n:1,label:[420,285],d:"M358 258 C413 217 467 224 480 252 C454 256 432 270 415 294 C400 315 382 323 358 314 Z"},
+    {id:"legL",n:2,label:[225,420],d:"M214 373 C198 395 196 431 210 453 C224 473 253 468 258 445 C262 424 250 398 237 380 Z"},
+    {id:"legR",n:2,label:[330,420],d:"M322 372 C342 392 353 424 346 448 C338 474 307 474 297 450 C288 428 299 397 309 379 Z"},
+    {id:"platesA",n:4,label:[230,205],d:"M190 228 L205 184 L230 217 L252 172 L274 216 L299 178 L313 225 Z"},
+    {id:"platesB",n:5,label:[325,230],d:"M302 226 L325 190 L344 226 L365 202 L375 244 Z"},
+    {id:"sun",n:4,label:[410,90],d:"M410 50 C433 50 450 67 450 90 C450 113 433 130 410 130 C387 130 370 113 370 90 C370 67 387 50 410 50 Z"},
+    {id:"plantL",n:4,label:[75,355],d:"M45 395 C48 350 62 326 81 312 C84 340 82 365 75 395 C93 360 113 342 132 339 C121 368 102 386 80 401 Z"},
+    {id:"rock",n:6,label:[425,385],d:"M386 410 C390 378 411 361 436 365 C460 369 474 388 469 415 Z"}
+   ]
+  },
+  unicorn:{
+   title:"Einhorn",
+   regions:[
+    {id:"skyA",n:3,label:[70,75],d:"M18 18 H482 V145 C420 128 365 132 315 149 C260 167 210 165 158 148 C110 132 68 136 18 151 Z"},
+    {id:"skyB",n:5,label:[420,220],d:"M18 145 C90 130 150 137 210 155 C270 173 330 172 390 154 C430 142 457 143 482 151 V294 C405 276 350 286 290 300 C215 318 130 314 18 294 Z"},
+    {id:"ground",n:4,label:[70,430],d:"M18 294 C100 275 165 318 250 301 C335 284 412 274 482 300 V482 H18 Z"},
+    {id:"body",n:1,label:[280,300],d:"M185 250 C220 222 278 217 330 236 C374 252 397 288 390 329 C382 372 342 397 291 397 C238 397 190 373 176 335 C163 300 168 271 185 250 Z"},
+    {id:"belly",n:6,label:[285,340],d:"M220 290 C250 270 302 270 338 291 C358 303 366 329 354 350 C336 380 293 387 257 374 C228 364 210 335 220 290 Z"},
+    {id:"head",n:1,label:[165,210],d:"M105 170 C130 139 175 135 207 157 C238 180 242 217 217 244 C189 274 139 274 108 247 C84 226 82 194 105 170 Z"},
+    {id:"muzzle",n:5,label:[135,232],d:"M103 218 C126 204 158 208 177 227 C189 240 184 257 167 266 C143 278 113 267 101 249 C94 238 94 226 103 218 Z"},
+    {id:"maneA",n:2,label:[210,175],d:"M174 147 C201 119 231 129 237 155 C259 142 277 161 267 181 C248 211 226 229 205 245 C209 213 197 181 174 147 Z"},
+    {id:"maneB",n:6,label:[225,205],d:"M205 158 C224 145 246 151 252 171 C260 190 244 214 220 232 C225 202 219 180 205 158 Z"},
+    {id:"tailA",n:2,label:[410,315],d:"M374 286 C420 262 462 280 468 315 C442 311 423 322 407 345 C391 365 369 367 346 355 C372 342 383 318 374 286 Z"},
+    {id:"tailB",n:6,label:[445,315],d:"M405 290 C434 282 457 294 462 315 C440 315 423 327 411 345 C399 356 387 358 375 353 C395 336 405 315 405 290 Z"},
+    {id:"horn",n:4,label:[158,118],d:"M144 159 L157 83 L177 160 Z"},
+    {id:"legL",n:1,label:[238,420],d:"M225 374 C217 401 218 438 230 459 H259 C265 430 260 402 250 377 Z"},
+    {id:"legR",n:1,label:[330,420],d:"M317 374 C311 402 314 438 326 458 H355 C359 429 351 399 342 377 Z"},
+    {id:"cloud",n:3,label:[405,100],d:"M355 93 C365 67 393 62 409 81 C425 60 455 71 457 96 C478 97 483 121 466 132 H348 C329 120 334 99 355 93 Z"},
+    {id:"star",n:4,label:[85,180],d:"M85 145 L95 170 L122 172 L101 189 L107 216 L85 201 L63 216 L69 189 L48 172 L75 170 Z"}
+   ]
+  },
+  tractor:{
+   title:"Traktor",
+   regions:[
+    {id:"skyA",n:3,label:[80,75],d:"M18 18 H482 V145 C420 130 365 132 310 150 C255 168 205 166 155 150 C105 134 65 137 18 151 Z"},
+    {id:"skyB",n:5,label:[420,220],d:"M18 145 C95 128 158 137 215 155 C272 174 330 173 390 154 C427 142 456 143 482 151 V285 C420 270 350 279 295 292 C210 312 125 307 18 286 Z"},
+    {id:"field",n:4,label:[80,430],d:"M18 286 C110 270 175 312 255 296 C342 278 415 270 482 296 V482 H18 Z"},
+    {id:"body",n:1,label:[255,302],d:"M145 260 H346 C374 260 395 280 395 308 V350 H137 V282 C137 270 140 264 145 260 Z"},
+    {id:"hood",n:6,label:[170,292],d:"M110 274 H224 V344 H110 Z"},
+    {id:"grille",n:5,label:[120,310],d:"M110 290 H142 V335 H110 Z"},
+    {id:"cabin",n:2,label:[290,210],d:"M228 152 H342 L368 260 H224 Z"},
+    {id:"window",n:3,label:[292,205],d:"M247 172 H324 L340 240 H244 Z"},
+    {id:"windowShade",n:5,label:[315,210],d:"M286 172 H324 L340 240 H300 Z"},
+    {id:"wheelL",n:2,label:[178,386],d:"M118 386 C118 349 144 323 178 323 C212 323 238 349 238 386 C238 423 212 449 178 449 C144 449 118 423 118 386 Z"},
+    {id:"wheelLHub",n:6,label:[178,386],d:"M150 386 C150 369 162 357 178 357 C194 357 206 369 206 386 C206 403 194 415 178 415 C162 415 150 403 150 386 Z"},
+    {id:"wheelR",n:2,label:[366,390],d:"M302 390 C302 350 330 322 366 322 C402 322 430 350 430 390 C430 430 402 458 366 458 C330 458 302 430 302 390 Z"},
+    {id:"wheelRHub",n:6,label:[366,390],d:"M335 390 C335 371 348 358 366 358 C384 358 397 371 397 390 C397 409 384 422 366 422 C348 422 335 409 335 390 Z"},
+    {id:"exhaust",n:4,label:[178,200],d:"M165 150 H190 V260 H165 Z"},
+    {id:"sun",n:4,label:[420,90],d:"M420 52 C442 52 459 69 459 91 C459 113 442 130 420 130 C398 130 381 113 381 91 C381 69 398 52 420 52 Z"},
+    {id:"barn",n:4,label:[70,220],d:"M32 197 L83 153 L134 197 V275 H32 Z"}
+   ]
+  },
+  fish:{
+   title:"Unterwasser",
+   regions:[
+    {id:"waterA",n:3,label:[75,75],d:"M18 18 H482 V150 C420 132 365 137 310 153 C250 170 200 169 150 152 C103 136 65 138 18 153 Z"},
+    {id:"waterB",n:5,label:[420,230],d:"M18 150 C92 132 150 139 210 158 C270 177 330 175 390 157 C427 145 456 145 482 153 V355 C420 340 355 350 295 360 C215 375 130 368 18 352 Z"},
+    {id:"sand",n:4,label:[75,440],d:"M18 352 C105 338 180 380 255 365 C335 350 410 340 482 364 V482 H18 Z"},
+    {id:"fishBody",n:1,label:[250,245],d:"M150 245 C185 185 270 168 338 205 C373 224 391 248 392 263 C382 281 359 299 329 311 C259 339 183 315 150 263 Z"},
+    {id:"fishStripe",n:6,label:[275,250],d:"M244 185 C269 180 296 184 318 195 C304 226 304 279 320 312 C295 322 269 325 244 319 C258 280 258 224 244 185 Z"},
+    {id:"tail",n:2,label:[115,245],d:"M152 220 C121 191 83 185 58 202 C81 221 91 244 58 279 C88 293 124 281 153 258 Z"},
+    {id:"tailInner",n:5,label:[100,245],d:"M130 225 C108 209 88 207 75 213 C91 229 95 244 77 267 C94 273 112 265 131 253 Z"},
+    {id:"finTop",n:2,label:[265,175],d:"M229 195 C248 157 280 142 309 153 C298 173 287 192 277 211 Z"},
+    {id:"finBottom",n:2,label:[275,322],d:"M246 309 C269 345 306 354 331 333 C310 321 292 307 278 290 Z"},
+    {id:"eyePatch",n:4,label:[342,236],d:"M318 224 C329 209 352 208 365 222 C379 237 376 260 359 270 C342 281 320 271 313 253 C309 242 311 232 318 224 Z"},
+    {id:"coralA",n:2,label:[412,400],d:"M386 453 C390 415 383 387 393 364 C403 387 403 409 407 425 C415 392 430 370 445 359 C441 390 434 415 430 452 Z"},
+    {id:"coralB",n:6,label:[445,410],d:"M421 452 C423 420 420 398 429 382 C438 400 438 419 441 433 C448 410 457 394 468 384 C466 412 458 433 457 452 Z"},
+    {id:"weed",n:4,label:[90,400],d:"M70 452 C69 411 59 384 68 355 C80 377 82 402 84 424 C91 392 104 367 119 353 C117 390 108 419 105 452 Z"},
+    {id:"bubble1",n:3,label:[400,125],d:"M370 125 C370 108 383 95 400 95 C417 95 430 108 430 125 C430 142 417 155 400 155 C383 155 370 142 370 125 Z"},
+    {id:"bubble2",n:3,label:[442,190],d:"M421 190 C421 178 430 169 442 169 C454 169 463 178 463 190 C463 202 454 211 442 211 C430 211 421 202 421 190 Z"},
+    {id:"shell",n:4,label:[185,420],d:"M156 438 C163 405 185 384 210 390 C235 396 246 421 234 447 H156 Z"}
+   ]
   }
  };
- const useMittelRealNumberBoard=numberDifficulty==="mittel"&&(numberThemeId==="malino"||numberThemeId==="rocket");
+ const useMittelRealNumberBoard=numberDifficulty==="mittel"&&!!numberRealBoardsMittel[numberThemeId];
  const activeMittelRealNumberBoard=useMittelRealNumberBoard?numberRealBoardsMittel[numberThemeId]:null;
  const activeRealNumberBoard=useMittelRealNumberBoard?activeMittelRealNumberBoard:(numberRealBoards[numberThemeId]||numberRealBoards.malino);
  const activeRealNumberRegions=activeRealNumberBoard.regions;
@@ -2456,7 +2539,7 @@ export default function Page(){
        <div><small>Bild wählen</small><div className="numberThemes">{numberThemes.map(t=><button key={t.id} className={numberThemeId===t.id?"active":""} onClick={()=>setNumberThemeId(t.id)}><span>{t.icon}</span><b>{t.title}</b></button>)}</div></div>
        <div><small>Schwierigkeit</small><div className="hiddenDiff">{Object.entries(numberDifficultyMeta).map(([id,m])=><button key={id} className={numberDifficulty===id?"active":""} onClick={()=>setNumberDifficulty(id)}>{m.label}<em>{m.colors} Farben</em></button>)}</div></div>
       </div>
-            {numberDifficulty==="mittel"&&<div className="numberMittelNote">{useMittelRealNumberBoard?"✨ Neue Mittel-Plansza: echte Felder":"Diese Mittel-Plansza nutzt noch die sichere Raster-Version."}</div>}
+            {numberDifficulty==="mittel"&&<div className="numberMittelNote">{"✨ Mittel: echte Felder · 6 Farben"}</div>}
 <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
       {useRealNumberBoard
        ?<div className="realNumberBoardWrap">
