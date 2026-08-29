@@ -6926,3 +6926,16 @@ nav,
 @media(max-width:650px){
  .realNumberBoard{border-radius:18px}
 }
+
+/* Malino v26.3 — Mittel pilot for Malino + Rakete */
+.numberMittelNote{
+  max-width:660px;
+  margin:10px auto -2px;
+  padding:8px 11px;
+  border-radius:12px;
+  background:#f3edff;
+  color:#6740a3;
+  text-align:center;
+  font-size:9px;
+  font-weight:900;
+}

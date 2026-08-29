@@ -1059,9 +1059,62 @@ export default function Page(){
    ]
   }
  };
- const activeRealNumberBoard=numberRealBoards[numberThemeId]||numberRealBoards.malino;
+
+ const numberRealBoardsMittel={
+  malino:{
+   title:"Malino",
+   regions:[
+    {id:"sky",n:3,label:[420,85],d:"M18 18 H482 V132 C430 118 393 118 354 130 C320 141 292 141 259 127 C222 111 186 112 150 128 C111 145 67 148 18 134 Z"},
+    {id:"grass",n:4,label:[85,445],d:"M18 330 C82 315 135 321 181 337 C224 352 274 353 320 336 C371 316 421 318 482 337 V482 H18 Z"},
+    {id:"treeCrownA",n:4,label:[83,72],d:"M20 63 C42 30 77 29 93 51 C106 25 146 27 156 55 C180 34 210 45 211 75 C234 74 244 99 230 116 C214 135 184 132 169 112 C153 138 116 139 98 117 C78 141 40 133 34 106 C10 103 4 81 20 63 Z"},
+    {id:"treeCrownB",n:5,label:[150,88],d:"M116 75 C131 53 161 52 174 72 C190 51 222 61 223 86 C241 87 247 105 236 119 C220 136 196 128 184 113 C167 132 143 132 129 114 C111 126 92 114 94 96 C95 87 104 80 116 75 Z"},
+    {id:"trunk",n:2,label:[110,220],d:"M82 105 C103 113 128 114 147 106 L140 330 H78 Z"},
+    {id:"maneOuter",n:2,label:[290,142],d:"M203 147 C216 118 244 111 266 126 C284 99 320 103 336 127 C365 114 393 133 390 161 C417 167 424 197 407 217 C429 239 416 267 391 275 C398 301 372 324 347 315 C331 342 297 345 275 325 C249 343 216 326 212 299 C184 295 171 265 187 243 C166 225 173 193 198 182 C192 168 194 157 203 147 Z"},
+    {id:"maneInner",n:5,label:[290,255],d:"M230 178 C249 156 276 148 301 154 C329 161 349 181 354 207 C359 232 349 258 329 275 C309 292 280 299 255 288 C229 277 213 254 213 229 C213 210 219 191 230 178 Z"},
+    {id:"face",n:1,label:[290,198],d:"M247 163 C267 145 302 144 325 160 C348 177 353 214 336 238 C318 263 279 267 253 248 C227 229 224 185 247 163 Z"},
+    {id:"earL",n:1,label:[220,137],d:"M218 160 C200 148 194 127 205 113 C217 99 241 109 251 131 Z"},
+    {id:"earR",n:1,label:[357,135],d:"M327 132 C341 108 367 100 378 117 C389 135 372 154 354 164 Z"},
+    {id:"belly",n:6,label:[289,335],d:"M250 270 C272 256 310 256 332 273 C353 290 356 326 347 359 C338 390 315 411 287 412 C258 412 236 391 229 359 C221 325 227 288 250 270 Z"},
+    {id:"armL",n:1,label:[210,330],d:"M239 278 C211 286 193 309 188 336 C184 357 199 373 216 367 C232 361 239 341 246 320 Z"},
+    {id:"armR",n:1,label:[368,330],d:"M343 280 C371 290 388 314 390 340 C392 359 376 372 360 366 C345 360 341 339 334 320 Z"},
+    {id:"legL",n:1,label:[252,438],d:"M248 389 C230 401 223 428 229 450 C235 473 267 480 278 455 C287 435 278 407 264 394 Z"},
+    {id:"legR",n:1,label:[316,438],d:"M323 392 C340 407 347 432 340 454 C332 477 300 480 290 456 C282 434 291 407 306 394 Z"},
+    {id:"tailA",n:2,label:[405,345],d:"M347 340 C387 343 416 329 428 302 C437 281 440 269 452 266 C466 263 477 278 469 290 C461 301 450 307 441 309 C432 346 402 373 359 379 Z"},
+    {id:"tailTip",n:5,label:[456,281],d:"M437 269 C445 255 461 251 472 261 C483 272 479 289 466 296 C454 303 440 295 437 282 Z"},
+    {id:"cloudA",n:3,label:[392,92],d:"M353 68 C365 47 392 47 404 65 C421 53 445 61 447 81 C468 81 477 102 462 116 H348 C331 106 334 81 353 68 Z"},
+    {id:"cloudB",n:3,label:[438,120],d:"M409 106 C418 89 438 89 447 103 C460 94 477 102 478 116 C491 118 494 133 484 142 H404 C393 135 396 117 409 106 Z"},
+    {id:"flowerL",n:4,label:[94,388],d:"M64 383 C52 365 63 348 79 355 C84 336 107 336 112 355 C130 346 144 365 132 380 C147 393 138 413 118 409 C113 429 87 428 83 409 C63 416 49 397 64 383 Z"},
+    {id:"flowerR",n:4,label:[442,395],d:"M409 391 C396 373 407 356 424 363 C429 344 453 344 458 363 C476 354 489 373 477 388 C493 400 483 422 463 417 C458 437 432 436 428 417 C408 424 394 405 409 391 Z"}
+   ]
+  },
+  rocket:{
+   title:"Rakete",
+   regions:[
+    {id:"skyA",n:3,label:[80,80],d:"M18 18 H482 V146 C425 126 380 124 333 142 C292 158 250 157 209 142 C160 124 106 129 18 150 Z"},
+    {id:"skyB",n:5,label:[410,135],d:"M18 146 C96 126 161 132 215 150 C268 168 318 169 372 151 C411 138 447 139 482 149 V340 C415 321 350 332 287 351 C216 373 141 365 18 340 Z"},
+    {id:"ground",n:4,label:[70,430],d:"M18 340 C105 325 175 365 245 350 C330 331 404 315 482 340 V482 H18 Z"},
+    {id:"bodyA",n:1,label:[250,245],d:"M250 80 C305 128 330 194 318 270 C311 316 286 355 250 388 C214 355 189 316 182 270 C170 194 195 128 250 80 Z"},
+    {id:"bodyStripe",n:6,label:[250,285],d:"M188 260 C228 275 273 275 312 260 C310 292 299 319 283 343 C261 351 239 351 217 343 C201 319 190 292 188 260 Z"},
+    {id:"nose",n:2,label:[250,120],d:"M250 80 C276 104 294 128 306 155 C270 143 230 143 194 155 C206 128 224 104 250 80 Z"},
+    {id:"windowOuter",n:3,label:[250,205],d:"M216 190 C216 168 232 153 250 153 C268 153 284 168 284 190 C284 212 268 227 250 227 C232 227 216 212 216 190 Z"},
+    {id:"windowInner",n:5,label:[250,190],d:"M230 190 C230 177 239 168 250 168 C261 168 270 177 270 190 C270 203 261 212 250 212 C239 212 230 203 230 190 Z"},
+    {id:"finL",n:2,label:[182,305],d:"M188 260 C150 280 126 324 132 370 C158 353 181 337 205 314 Z"},
+    {id:"finR",n:2,label:[318,305],d:"M312 260 C350 280 374 324 368 370 C342 353 319 337 295 314 Z"},
+    {id:"flameOuter",n:4,label:[250,410],d:"M222 365 C235 390 224 421 250 455 C276 421 265 390 278 365 C262 378 238 378 222 365 Z"},
+    {id:"flameInner",n:6,label:[250,420],d:"M239 379 C245 398 241 414 250 435 C259 414 255 398 261 379 C254 384 246 384 239 379 Z"},
+    {id:"planet",n:4,label:[420,180],d:"M374 180 C374 153 394 134 420 134 C446 134 466 153 466 180 C466 207 446 226 420 226 C394 226 374 207 374 180 Z"},
+    {id:"planetRing",n:5,label:[420,180],d:"M365 177 C385 162 459 162 478 177 C462 187 438 192 420 192 C402 192 379 187 365 177 Z"},
+    {id:"starL",n:2,label:[100,190],d:"M100 150 L111 179 L143 181 L118 200 L126 232 L100 214 L74 232 L82 200 L57 181 L89 179 Z"},
+    {id:"starR",n:2,label:[405,82],d:"M405 50 L414 72 L438 74 L419 89 L425 113 L405 100 L385 113 L391 89 L372 74 L396 72 Z"},
+    {id:"moon",n:5,label:[95,95],d:"M75 64 C99 49 124 60 129 82 C111 74 94 81 89 99 C84 116 91 130 106 139 C82 144 58 128 54 105 C51 87 58 74 75 64 Z"}
+   ]
+  }
+ };
+ const useMittelRealNumberBoard=numberDifficulty==="mittel"&&(numberThemeId==="malino"||numberThemeId==="rocket");
+ const activeMittelRealNumberBoard=useMittelRealNumberBoard?numberRealBoardsMittel[numberThemeId]:null;
+ const activeRealNumberBoard=useMittelRealNumberBoard?activeMittelRealNumberBoard:(numberRealBoards[numberThemeId]||numberRealBoards.malino);
  const activeRealNumberRegions=activeRealNumberBoard.regions;
- const useRealNumberBoard=numberDifficulty==="leicht";
+ const useRealNumberBoard=numberDifficulty==="leicht"||useMittelRealNumberBoard;
  const realNumberDone=useRealNumberBoard&&numberPainted.length===activeRealNumberRegions.length;
 
 
@@ -2403,7 +2456,8 @@ export default function Page(){
        <div><small>Bild wählen</small><div className="numberThemes">{numberThemes.map(t=><button key={t.id} className={numberThemeId===t.id?"active":""} onClick={()=>setNumberThemeId(t.id)}><span>{t.icon}</span><b>{t.title}</b></button>)}</div></div>
        <div><small>Schwierigkeit</small><div className="hiddenDiff">{Object.entries(numberDifficultyMeta).map(([id,m])=><button key={id} className={numberDifficulty===id?"active":""} onClick={()=>setNumberDifficulty(id)}>{m.label}<em>{m.colors} Farben</em></button>)}</div></div>
       </div>
-      <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
+            {numberDifficulty==="mittel"&&<div className="numberMittelNote">{useMittelRealNumberBoard?"✨ Neue Mittel-Plansza: echte Felder":"Diese Mittel-Plansza nutzt noch die sichere Raster-Version."}</div>}
+<div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
       {useRealNumberBoard
        ?<div className="realNumberBoardWrap">
          <svg className="realNumberBoard" viewBox="0 0 500 500" aria-label={`${activeRealNumberBoard.title} Malen nach Zahlen`}>
