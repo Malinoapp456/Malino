@@ -6918,3 +6918,11 @@ nav,
 .numberRegion{cursor:pointer;touch-action:manipulation}.numberRegion path{transition:fill .18s ease,filter .18s ease}.numberRegion:active path{filter:brightness(.94)}
 .numberRegionLabel{font-size:18px;font-weight:950;fill:#173d78;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
 @media(max-width:650px){.realNumberBoardWrap{max-width:100%}.numberRegionLabel{font-size:16px}.numberLegend button{width:42px;height:42px}}
+
+/* Malino v26.2 — six real Leicht boards */
+.realNumberBoard .numberRegion:hover path{filter:brightness(.985)}
+.realNumberDetails{vector-effect:non-scaling-stroke}
+.numberThemes button.active span{transform:scale(1.08)}
+@media(max-width:650px){
+ .realNumberBoard{border-radius:18px}
+}

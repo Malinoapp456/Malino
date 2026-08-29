@@ -953,27 +953,116 @@ export default function Page(){
   return Array.from({length:cols*rows},(_,i)=>({id:i,n:1+Math.floor(rand()*colors)}));
  },[numberThemeId,numberDifficulty]);
  const numberDone=numberPainted.length===numberCells.length;
- const malinoLeichtRegions=[
-  {id:"sky1",n:3,label:[410,110],d:"M18 18 H482 V142 C440 118 402 116 362 134 C328 149 295 147 258 128 C222 110 182 112 146 132 C106 154 66 154 18 140 Z"},
-  {id:"grass1",n:4,label:[80,430],d:"M18 336 C70 318 118 320 162 334 C213 351 263 352 314 333 C362 315 415 316 482 338 V482 H18 Z"},
-  {id:"treeCrown",n:4,label:[90,72],d:"M22 62 C42 24 84 28 96 53 C114 22 156 29 162 62 C186 37 218 50 216 82 C239 82 245 113 225 125 C201 139 185 130 171 116 C157 141 118 142 100 119 C78 143 38 134 33 106 C9 104 4 79 22 62 Z"},
-  {id:"treeTrunk",n:2,label:[110,230],d:"M83 108 C105 116 128 116 146 108 L139 329 H78 Z"},
-  {id:"mane",n:2,label:[290,145],d:"M205 147 C217 120 246 113 267 127 C283 101 321 104 335 128 C363 114 392 132 389 160 C414 166 424 195 407 215 C428 235 417 266 392 274 C397 301 371 322 347 314 C331 341 296 346 276 325 C249 342 216 326 213 298 C185 294 173 265 188 243 C166 225 174 193 198 183 C191 168 194 156 205 147 Z"},
-  {id:"face",n:1,label:[288,188],d:"M242 160 C263 141 302 140 326 158 C350 176 354 217 335 240 C316 264 276 268 250 248 C224 228 220 184 242 160 Z"},
-  {id:"earL",n:1,label:[221,135],d:"M218 160 C201 147 194 126 206 113 C218 100 241 111 250 131"},
-  {id:"earR",n:1,label:[356,132],d:"M327 132 C340 108 367 101 377 117 C387 134 372 154 354 163"},
-  {id:"belly",n:1,label:[290,332],d:"M250 269 C270 255 310 254 332 272 C352 289 356 326 347 360 C339 390 315 411 287 412 C258 412 236 391 229 359 C221 324 226 287 250 269 Z"},
-  {id:"armL",n:1,label:[214,330],d:"M238 278 C210 286 192 309 188 336 C186 356 199 372 216 367 C232 362 238 340 246 321"},
-  {id:"armR",n:1,label:[365,330],d:"M343 280 C371 290 387 314 389 340 C390 358 376 372 360 366 C345 360 341 339 334 320"},
-  {id:"legL",n:1,label:[252,438],d:"M248 389 C230 401 222 428 228 450 C235 474 267 479 278 455 C287 435 278 407 264 394"},
-  {id:"legR",n:1,label:[316,438],d:"M323 392 C339 407 347 432 340 454 C332 477 300 480 290 456 C282 434 291 407 306 394"},
-  {id:"tail",n:2,label:[420,348],d:"M347 340 C397 345 423 321 432 287 C437 269 453 264 464 276 C476 289 465 304 452 310 C445 357 410 385 359 380"},
-  {id:"cloud1",n:3,label:[407,95],d:"M356 68 C368 47 395 47 405 66 C423 52 446 61 448 81 C470 80 477 103 463 116 H350 C331 108 334 82 356 68 Z"},
-  {id:"flower1",n:4,label:[96,387],d:"M64 383 C51 365 62 348 79 355 C84 336 108 336 113 355 C131 346 144 365 132 380 C148 392 138 414 118 409 C113 429 87 428 83 409 C63 416 49 397 64 383 Z"},
-  {id:"flower2",n:4,label:[442,394],d:"M409 391 C396 373 407 356 424 363 C429 344 453 344 458 363 C476 354 489 373 477 388 C493 400 483 422 463 417 C458 437 432 436 428 417 C408 424 394 405 409 391 Z"}
- ];
- const useRealNumberBoard=numberThemeId==="malino"&&numberDifficulty==="leicht";
- const realNumberDone=useRealNumberBoard&&numberPainted.length===malinoLeichtRegions.length;
+ const numberRealBoards={
+  malino:{
+   title:"Malino",
+   regions:[
+    {id:"sky1",n:3,label:[410,110],d:"M18 18 H482 V142 C440 118 402 116 362 134 C328 149 295 147 258 128 C222 110 182 112 146 132 C106 154 66 154 18 140 Z"},
+    {id:"grass1",n:4,label:[80,430],d:"M18 336 C70 318 118 320 162 334 C213 351 263 352 314 333 C362 315 415 316 482 338 V482 H18 Z"},
+    {id:"treeCrown",n:4,label:[90,72],d:"M22 62 C42 24 84 28 96 53 C114 22 156 29 162 62 C186 37 218 50 216 82 C239 82 245 113 225 125 C201 139 185 130 171 116 C157 141 118 142 100 119 C78 143 38 134 33 106 C9 104 4 79 22 62 Z"},
+    {id:"treeTrunk",n:2,label:[110,230],d:"M83 108 C105 116 128 116 146 108 L139 329 H78 Z"},
+    {id:"mane",n:2,label:[290,145],d:"M205 147 C217 120 246 113 267 127 C283 101 321 104 335 128 C363 114 392 132 389 160 C414 166 424 195 407 215 C428 235 417 266 392 274 C397 301 371 322 347 314 C331 341 296 346 276 325 C249 342 216 326 213 298 C185 294 173 265 188 243 C166 225 174 193 198 183 C191 168 194 156 205 147 Z"},
+    {id:"face",n:1,label:[288,188],d:"M242 160 C263 141 302 140 326 158 C350 176 354 217 335 240 C316 264 276 268 250 248 C224 228 220 184 242 160 Z"},
+    {id:"earL",n:1,label:[221,135],d:"M218 160 C201 147 194 126 206 113 C218 100 241 111 250 131 Z"},
+    {id:"earR",n:1,label:[356,132],d:"M327 132 C340 108 367 101 377 117 C387 134 372 154 354 163 Z"},
+    {id:"belly",n:1,label:[290,332],d:"M250 269 C270 255 310 254 332 272 C352 289 356 326 347 360 C339 390 315 411 287 412 C258 412 236 391 229 359 C221 324 226 287 250 269 Z"},
+    {id:"armL",n:1,label:[214,330],d:"M238 278 C210 286 192 309 188 336 C186 356 199 372 216 367 C232 362 238 340 246 321 Z"},
+    {id:"armR",n:1,label:[365,330],d:"M343 280 C371 290 387 314 389 340 C390 358 376 372 360 366 C345 360 341 339 334 320 Z"},
+    {id:"legL",n:1,label:[252,438],d:"M248 389 C230 401 222 428 228 450 C235 474 267 479 278 455 C287 435 278 407 264 394 Z"},
+    {id:"legR",n:1,label:[316,438],d:"M323 392 C339 407 347 432 340 454 C332 477 300 480 290 456 C282 434 291 407 306 394 Z"},
+    {id:"tail",n:2,label:[420,348],d:"M347 340 C397 345 423 321 432 287 C437 269 453 264 464 276 C476 289 465 304 452 310 C445 357 410 385 359 380 Z"},
+    {id:"cloud1",n:3,label:[407,95],d:"M356 68 C368 47 395 47 405 66 C423 52 446 61 448 81 C470 80 477 103 463 116 H350 C331 108 334 82 356 68 Z"},
+    {id:"flower1",n:4,label:[96,387],d:"M64 383 C51 365 62 348 79 355 C84 336 108 336 113 355 C131 346 144 365 132 380 C148 392 138 414 118 409 C113 429 87 428 83 409 C63 416 49 397 64 383 Z"},
+    {id:"flower2",n:4,label:[442,394],d:"M409 391 C396 373 407 356 424 363 C429 344 453 344 458 363 C476 354 489 373 477 388 C493 400 483 422 463 417 C458 437 432 436 428 417 C408 424 394 405 409 391 Z"}
+   ]
+  },
+  rocket:{
+   title:"Rakete",
+   regions:[
+    {id:"sky",n:3,label:[80,85],d:"M18 18 H482 V340 C410 320 345 330 285 350 C215 372 140 365 18 340 Z"},
+    {id:"moonGround",n:4,label:[70,430],d:"M18 340 C105 325 175 365 245 350 C330 331 404 315 482 340 V482 H18 Z"},
+    {id:"rocketBody",n:1,label:[255,235],d:"M250 80 C305 128 330 194 318 270 C311 316 286 355 250 388 C214 355 189 316 182 270 C170 194 195 128 250 80 Z"},
+    {id:"rocketNose",n:2,label:[250,120],d:"M250 80 C276 104 294 128 306 155 C270 143 230 143 194 155 C206 128 224 104 250 80 Z"},
+    {id:"window",n:3,label:[250,205],d:"M216 190 C216 168 232 153 250 153 C268 153 284 168 284 190 C284 212 268 227 250 227 C232 227 216 212 216 190 Z"},
+    {id:"leftFin",n:2,label:[185,305],d:"M188 260 C150 280 126 324 132 370 C158 353 181 337 205 314 Z"},
+    {id:"rightFin",n:2,label:[315,305],d:"M312 260 C350 280 374 324 368 370 C342 353 319 337 295 314 Z"},
+    {id:"flame",n:4,label:[250,410],d:"M222 365 C235 390 224 421 250 455 C276 421 265 390 278 365 C262 378 238 378 222 365 Z"},
+    {id:"planet",n:4,label:[405,180],d:"M374 180 C374 153 394 134 420 134 C446 134 466 153 466 180 C466 207 446 226 420 226 C394 226 374 207 374 180 Z"},
+    {id:"star1",n:2,label:[100,190],d:"M100 150 L111 179 L143 181 L118 200 L126 232 L100 214 L74 232 L82 200 L57 181 L89 179 Z"},
+    {id:"star2",n:2,label:[405,82],d:"M405 50 L414 72 L438 74 L419 89 L425 113 L405 100 L385 113 L391 89 L372 74 L396 72 Z"}
+   ]
+  },
+  dino:{
+   title:"Dinosaurier",
+   regions:[
+    {id:"sky",n:3,label:[85,80],d:"M18 18 H482 V280 C420 260 360 275 300 290 C220 310 130 305 18 282 Z"},
+    {id:"ground",n:4,label:[85,430],d:"M18 282 C115 260 180 315 260 292 C335 270 410 260 482 288 V482 H18 Z"},
+    {id:"body",n:1,label:[270,300],d:"M180 250 C205 215 260 198 318 218 C365 235 390 278 380 330 C370 380 325 410 272 405 C220 400 177 365 170 320 C166 292 169 268 180 250 Z"},
+    {id:"head",n:1,label:[155,210],d:"M90 166 C117 135 165 132 197 158 C229 184 229 227 200 250 C168 275 118 268 91 238 C70 214 71 188 90 166 Z"},
+    {id:"belly",n:2,label:[282,340],d:"M231 278 C260 257 307 260 334 287 C357 310 355 352 326 374 C296 397 248 386 227 350 C211 323 214 297 231 278 Z"},
+    {id:"tail",n:1,label:[410,285],d:"M358 258 C413 217 467 224 480 252 C454 256 432 270 415 294 C400 315 382 323 358 314 Z"},
+    {id:"legL",n:2,label:[225,418],d:"M214 373 C198 395 196 431 210 453 C224 473 253 468 258 445 C262 424 250 398 237 380 Z"},
+    {id:"legR",n:2,label:[330,418],d:"M322 372 C342 392 353 424 346 448 C338 474 307 474 297 450 C288 428 299 397 309 379 Z"},
+    {id:"plates1",n:4,label:[230,205],d:"M190 228 L205 184 L230 217 L252 172 L274 216 L299 178 L313 225 Z"},
+    {id:"sun",n:4,label:[410,90],d:"M410 50 C433 50 450 67 450 90 C450 113 433 130 410 130 C387 130 370 113 370 90 C370 67 387 50 410 50 Z"},
+    {id:"plant1",n:4,label:[75,355],d:"M45 395 C48 350 62 326 81 312 C84 340 82 365 75 395 C93 360 113 342 132 339 C121 368 102 386 80 401 Z"}
+   ]
+  },
+  unicorn:{
+   title:"Einhorn",
+   regions:[
+    {id:"sky",n:3,label:[70,80],d:"M18 18 H482 V294 C405 276 350 286 290 300 C215 318 130 314 18 294 Z"},
+    {id:"ground",n:4,label:[70,430],d:"M18 294 C100 275 165 318 250 301 C335 284 412 274 482 300 V482 H18 Z"},
+    {id:"body",n:1,label:[280,300],d:"M185 250 C220 222 278 217 330 236 C374 252 397 288 390 329 C382 372 342 397 291 397 C238 397 190 373 176 335 C163 300 168 271 185 250 Z"},
+    {id:"head",n:1,label:[165,210],d:"M105 170 C130 139 175 135 207 157 C238 180 242 217 217 244 C189 274 139 274 108 247 C84 226 82 194 105 170 Z"},
+    {id:"mane",n:2,label:[210,175],d:"M174 147 C201 119 231 129 237 155 C259 142 277 161 267 181 C248 211 226 229 205 245 C209 213 197 181 174 147 Z"},
+    {id:"tail",n:2,label:[410,315],d:"M374 286 C420 262 462 280 468 315 C442 311 423 322 407 345 C391 365 369 367 346 355 C372 342 383 318 374 286 Z"},
+    {id:"horn",n:4,label:[150,125],d:"M144 159 L157 83 L177 160 Z"},
+    {id:"legL",n:1,label:[238,420],d:"M225 374 C217 401 218 438 230 459 H259 C265 430 260 402 250 377 Z"},
+    {id:"legR",n:1,label:[330,420],d:"M317 374 C311 402 314 438 326 458 H355 C359 429 351 399 342 377 Z"},
+    {id:"cloud",n:3,label:[405,100],d:"M355 93 C365 67 393 62 409 81 C425 60 455 71 457 96 C478 97 483 121 466 132 H348 C329 120 334 99 355 93 Z"},
+    {id:"star",n:4,label:[85,180],d:"M85 145 L95 170 L122 172 L101 189 L107 216 L85 201 L63 216 L69 189 L48 172 L75 170 Z"},
+    {id:"flower",n:4,label:[95,380],d:"M70 380 C55 365 65 345 83 353 C88 333 111 333 116 353 C134 345 145 365 131 379 C146 394 136 414 118 407 C112 427 88 427 82 407 C64 414 54 394 70 380 Z"}
+   ]
+  },
+  tractor:{
+   title:"Traktor",
+   regions:[
+    {id:"sky",n:3,label:[80,80],d:"M18 18 H482 V285 C420 270 350 279 295 292 C210 312 125 307 18 286 Z"},
+    {id:"field",n:4,label:[80,430],d:"M18 286 C110 270 175 312 255 296 C342 278 415 270 482 296 V482 H18 Z"},
+    {id:"tractorBody",n:1,label:[255,302],d:"M145 260 H346 C374 260 395 280 395 308 V350 H137 V282 C137 270 140 264 145 260 Z"},
+    {id:"hood",n:1,label:[170,292],d:"M110 274 H224 V344 H110 Z"},
+    {id:"cabin",n:2,label:[290,210],d:"M228 152 H342 L368 260 H224 Z"},
+    {id:"window",n:3,label:[292,205],d:"M247 172 H324 L340 240 H244 Z"},
+    {id:"wheelL",n:2,label:[170,385],d:"M118 386 C118 349 144 323 178 323 C212 323 238 349 238 386 C238 423 212 449 178 449 C144 449 118 423 118 386 Z"},
+    {id:"wheelR",n:2,label:[350,385],d:"M302 390 C302 350 330 322 366 322 C402 322 430 350 430 390 C430 430 402 458 366 458 C330 458 302 430 302 390 Z"},
+    {id:"exhaust",n:4,label:[187,200],d:"M165 150 H190 V260 H165 Z"},
+    {id:"sun",n:4,label:[420,90],d:"M420 52 C442 52 459 69 459 91 C459 113 442 130 420 130 C398 130 381 113 381 91 C381 69 398 52 420 52 Z"},
+    {id:"barn",n:4,label:[70,220],d:"M32 197 L83 153 L134 197 V275 H32 Z"}
+   ]
+  },
+  fish:{
+   title:"Unterwasser",
+   regions:[
+    {id:"water",n:3,label:[75,75],d:"M18 18 H482 V355 C420 340 355 350 295 360 C215 375 130 368 18 352 Z"},
+    {id:"sand",n:4,label:[75,440],d:"M18 352 C105 338 180 380 255 365 C335 350 410 340 482 364 V482 H18 Z"},
+    {id:"fishBody",n:1,label:[250,245],d:"M150 245 C185 185 270 168 338 205 C373 224 391 248 392 263 C382 281 359 299 329 311 C259 339 183 315 150 263 Z"},
+    {id:"fishTail",n:2,label:[115,245],d:"M152 220 C121 191 83 185 58 202 C81 221 91 244 58 279 C88 293 124 281 153 258 Z"},
+    {id:"finTop",n:2,label:[265,175],d:"M229 195 C248 157 280 142 309 153 C298 173 287 192 277 211 Z"},
+    {id:"finBottom",n:2,label:[275,322],d:"M246 309 C269 345 306 354 331 333 C310 321 292 307 278 290 Z"},
+    {id:"eyePatch",n:4,label:[342,236],d:"M318 224 C329 209 352 208 365 222 C379 237 376 260 359 270 C342 281 320 271 313 253 C309 242 311 232 318 224 Z"},
+    {id:"coral",n:2,label:[412,400],d:"M386 453 C390 415 383 387 393 364 C403 387 403 409 407 425 C415 392 430 370 445 359 C441 390 434 415 430 452 Z"},
+    {id:"weed1",n:4,label:[90,400],d:"M70 452 C69 411 59 384 68 355 C80 377 82 402 84 424 C91 392 104 367 119 353 C117 390 108 419 105 452 Z"},
+    {id:"bubble1",n:3,label:[390,125],d:"M370 125 C370 108 383 95 400 95 C417 95 430 108 430 125 C430 142 417 155 400 155 C383 155 370 142 370 125 Z"},
+    {id:"bubble2",n:3,label:[435,190],d:"M421 190 C421 178 430 169 442 169 C454 169 463 178 463 190 C463 202 454 211 442 211 C430 211 421 202 421 190 Z"},
+    {id:"shell",n:4,label:[185,420],d:"M156 438 C163 405 185 384 210 390 C235 396 246 421 234 447 H156 Z"}
+   ]
+  }
+ };
+ const activeRealNumberBoard=numberRealBoards[numberThemeId]||numberRealBoards.malino;
+ const activeRealNumberRegions=activeRealNumberBoard.regions;
+ const useRealNumberBoard=numberDifficulty==="leicht";
+ const realNumberDone=useRealNumberBoard&&numberPainted.length===activeRealNumberRegions.length;
 
 
 
@@ -1059,11 +1148,29 @@ export default function Page(){
    const W=1240,H=1754,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");if(!x)return;
    x.fillStyle="#fff";x.fillRect(0,0,W,H);x.textAlign="center";x.fillStyle="#173d78";x.font="800 38px system-ui";x.fillText(`🎨 Malen nach Zahlen – ${activeNumberTheme.title}`,W/2,90);
    x.fillStyle="#66778c";x.font="500 20px system-ui";x.fillText(`${activeNumberDifficulty.label} · Male jedes Feld in der Farbe seiner Nummer aus.`,W/2,135);
-   const cols=activeNumberDifficulty.cols,rows=activeNumberDifficulty.rows,size=Math.min(900/cols,1050/rows),bw=cols*size,bh=rows*size,bx=(W-bw)/2,by=220;
-   numberCells.forEach((cell,i)=>{const col=i%cols,row=(i/cols)|0,xx=bx+col*size,yy=by+row*size;x.fillStyle="#fff";x.fillRect(xx,yy,size,size);x.strokeStyle="#718096";x.lineWidth=2;x.strokeRect(xx,yy,size,size);x.fillStyle="#42546b";x.font=`700 ${Math.max(18,size*.18)}px system-ui`;x.fillText(String(cell.n),xx+size/2,yy+size/2+8)});
-   x.fillStyle="#173d78";x.font="800 22px system-ui";x.fillText("Farben:",W/2,by+bh+70);
+   let paletteY=0;
+   if(useRealNumberBoard&&typeof Path2D!=="undefined"){
+    const bx=170,by=210,scale=1.8;
+    x.save();x.translate(bx,by);x.scale(scale,scale);
+    x.fillStyle="#fff";x.fillRect(8,8,484,484);
+    x.strokeStyle="#173d78";x.lineWidth=3;x.strokeRect(8,8,484,484);
+    activeRealNumberRegions.forEach(region=>{
+     const p=new Path2D(region.d);
+     x.fillStyle="#fff";x.fill(p);
+     x.strokeStyle="#173d78";x.lineWidth=3;x.stroke(p);
+     x.fillStyle="#173d78";x.font="800 16px system-ui";x.textAlign="center";
+     x.fillText(String(region.n),region.label[0],region.label[1]);
+    });
+    x.restore();
+    paletteY=by+500*scale+55;
+   }else{
+    const cols=activeNumberDifficulty.cols,rows=activeNumberDifficulty.rows,size=Math.min(900/cols,1050/rows),bw=cols*size,bh=rows*size,bx=(W-bw)/2,by=220;
+    numberCells.forEach((cell,i)=>{const col=i%cols,row=(i/cols)|0,xx=bx+col*size,yy=by+row*size;x.fillStyle="#fff";x.fillRect(xx,yy,size,size);x.strokeStyle="#718096";x.lineWidth=2;x.strokeRect(xx,yy,size,size);x.fillStyle="#42546b";x.font=`700 ${Math.max(18,size*.18)}px system-ui`;x.textAlign="center";x.fillText(String(cell.n),xx+size/2,yy+size/2+8)});
+    paletteY=by+bh+70;
+   }
+   x.fillStyle="#173d78";x.font="800 22px system-ui";x.textAlign="center";x.fillText("Farben:",W/2,paletteY);
    const n=activeNumberDifficulty.colors;
-   for(let i=0;i<n;i++){const xx=W/2-(n-1)*55+i*110;x.fillStyle=numberPalette[i];x.beginPath();x.arc(xx,by+bh+125,30,0,Math.PI*2);x.fill();x.fillStyle="#173d78";x.font="800 18px system-ui";x.fillText(String(i+1),xx,by+bh+132)}
+   for(let i=0;i<n;i++){const xx=W/2-(n-1)*55+i*110;x.fillStyle=numberPalette[i];x.beginPath();x.arc(xx,paletteY+55,30,0,Math.PI*2);x.fill();x.fillStyle="#173d78";x.font="800 18px system-ui";x.fillText(String(i+1),xx,paletteY+62)}
    x.fillStyle="#8a96a5";x.font="500 16px system-ui";x.fillText("Malino – kreative Spielzeit ohne Bildschirm",W/2,H-35);
    const data=c.toDataURL("image/jpeg",.95).split(",")[1],bin=atob(data),jpg=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)jpg[i]=bin.charCodeAt(i);
    const enc=new TextEncoder(),chunks=[];let off=0;const ofs=[0],add=d=>{const b=typeof d==="string"?enc.encode(d):d;chunks.push(b);off+=b.length},obj=(n,b)=>{ofs[n]=off;add(`${n} 0 obj\n${b}\nendobj\n`)};
@@ -2299,21 +2406,36 @@ export default function Page(){
       <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
       {useRealNumberBoard
        ?<div className="realNumberBoardWrap">
-         <svg className="realNumberBoard" viewBox="0 0 500 500" aria-label="Malino Malen nach Zahlen">
+         <svg className="realNumberBoard" viewBox="0 0 500 500" aria-label={`${activeRealNumberBoard.title} Malen nach Zahlen`}>
           <rect x="8" y="8" width="484" height="484" rx="24" fill="#fff" stroke="#173d78" strokeWidth="5"/>
-          {malinoLeichtRegions.map(region=>{
+          {activeRealNumberRegions.map(region=>{
            const painted=numberPainted.includes(region.id);
-           return <g key={region.id} className={`numberRegion ${painted?"painted":""}`} onClick={()=>paintNumberCell(region,malinoLeichtRegions.length)}>
+           return <g key={region.id} className={`numberRegion ${painted?"painted":""}`} onClick={()=>paintNumberCell(region,activeRealNumberRegions.length)}>
             <path d={region.d} fill={painted?numberPalette[region.n-1]:"#fff"} stroke="#173d78" strokeWidth="4" strokeLinejoin="round"/>
             {!painted&&<text x={region.label[0]} y={region.label[1]} className="numberRegionLabel">{region.n}</text>}
            </g>
           })}
-          <g className="malinoFaceDetails" pointerEvents="none">
-           <ellipse cx="270" cy="195" rx="10" ry="14" fill="#fff" stroke="#173d78" strokeWidth="4"/>
-           <ellipse cx="314" cy="195" rx="10" ry="14" fill="#fff" stroke="#173d78" strokeWidth="4"/>
-           <circle cx="273" cy="199" r="4" fill="#173d78"/><circle cx="311" cy="199" r="4" fill="#173d78"/>
-           <path d="M283 217 Q292 225 301 217" fill="none" stroke="#173d78" strokeWidth="4" strokeLinecap="round"/>
-           <path d="M275 235 Q292 247 309 234" fill="none" stroke="#173d78" strokeWidth="4" strokeLinecap="round"/>
+          <g className="realNumberDetails" pointerEvents="none" fill="none" stroke="#173d78" strokeWidth="4" strokeLinecap="round">
+           {numberThemeId==="malino"&&<>
+            <ellipse cx="270" cy="195" rx="10" ry="14" fill="#fff"/><ellipse cx="314" cy="195" rx="10" ry="14" fill="#fff"/>
+            <circle cx="273" cy="199" r="4" fill="#173d78"/><circle cx="311" cy="199" r="4" fill="#173d78"/>
+            <path d="M283 217 Q292 225 301 217"/><path d="M275 235 Q292 247 309 234"/>
+           </>}
+           {numberThemeId==="rocket"&&<>
+            <circle cx="250" cy="190" r="20"/><path d="M218 275 H282"/><path d="M235 405 Q250 430 265 405"/>
+           </>}
+           {numberThemeId==="dino"&&<>
+            <circle cx="145" cy="195" r="7" fill="#173d78"/><path d="M125 225 Q150 240 178 225"/><path d="M280 240 Q300 250 320 240"/>
+           </>}
+           {numberThemeId==="unicorn"&&<>
+            <circle cx="162" cy="195" r="7" fill="#173d78"/><path d="M145 225 Q168 238 192 224"/><path d="M157 84 L161 150"/>
+           </>}
+           {numberThemeId==="tractor"&&<>
+            <circle cx="178" cy="386" r="28"/><circle cx="366" cy="390" r="30"/><path d="M125 300 H215"/><path d="M250 246 H340"/>
+           </>}
+           {numberThemeId==="fish"&&<>
+            <circle cx="342" cy="238" r="7" fill="#173d78"/><path d="M340 275 Q355 284 370 274"/><path d="M205 255 Q245 275 285 255"/>
+           </>}
           </g>
          </svg>
          {realNumberDone&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
@@ -2323,7 +2445,7 @@ export default function Page(){
          <div className="numberCenterIcon">{activeNumberTheme.icon}</div>
          {numberDone&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
         </div>}
-      <div className="numberProgress"><span style={{width:`${Math.round(numberPainted.length/(useRealNumberBoard?malinoLeichtRegions.length:numberCells.length)*100)}%`}}/><b>{numberPainted.length}/{useRealNumberBoard?malinoLeichtRegions.length:numberCells.length}</b></div>
+      <div className="numberProgress"><span style={{width:`${Math.round(numberPainted.length/(useRealNumberBoard?activeRealNumberRegions.length:numberCells.length)*100)}%`}}/><b>{numberPainted.length}/{useRealNumberBoard?activeRealNumberRegions.length:numberCells.length}</b></div>
       <div className="mazeActions"><button className="craftSaveBtn" onClick={saveNumberArt}>💾 Speichern</button><button className="craftPrintBtn" onClick={shareNumberPdf}>↗️ Teilen / Drucken (A4)</button></div>
      </main>
     </div>
