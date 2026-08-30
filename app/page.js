@@ -302,6 +302,136 @@ function MazeBoard({maze,startEmoji,endEmoji,className=""}){
  </svg>
 }
 
+
+function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,resetKey}){
+ const canvasRef=useRef(null);
+ const modelRef=useRef(null);
+ const completeRef=useRef(false);
+
+ const seeds=[
+  [168,73,3],[83,280,4],[190,380,3],
+  [55,535,4],[130,535,4],[207,535,4],[279,535,4],
+  [290,660,4],[1025,477,3],[718,675,4],
+  [925,111,4],[1024,249,4],
+  [432,111,3],[523,74,3],[614,92,3],[690,140,3],
+  [339,259,3],[695,348,3],[641,393,3],
+  [376,192,1],[691,280,1],[512,230,1],
+  [421,426,3],[465,500,2],[355,508,1],[616,525,1],
+  [414,653,2],[572,613,2],[413,744,1],[580,744,1],
+  [844,437,3],[174,613,1],[970,577,1],
+  [101,743,4],[842,733,4]
+ ];
+
+ const hexToRgb=h=>{
+  const v=h.replace("#","");
+  const n=parseInt(v.length===3?v.split("").map(x=>x+x).join(""):v,16);
+  return [(n>>16)&255,(n>>8)&255,n&255];
+ };
+
+ useEffect(()=>{
+  let cancelled=false;
+  const img=new Image();
+  img.onload=()=>{
+   if(cancelled)return;
+   const canvas=canvasRef.current,ctx=canvas?.getContext("2d",{willReadFrequently:true});
+   if(!canvas||!ctx)return;
+   canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;
+   ctx.drawImage(img,0,0);
+   const base=ctx.getImageData(0,0,canvas.width,canvas.height);
+   const {width:w,height:h,data}=base;
+   const labels=new Int32Array(w*h);labels.fill(-1);
+   const q=new Int32Array(w*h);
+   let nextLabel=0;
+   const isWhite=i=>data[i*4]>242&&data[i*4+1]>242&&data[i*4+2]>242&&data[i*4+3]>200;
+   for(let p=0;p<w*h;p++){
+    if(labels[p]!==-1||!isWhite(p))continue;
+    let head=0,tail=0;q[tail++]=p;labels[p]=nextLabel;
+    while(head<tail){
+     const cur=q[head++],x=cur%w,y=(cur/w)|0;
+     let n;
+     if(x>0){n=cur-1;if(labels[n]===-1&&isWhite(n)){labels[n]=nextLabel;q[tail++]=n}}
+     if(x<w-1){n=cur+1;if(labels[n]===-1&&isWhite(n)){labels[n]=nextLabel;q[tail++]=n}}
+     if(y>0){n=cur-w;if(labels[n]===-1&&isWhite(n)){labels[n]=nextLabel;q[tail++]=n}}
+     if(y<h-1){n=cur+w;if(labels[n]===-1&&isWhite(n)){labels[n]=nextLabel;q[tail++]=n}}
+    }
+    nextLabel++;
+   }
+   const findLabel=(sx,sy)=>{
+    sx=Math.max(0,Math.min(w-1,Math.round(sx)));sy=Math.max(0,Math.min(h-1,Math.round(sy)));
+    const direct=labels[sy*w+sx];if(direct>=0)return direct;
+    for(let r=1;r<=18;r++){
+     for(let dy=-r;dy<=r;dy++){
+      for(let dx=-r;dx<=r;dx++){
+       if(Math.abs(dx)!==r&&Math.abs(dy)!==r)continue;
+       const x=sx+dx,y=sy+dy;if(x<0||y<0||x>=w||y>=h)continue;
+       const lab=labels[y*w+x];if(lab>=0)return lab;
+      }
+     }
+    }
+    return -1;
+   };
+   const required=new Map();
+   seeds.forEach(([x,y,n])=>{const lab=findLabel(x,y);if(lab>=0)required.set(lab,n)});
+   const members=new Map();
+   for(let p=0;p<labels.length;p++){
+    const lab=labels[p];if(!required.has(lab))continue;
+    if(!members.has(lab))members.set(lab,[]);
+    members.get(lab).push(p);
+   }
+   modelRef.current={base,labels,required,members,w,h};
+   onReady?.(required.size);
+   // Replay saved progress.
+   const out=new ImageData(new Uint8ClampedArray(base.data),w,h);
+   painted.forEach(id=>{
+    const lab=Number(id),n=required.get(lab);if(!n)return;
+    const rgb=hexToRgb(palette[n-1]||"#ffd84d");
+    (members.get(lab)||[]).forEach(p=>{const i=p*4;out.data[i]=rgb[0];out.data[i+1]=rgb[1];out.data[i+2]=rgb[2];out.data[i+3]=255});
+   });
+   ctx.putImageData(out,0,0);
+   completeRef.current=painted.length>=required.size&&required.size>0;
+  };
+  img.src="/assets/malino-number-lineart.png";
+  return()=>{cancelled=true};
+ },[resetKey]);
+
+ useEffect(()=>{
+  const m=modelRef.current,canvas=canvasRef.current,ctx=canvas?.getContext("2d",{willReadFrequently:true});
+  if(!m||!ctx)return;
+  const out=new ImageData(new Uint8ClampedArray(m.base.data),m.w,m.h);
+  painted.forEach(id=>{
+   const lab=Number(id),n=m.required.get(lab);if(!n)return;
+   const rgb=hexToRgb(palette[n-1]||"#ffd84d");
+   (m.members.get(lab)||[]).forEach(p=>{const i=p*4;out.data[i]=rgb[0];out.data[i+1]=rgb[1];out.data[i+2]=rgb[2];out.data[i+3]=255});
+  });
+  ctx.putImageData(out,0,0);
+ },[painted,palette]);
+
+ const tap=e=>{
+  const m=modelRef.current,canvas=canvasRef.current;if(!m||!canvas)return;
+  const r=canvas.getBoundingClientRect();
+  let x=Math.round((e.clientX-r.left)*m.w/r.width),y=Math.round((e.clientY-r.top)*m.h/r.height);
+  const findMapped=(sx,sy)=>{
+   for(let rad=0;rad<=16;rad++){
+    for(let dy=-rad;dy<=rad;dy++)for(let dx=-rad;dx<=rad;dx++){
+     if(rad&&Math.abs(dx)!==rad&&Math.abs(dy)!==rad)continue;
+     const xx=sx+dx,yy=sy+dy;if(xx<0||yy<0||xx>=m.w||yy>=m.h)continue;
+     const lab=m.labels[yy*m.w+xx];if(m.required.has(lab))return lab;
+    }
+   }
+   return -1;
+  };
+  const lab=findMapped(x,y);if(lab<0)return;
+  const required=m.required.get(lab);
+  if(required!==selectedNumber)return;
+  const id=String(lab);if(painted.includes(id))return;
+  onFill?.({id,n:required},m.required.size);
+ };
+
+ return <div className="numberFloodBoard">
+  <canvas ref={canvasRef} onClick={tap} aria-label="Malino Malen nach Zahlen"/>
+ </div>
+}
+
 export default function Page(){
  const emptyProfileData=()=>({fav:[],done:[],gallery:[],stars:0,rewards:[],avatar:"lion",dailyClaims:[],dailyStreak:0,lastDailyDate:"",activeFrame:"classic",puzzleSolved:[],hiddenSolved:[]});
  const [screen,setScreen]=useState("start");
@@ -340,6 +470,7 @@ export default function Page(){
  const [numberPainted,setNumberPainted]=useState([]);
  const [savedNumberArt,setSavedNumberArt]=useState([]);
  const [selectedNumber,setSelectedNumber]=useState(1);
+ const [numberFloodTotal,setNumberFloodTotal]=useState(1);
 
 
 
@@ -1381,6 +1512,7 @@ export default function Page(){
  const useRealNumberBoard=numberDifficulty==="leicht"||useMittelRealNumberBoard||useSchwerRealNumberBoard;
  const realNumberDone=useRealNumberBoard&&numberPainted.length===activeRealNumberRegions.length;
  const useImageNumberBoard=false;
+ const useFloodNumberBoard=numberThemeId==="malino"&&numberDifficulty==="leicht";
  const malinoImageMasks=[
   // Tło — osobne, nie nachodzi na postać
   {id:"treeCrown",baseN:8,label:[100,80],d:"M0 0 H260 C270 70 238 132 176 153 C120 171 54 155 0 124 Z"},
@@ -2774,6 +2906,11 @@ export default function Page(){
 
    {craftMode==="numbers"&&<>
     <style jsx global>{`
+     .numberFloodWrap{position:relative;max-width:760px;margin:0 auto}
+     .numberFloodBoard{overflow:hidden;border:3px solid #173d78;border-radius:22px;background:#fff;box-shadow:0 12px 28px rgba(34,54,86,.10)}
+     .numberFloodBoard canvas{display:block;width:100%;height:auto;cursor:pointer;touch-action:manipulation}
+     .numberFloodWrap .numberComplete{z-index:8}
+     @media(max-width:650px){.numberFloodBoard{border-radius:18px}}
      .imageNumberBoardWrap{position:relative;max-width:660px;margin:0 auto}
      .imageNumberBoard{position:relative;overflow:hidden;border:3px solid #173d78;border-radius:22px;background:#fff;box-shadow:0 12px 28px rgba(34,54,86,.12)}
      .imageNumberBase{display:block;width:100%;height:auto;filter:none;opacity:1}
@@ -2794,10 +2931,18 @@ export default function Page(){
        <div><small>Bild wählen</small><div className="numberThemes">{numberThemes.map(t=><button key={t.id} className={numberThemeId===t.id?"active":""} onClick={()=>setNumberThemeId(t.id)}><span>{t.icon}</span><b>{t.title}</b></button>)}</div></div>
        <div><small>Schwierigkeit</small><div className="hiddenDiff">{Object.entries(numberDifficultyMeta).map(([id,m])=><button key={id} className={numberDifficulty===id?"active":""} onClick={()=>setNumberDifficulty(id)}>{m.label}<em>{m.colors} Farben</em></button>)}</div></div>
       </div>
+      {useFloodNumberBoard&&<div className="numberImageNote">✨ Tippe in ein geschlossenes Feld – die Farbe bleibt exakt innerhalb der Kontur.</div>}
             {numberDifficulty==="mittel"&&<div className="numberMittelNote">{"✨ Mittel: echte Felder · 6 Farben"}</div>}
       {numberDifficulty==="schwer"&&<div className="numberSchwerNote">🔥 Schwer: echte Felder · 8 Farben</div>}
       <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
-      {useImageNumberBoard
+      {useFloodNumberBoard
+       ?<div className="numberFloodWrap">
+         <MalinoNumberFloodBoard selectedNumber={selectedNumber} palette={numberPalette} painted={numberPainted}
+          onFill={(cell,total)=>paintNumberCell(cell,total)} onReady={setNumberFloodTotal}
+          resetKey={`${numberThemeId}-${numberDifficulty}`}/>
+         {numberPainted.length>=numberFloodTotal&&numberFloodTotal>1&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
+        </div>
+       :useImageNumberBoard
        ?<div className="imageNumberBoardWrap">
          <div className="imageNumberBoard">
           <img src="/assets/malino-simple-number-board.png" alt="Malino 2.0" className="imageNumberBase"/>
@@ -2869,7 +3014,7 @@ export default function Page(){
          <div className="numberCenterIcon">{activeNumberTheme.icon}</div>
          {numberDone&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
         </div>}
-      <div className="numberProgress"><span style={{width:`${Math.round(numberPainted.length/(useImageNumberBoard?activeImageNumberMasks.length:(useRealNumberBoard?activeRealNumberRegions.length:numberCells.length))*100)}%`}}/><b>{numberPainted.length}/{useImageNumberBoard?activeImageNumberMasks.length:(useRealNumberBoard?activeRealNumberRegions.length:numberCells.length)}</b></div>
+      <div className="numberProgress"><span style={{width:`${Math.round(numberPainted.length/(useFloodNumberBoard?numberFloodTotal:(useImageNumberBoard?activeImageNumberMasks.length:(useRealNumberBoard?activeRealNumberRegions.length:numberCells.length)))*100)}%`}}/><b>{numberPainted.length}/{useFloodNumberBoard?numberFloodTotal:(useImageNumberBoard?activeImageNumberMasks.length:(useRealNumberBoard?activeRealNumberRegions.length:numberCells.length))}</b></div>
       <div className="mazeActions"><button className="craftSaveBtn" onClick={saveNumberArt}>💾 Speichern</button><button className="craftPrintBtn" onClick={shareNumberPdf}>↗️ Teilen / Drucken (A4)</button></div>
      </main>
     </div>
