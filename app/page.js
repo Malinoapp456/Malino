@@ -400,8 +400,20 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
     }
     return -1;
    };
+   // Never allow the white page/background to become a paintable field.
+   // Any white component touching an image edge is background, even if a seed
+   // happens to be close to it. This prevents a colour from flooding the page.
+   const borderLabels=new Set();
+   for(let x=0;x<w;x++){
+    const a=labels[x],b=labels[(h-1)*w+x];
+    if(a>=0)borderLabels.add(a);if(b>=0)borderLabels.add(b);
+   }
+   for(let y=0;y<h;y++){
+    const a=labels[y*w],b=labels[y*w+w-1];
+    if(a>=0)borderLabels.add(a);if(b>=0)borderLabels.add(b);
+   }
    const required=new Map();
-   seeds.forEach(([x,y,n])=>{const lab=findLabel(x,y);if(lab>=0)required.set(lab,n)});
+   seeds.forEach(([x,y,n])=>{const lab=findLabel(x,y);if(lab>=0&&!borderLabels.has(lab))required.set(lab,n)});
    const members=new Map();
    for(let p=0;p<labels.length;p++){
     const lab=labels[p];if(!required.has(lab))continue;
@@ -2987,8 +2999,16 @@ export default function Page(){
           onFill={(cell,total)=>paintNumberCell(cell,total)} onReady={setNumberFloodTotal}
           imagePath={numberThemeId==="rocket"?"/assets/rocket-number-lineart.png":"/assets/malino-number-lineart.png"}
           customSeeds={numberThemeId==="rocket"?[
-           [660,105,2],[660,235,1],[660,305,3],[660,385,4],[660,560,1],[660,705,2],
-           [430,650,1],[900,650,1],[660,790,3],[660,870,4],[660,975,2],[660,1080,1]
+           // Rakieta final 1173×1341 — tylko zamknięte, widoczne pola.
+           [586,130,2],
+           [586,285,1],
+           [586,390,3],
+           [586,475,4],
+           [586,650,1],
+           [586,805,2],
+           [350,755,1],[825,755,1],
+           [586,965,2],
+           [586,1160,1]
           ]:null}
           resetKey={`${numberThemeId}-${numberDifficulty}`}/>
          {numberPainted.length>=numberFloodTotal&&numberFloodTotal>1&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
