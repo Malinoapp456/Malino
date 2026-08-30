@@ -1570,7 +1570,7 @@ export default function Page(){
  const useRealNumberBoard=numberDifficulty==="leicht"||useMittelRealNumberBoard||useSchwerRealNumberBoard;
  const realNumberDone=useRealNumberBoard&&numberPainted.length===activeRealNumberRegions.length;
  const useImageNumberBoard=false;
- const useFloodNumberBoard=(numberThemeId==="malino"||numberThemeId==="rocket"||numberThemeId==="dino")&&numberDifficulty==="leicht";
+ const useFloodNumberBoard=(numberThemeId==="malino"||numberThemeId==="rocket"||numberThemeId==="dino"||numberThemeId==="unicorn")&&numberDifficulty==="leicht";
  const malinoImageMasks=[
   // Tło — osobne, nie nachodzi na postać
   {id:"treeCrown",baseN:8,label:[100,80],d:"M0 0 H260 C270 70 238 132 176 153 C120 171 54 155 0 124 Z"},
@@ -2989,7 +2989,7 @@ export default function Page(){
        <div><small>Bild wählen</small><div className="numberThemes">{numberThemes.map(t=><button key={t.id} className={numberThemeId===t.id?"active":""} onClick={()=>setNumberThemeId(t.id)}><span>{t.icon}</span><b>{t.title}</b></button>)}</div></div>
        <div><small>Schwierigkeit</small><div className="hiddenDiff">{Object.entries(numberDifficultyMeta).map(([id,m])=><button key={id} className={numberDifficulty===id?"active":""} onClick={()=>setNumberDifficulty(id)}>{m.label}<em>{m.colors} Farben</em></button>)}</div></div>
       </div>
-      {useFloodNumberBoard&&<div className="numberImageNote">{numberThemeId==="rocket"?"🚀 Tippe direkt in die nummerierten Flächen der Rakete.":numberThemeId==="dino"?"🦕 Tippe direkt in die nummerierten Flächen des Dinosauriers.":"✨ Weißes T-Shirt bleibt frei. Beide Träger sind Feld 2. Die Mähne nutzt alle 4 Farben."}</div>}
+      {useFloodNumberBoard&&<div className="numberImageNote">{numberThemeId==="rocket"?"🚀 Tippe direkt in die nummerierten Flächen der Rakete.":numberThemeId==="dino"?"🦕 Tippe direkt in die nummerierten Flächen des Dinosauriers.":numberThemeId==="unicorn"?"🦄 Tippe direkt in die nummerierten Flächen jednorożca.":"✨ Weißes T-Shirt bleibt frei. Beide Träger sind Feld 2. Die Mähne nutzt alle 4 Farben."}</div>}
             {numberDifficulty==="mittel"&&<div className="numberMittelNote">{"✨ Mittel: echte Felder · 6 Farben"}</div>}
       {numberDifficulty==="schwer"&&<div className="numberSchwerNote">🔥 Schwer: echte Felder · 8 Farben</div>}
       <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
@@ -2997,7 +2997,7 @@ export default function Page(){
        ?<div className="numberFloodWrap">
          <MalinoNumberFloodBoard selectedNumber={selectedNumber} palette={numberPalette} painted={numberPainted}
           onFill={(cell,total)=>paintNumberCell(cell,total)} onReady={setNumberFloodTotal}
-          imagePath={numberThemeId==="rocket"?"/assets/rocket-number-lineart.png":numberThemeId==="dino"?"/assets/dinosaur-number-lineart.png":"/assets/malino-number-lineart.png"}
+          imagePath={numberThemeId==="rocket"?"/assets/rocket-number-lineart.png":numberThemeId==="dino"?"/assets/dinosaur-number-lineart.png":numberThemeId==="unicorn"?"/assets/unicorn-number-lineart.png":"/assets/malino-number-lineart.png"}
           customSeeds={numberThemeId==="rocket"?[
            // Rakieta final 1173×1341 — tylko zamknięte, widoczne pola.
            [586,130,2],
@@ -3019,6 +3019,16 @@ export default function Page(){
            [580,125,3],[780,455,3],[1010,675,3],[455,520,3],[470,805,3],
            // 4 — łuski i pasy podbrzusza
            [665,230,4],[860,545,4],[455,605,4],[550,875,4]
+          ]:numberThemeId==="unicorn"?[
+           // Einhorn final 1254×1254 — pola zamknięte, cyfry 1–4.
+           // 1 — twarz, ciało i nogi
+           [400,475,1],[625,720,1],[300,805,1],[500,995,1],[735,995,1],[885,995,1],
+           // 2 — grzywa, ogon, róg i kopyta
+           [365,215,2],[650,500,2],[1040,605,2],[260,195,2],[300,940,2],[475,1135,2],[690,1100,2],[855,1135,2],
+           // 3 — grzywa, lewa część grzywy i środkowe pole ogona
+           [640,245,3],[215,305,3],[1010,710,3],
+           // 4 — róg, grzywa i dolne pole ogona
+           [195,95,4],[620,340,4],[1040,900,4]
           ]:null}
           resetKey={`${numberThemeId}-${numberDifficulty}`}/>
          {numberPainted.length>=numberFloodTotal&&numberFloodTotal>1&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
