@@ -363,9 +363,9 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
    const findLabel=(sx,sy)=>{
     sx=Math.max(0,Math.min(w-1,Math.round(sx)));
     sy=Math.max(0,Math.min(h-1,Math.round(sy)));
-    let best=-1,bestSize=-1,bestDist=1e9;
     const seen=new Set();
-    for(let r=0;r<=30;r++){
+    for(let r=0;r<=34;r++){
+     let best=-1,bestDist=1e9,bestSize=-1;
      for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){
       if(r&&Math.abs(dx)!==r&&Math.abs(dy)!==r)continue;
       const x=sx+dx,y=sy+dy;
@@ -376,12 +376,13 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
       const size=componentSizes[lab]||0;
       if(size<120)continue;
       const dist=dx*dx+dy*dy;
-      if(size>bestSize||(size===bestSize&&dist<bestDist)){
-       best=lab;bestSize=size;bestDist=dist;
+      if(dist<bestDist||(dist===bestDist&&size>bestSize)){
+       best=lab;bestDist=dist;bestSize=size;
       }
      }
+     if(best>=0)return best;
     }
-    return best;
+    return -1;
    };
    const required=new Map();
    seeds.forEach(([x,y,n])=>{const lab=findLabel(x,y);if(lab>=0)required.set(lab,n)});
@@ -424,29 +425,60 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
   const r=canvas.getBoundingClientRect();
   const x=Math.round((e.clientX-r.left)*m.w/r.width);
   const y=Math.round((e.clientY-r.top)*m.h/r.height);
-  let best=-1,bestDist=1e9,bestSize=-1;
-  const seen=new Set();
-  for(let rad=0;rad<=34;rad++){
-   for(let dy=-rad;dy<=rad;dy++)for(let dx=-rad;dx<=rad;dx++){
+
+  const direct=(x>=0&&y>=0&&x<m.w&&y<m.h)?m.labels[y*m.w+x]:-1;
+  let best=(direct>=0&&m.required.has(direct))?direct:-1;
+
+  if(best<0){
+   let bestDist=1e9,bestSize=-1;
+   const seen=new Set();
+   for(let rad=0;rad<=36;rad++){
+    for(let dy=-rad;dy<=rad;dy++)for(let dx=-rad;dx<=rad;dx++){
+     if(rad&&Math.abs(dx)!==rad&&Math.abs(dy)!==rad)continue;
+     const xx=x+dx,yy=y+dy;
+     if(xx<0||yy<0||xx>=m.w||yy>=m.h)continue;
+     const lab=m.labels[yy*m.w+xx];
+     if(lab<0||seen.has(lab)||!m.required.has(lab))continue;
+     seen.add(lab);
+     const dist=dx*dx+dy*dy,size=m.componentSizes?.[lab]||0;
+     if(dist<bestDist||(dist===bestDist&&size>bestSize)){
+      best=lab;bestDist=dist;bestSize=size;
+     }
+    }
+    if(best>=0&&rad>=8)break;
+   }
+  }
+
+  if(best>=0){
+   const required=m.required.get(best);
+   if(required!==selectedNumber)return;
+   const id=String(best);if(painted.includes(id))return;
+   onFill?.({id,n:required},m.required.size);
+   return;
+  }
+
+  // Awaryjne przypisanie dla poprawnego, zamkniętego pola,
+  // którego punkt startowy nie został wcześniej rozpoznany.
+  let fallback=-1;
+  for(let rad=0;rad<=20&&fallback<0;rad++){
+   for(let dy=-rad;dy<=rad&&fallback<0;dy++)for(let dx=-rad;dx<=rad;dx++){
     if(rad&&Math.abs(dx)!==rad&&Math.abs(dy)!==rad)continue;
     const xx=x+dx,yy=y+dy;
     if(xx<0||yy<0||xx>=m.w||yy>=m.h)continue;
     const lab=m.labels[yy*m.w+xx];
-    if(!m.required.has(lab)||seen.has(lab))continue;
-    seen.add(lab);
-    const dist=dx*dx+dy*dy;
-    const size=m.componentSizes?.[lab]||0;
-    if(dist<bestDist||(dist===bestDist&&size>bestSize)){
-     best=lab;bestDist=dist;bestSize=size;
-    }
+    if(lab>=0&&(m.componentSizes?.[lab]||0)>=120){fallback=lab;break}
    }
-   if(best>=0&&rad>=10)break;
   }
-  if(best<0)return;
-  const required=m.required.get(best);
-  if(required!==selectedNumber)return;
-  const id=String(best);if(painted.includes(id))return;
-  onFill?.({id,n:required},m.required.size);
+  if(fallback<0)return;
+  if(!m.required.has(fallback)){
+   m.required.set(fallback,selectedNumber);
+   const members=[];
+   for(let p=0;p<m.labels.length;p++)if(m.labels[p]===fallback)members.push(p);
+   m.members.set(fallback,members);
+   onReady?.(m.required.size);
+  }
+  const id=String(fallback);if(painted.includes(id))return;
+  onFill?.({id,n:selectedNumber},m.required.size);
  };
 
  return <div className="numberFloodBoard">
@@ -2953,7 +2985,7 @@ export default function Page(){
        <div><small>Bild wählen</small><div className="numberThemes">{numberThemes.map(t=><button key={t.id} className={numberThemeId===t.id?"active":""} onClick={()=>setNumberThemeId(t.id)}><span>{t.icon}</span><b>{t.title}</b></button>)}</div></div>
        <div><small>Schwierigkeit</small><div className="hiddenDiff">{Object.entries(numberDifficultyMeta).map(([id,m])=><button key={id} className={numberDifficulty===id?"active":""} onClick={()=>setNumberDifficulty(id)}>{m.label}<em>{m.colors} Farben</em></button>)}</div></div>
       </div>
-      {useFloodNumberBoard&&<div className="numberImageNote">✨ Tippe in ein geschlossenes Feld – die Farbe bleibt exakt innerhalb der Kontur.</div>}
+      {useFloodNumberBoard&&<div className="numberImageNote">✨ Tippe auf die Zahl oder direkt in das geschlossene Feld.</div>}
             {numberDifficulty==="mittel"&&<div className="numberMittelNote">{"✨ Mittel: echte Felder · 6 Farben"}</div>}
       {numberDifficulty==="schwer"&&<div className="numberSchwerNote">🔥 Schwer: echte Felder · 8 Farben</div>}
       <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
