@@ -321,7 +321,7 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
 
   // 2 — wyłącznie obie szelki i ogrodniczki (koszulka pozostaje biała)
   [540,555,2],
-  [710,555,2],
+  [730,570,2],
   [605,665,2],
   [520,855,2],
   [730,850,2],
@@ -449,7 +449,7 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
   if(best<0){
    let bestDist=1e9,bestSize=-1;
    const seen=new Set();
-   for(let rad=0;rad<=34;rad++){
+   for(let rad=0;rad<=40;rad++){
     for(let dy=-rad;dy<=rad;dy++)for(let dx=-rad;dx<=rad;dx++){
      if(rad&&Math.abs(dx)!==rad&&Math.abs(dy)!==rad)continue;
      const xx=x+dx,yy=y+dy;
