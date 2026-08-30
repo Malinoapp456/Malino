@@ -309,29 +309,34 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
  const completeRef=useRef(false);
 
  const seeds=[
-  [713,321,1],
-  [502,251,1],
-  [966,329,1],
-  [464,674,1],
-  [856,674,1],
-  [558,984,1],
-  [804,984,1],
-  [1000,830,1],
+  // 1 — twarz, uszy, dłonie, stopy i ogon
+  [655,295,1],
+  [460,250,1],
+  [880,325,1],
+  [435,665,1],
+  [790,665,1],
+  [520,980,1],
+  [745,980,1],
+  [910,830,1],
 
-  [575,568,2],
-  [765,568,2],
-  [650,670,2],
-  [560,858,2],
-  [785,858,2],
+  // 2 — wyłącznie obie szelki i ogrodniczki (koszulka pozostaje biała)
+  [540,555,2],
+  [710,555,2],
+  [605,665,2],
+  [520,855,2],
+  [730,850,2],
 
-  [603,113,3],
-  [452,347,3],
-  [1108,664,3],
+  // grzywa — cztery kolory
+  [550,130,3],
+  [660,105,1],
+  [790,130,4],
+  [875,190,2],
+  [400,350,3],
+  [885,465,2],
 
-  [750,107,4],
-  [872,132,4],
-  [966,475,4],
-  [654,737,4]
+  // kieszeń i końcówka ogona
+  [600,725,4],
+  [1075,665,3]
  ];
 
  const hexToRgb=h=>{
@@ -2973,7 +2978,7 @@ export default function Page(){
        <div><small>Bild wählen</small><div className="numberThemes">{numberThemes.map(t=><button key={t.id} className={numberThemeId===t.id?"active":""} onClick={()=>setNumberThemeId(t.id)}><span>{t.icon}</span><b>{t.title}</b></button>)}</div></div>
        <div><small>Schwierigkeit</small><div className="hiddenDiff">{Object.entries(numberDifficultyMeta).map(([id,m])=><button key={id} className={numberDifficulty===id?"active":""} onClick={()=>setNumberDifficulty(id)}>{m.label}<em>{m.colors} Farben</em></button>)}</div></div>
       </div>
-      {useFloodNumberBoard&&<div className="numberImageNote">✨ Male nur die sichtbar nummerierten Felder. Weiße Flächen ohne Zahl bleiben frei.</div>}
+      {useFloodNumberBoard&&<div className="numberImageNote">✨ Weißes T-Shirt bleibt frei. Beide Träger sind Feld 2. Die Mähne nutzt alle 4 Farben.</div>}
             {numberDifficulty==="mittel"&&<div className="numberMittelNote">{"✨ Mittel: echte Felder · 6 Farben"}</div>}
       {numberDifficulty==="schwer"&&<div className="numberSchwerNote">🔥 Schwer: echte Felder · 8 Farben</div>}
       <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
