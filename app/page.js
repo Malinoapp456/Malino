@@ -309,17 +309,29 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
  const completeRef=useRef(false);
 
  const seeds=[
-  [168,73,3],[83,280,4],[190,380,3],
-  [55,535,4],[130,535,4],[207,535,4],[279,535,4],
-  [290,660,4],[1025,477,3],[718,675,4],
-  [925,111,4],[1024,249,4],
-  [432,111,3],[523,74,3],[614,92,3],[690,140,3],
-  [339,259,3],[695,348,3],[641,393,3],
-  [376,192,1],[691,280,1],[512,230,1],
-  [421,426,3],[557,426,3],[465,500,2],[355,508,1],[616,525,1],
-  [414,653,2],[572,613,2],[413,744,1],[580,744,1],
-  [844,437,3],[174,613,1],[970,577,1],
-  [101,743,4],[842,733,4]
+  [385,165,3],
+  [470,120,3],
+  [565,120,4],
+  [650,155,3],
+  [705,235,4],
+  [700,350,3],
+  [350,350,4],
+  [350,265,3],
+  [382,270,1],
+  [695,270,1],
+  [535,280,1],
+  [465,505,2],
+  [603,505,2],
+  [410,530,1],
+  [658,530,1],
+  [535,600,2],
+  [475,690,2],
+  [590,690,2],
+  [535,620,4],
+  [465,750,1],
+  [605,750,1],
+  [760,665,1],
+  [885,525,3]
  ];
 
  const hexToRgb=h=>{
@@ -2961,7 +2973,7 @@ export default function Page(){
        <div><small>Bild wählen</small><div className="numberThemes">{numberThemes.map(t=><button key={t.id} className={numberThemeId===t.id?"active":""} onClick={()=>setNumberThemeId(t.id)}><span>{t.icon}</span><b>{t.title}</b></button>)}</div></div>
        <div><small>Schwierigkeit</small><div className="hiddenDiff">{Object.entries(numberDifficultyMeta).map(([id,m])=><button key={id} className={numberDifficulty===id?"active":""} onClick={()=>setNumberDifficulty(id)}>{m.label}<em>{m.colors} Farben</em></button>)}</div></div>
       </div>
-      {useFloodNumberBoard&&<div className="numberImageNote">✨ Nur nummerierte Felder zählen zum Fortschritt.</div>}
+      {useFloodNumberBoard&&<div className="numberImageNote">✨ Nur Felder mit einer sichtbaren Zahl zählen – weiße Flächen bleiben frei.</div>}
             {numberDifficulty==="mittel"&&<div className="numberMittelNote">{"✨ Mittel: echte Felder · 6 Farben"}</div>}
       {numberDifficulty==="schwer"&&<div className="numberSchwerNote">🔥 Schwer: echte Felder · 8 Farben</div>}
       <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
