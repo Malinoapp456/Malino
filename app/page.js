@@ -422,6 +422,16 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
 
  const tap=e=>{
   const m=modelRef.current,canvas=canvasRef.current;if(!m||!canvas)return;
+
+  // Jeśli został tylko jeden region, nie pozwól żeby ukryty/mały seed blokował ukończenie planszy.
+  const remaining=[...m.required.entries()].filter(([lab])=>!painted.includes(String(lab)));
+  if(remaining.length===1){
+   const [lastLab,lastNumber]=remaining[0];
+   if(lastNumber===selectedNumber){
+    onFill?.({id:String(lastLab),n:lastNumber},m.required.size);
+    return;
+   }
+  }
   const r=canvas.getBoundingClientRect();
   const x=Math.round((e.clientX-r.left)*m.w/r.width);
   const y=Math.round((e.clientY-r.top)*m.h/r.height);
@@ -430,6 +440,12 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
   let best=(direct>=0&&m.required.has(direct))?direct:-1;
 
   if(best<0){
+   const candidates=[...m.required.entries()].filter(([lab,num])=>!painted.includes(String(lab))&&num===selectedNumber);
+   if(candidates.length===1){
+    const [candidateLab,candidateNumber]=candidates[0];
+    onFill?.({id:String(candidateLab),n:candidateNumber},m.required.size);
+    return;
+   }
    let bestDist=1e9,bestSize=-1;
    const seen=new Set();
    for(let rad=0;rad<=36;rad++){
@@ -2985,7 +3001,7 @@ export default function Page(){
        <div><small>Bild wählen</small><div className="numberThemes">{numberThemes.map(t=><button key={t.id} className={numberThemeId===t.id?"active":""} onClick={()=>setNumberThemeId(t.id)}><span>{t.icon}</span><b>{t.title}</b></button>)}</div></div>
        <div><small>Schwierigkeit</small><div className="hiddenDiff">{Object.entries(numberDifficultyMeta).map(([id,m])=><button key={id} className={numberDifficulty===id?"active":""} onClick={()=>setNumberDifficulty(id)}>{m.label}<em>{m.colors} Farben</em></button>)}</div></div>
       </div>
-      {useFloodNumberBoard&&<div className="numberImageNote">✨ Tippe auf die Zahl oder direkt in das geschlossene Feld.</div>}
+      {useFloodNumberBoard&&<div className="numberImageNote">✨ Tippe auf die Zahl oder direkt in das Feld. Auch kleine Restfelder werden erkannt.</div>}
             {numberDifficulty==="mittel"&&<div className="numberMittelNote">{"✨ Mittel: echte Felder · 6 Farben"}</div>}
       {numberDifficulty==="schwer"&&<div className="numberSchwerNote">🔥 Schwer: echte Felder · 8 Farben</div>}
       <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
