@@ -303,12 +303,12 @@ function MazeBoard({maze,startEmoji,endEmoji,className=""}){
 }
 
 
-function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,resetKey}){
+function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,resetKey,imagePath="/assets/malino-number-lineart.png",customSeeds=null}){
  const canvasRef=useRef(null);
  const modelRef=useRef(null);
  const completeRef=useRef(false);
 
- const seeds=[
+ const defaultSeeds=[
   // 1 — twarz, uszy, dłonie, stopy i ogon
   [655,295,1],
   [460,250,1],
@@ -338,6 +338,7 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
   [600,725,4],
   [1075,665,3]
  ];
+ const seeds=customSeeds||defaultSeeds;
 
  const hexToRgb=h=>{
   const v=h.replace("#","");
@@ -419,9 +420,9 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
    ctx.putImageData(out,0,0);
    completeRef.current=painted.length>=required.size&&required.size>0;
   };
-  img.src="/assets/malino-number-lineart.png";
+  img.src=imagePath;
   return()=>{cancelled=true};
- },[resetKey]);
+ },[resetKey,imagePath]);
 
  useEffect(()=>{
   const m=modelRef.current,canvas=canvasRef.current,ctx=canvas?.getContext("2d",{willReadFrequently:true});
@@ -1557,7 +1558,7 @@ export default function Page(){
  const useRealNumberBoard=numberDifficulty==="leicht"||useMittelRealNumberBoard||useSchwerRealNumberBoard;
  const realNumberDone=useRealNumberBoard&&numberPainted.length===activeRealNumberRegions.length;
  const useImageNumberBoard=false;
- const useFloodNumberBoard=numberThemeId==="malino"&&numberDifficulty==="leicht";
+ const useFloodNumberBoard=(numberThemeId==="malino"||numberThemeId==="rocket")&&numberDifficulty==="leicht";
  const malinoImageMasks=[
   // Tło — osobne, nie nachodzi na postać
   {id:"treeCrown",baseN:8,label:[100,80],d:"M0 0 H260 C270 70 238 132 176 153 C120 171 54 155 0 124 Z"},
@@ -2976,7 +2977,7 @@ export default function Page(){
        <div><small>Bild wählen</small><div className="numberThemes">{numberThemes.map(t=><button key={t.id} className={numberThemeId===t.id?"active":""} onClick={()=>setNumberThemeId(t.id)}><span>{t.icon}</span><b>{t.title}</b></button>)}</div></div>
        <div><small>Schwierigkeit</small><div className="hiddenDiff">{Object.entries(numberDifficultyMeta).map(([id,m])=><button key={id} className={numberDifficulty===id?"active":""} onClick={()=>setNumberDifficulty(id)}>{m.label}<em>{m.colors} Farben</em></button>)}</div></div>
       </div>
-      {useFloodNumberBoard&&<div className="numberImageNote">✨ Weißes T-Shirt bleibt frei. Beide Träger sind Feld 2. Die Mähne nutzt alle 4 Farben.</div>}
+      {useFloodNumberBoard&&<div className="numberImageNote">{numberThemeId==="rocket"?"🚀 Tippe direkt in die nummerierten Flächen der Rakete.":"✨ Weißes T-Shirt bleibt frei. Beide Träger sind Feld 2. Die Mähne nutzt alle 4 Farben."}</div>}
             {numberDifficulty==="mittel"&&<div className="numberMittelNote">{"✨ Mittel: echte Felder · 6 Farben"}</div>}
       {numberDifficulty==="schwer"&&<div className="numberSchwerNote">🔥 Schwer: echte Felder · 8 Farben</div>}
       <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
@@ -2984,6 +2985,11 @@ export default function Page(){
        ?<div className="numberFloodWrap">
          <MalinoNumberFloodBoard selectedNumber={selectedNumber} palette={numberPalette} painted={numberPainted}
           onFill={(cell,total)=>paintNumberCell(cell,total)} onReady={setNumberFloodTotal}
+          imagePath={numberThemeId==="rocket"?"/assets/rocket-number-lineart.png":"/assets/malino-number-lineart.png"}
+          customSeeds={numberThemeId==="rocket"?[
+           [660,105,2],[660,235,1],[660,305,3],[660,385,4],[660,560,1],[660,705,2],
+           [430,650,1],[900,650,1],[660,790,3],[660,870,4],[660,975,2],[660,1080,1]
+          ]:null}
           resetKey={`${numberThemeId}-${numberDifficulty}`}/>
          {numberPainted.length>=numberFloodTotal&&numberFloodTotal>1&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
         </div>
