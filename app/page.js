@@ -309,29 +309,29 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
  const completeRef=useRef(false);
 
  const seeds=[
-  [385,165,3],
-  [470,120,3],
-  [565,120,4],
-  [650,155,3],
-  [705,235,4],
-  [700,350,3],
-  [350,350,4],
-  [350,265,3],
-  [382,270,1],
-  [695,270,1],
-  [535,280,1],
-  [465,505,2],
-  [603,505,2],
-  [410,530,1],
-  [658,530,1],
-  [535,600,2],
-  [475,690,2],
-  [590,690,2],
-  [535,620,4],
-  [465,750,1],
-  [605,750,1],
-  [760,665,1],
-  [885,525,3]
+  [713,321,1],
+  [502,251,1],
+  [966,329,1],
+  [464,674,1],
+  [856,674,1],
+  [558,984,1],
+  [804,984,1],
+  [1000,830,1],
+
+  [575,568,2],
+  [765,568,2],
+  [650,670,2],
+  [560,858,2],
+  [785,858,2],
+
+  [603,113,3],
+  [452,347,3],
+  [1108,664,3],
+
+  [750,107,4],
+  [872,132,4],
+  [966,475,4],
+  [654,737,4]
  ];
 
  const hexToRgb=h=>{
@@ -2973,7 +2973,7 @@ export default function Page(){
        <div><small>Bild wählen</small><div className="numberThemes">{numberThemes.map(t=><button key={t.id} className={numberThemeId===t.id?"active":""} onClick={()=>setNumberThemeId(t.id)}><span>{t.icon}</span><b>{t.title}</b></button>)}</div></div>
        <div><small>Schwierigkeit</small><div className="hiddenDiff">{Object.entries(numberDifficultyMeta).map(([id,m])=><button key={id} className={numberDifficulty===id?"active":""} onClick={()=>setNumberDifficulty(id)}>{m.label}<em>{m.colors} Farben</em></button>)}</div></div>
       </div>
-      {useFloodNumberBoard&&<div className="numberImageNote">✨ Nur Felder mit einer sichtbaren Zahl zählen – weiße Flächen bleiben frei.</div>}
+      {useFloodNumberBoard&&<div className="numberImageNote">✨ Male nur die sichtbar nummerierten Felder. Weiße Flächen ohne Zahl bleiben frei.</div>}
             {numberDifficulty==="mittel"&&<div className="numberMittelNote">{"✨ Mittel: echte Felder · 6 Farben"}</div>}
       {numberDifficulty==="schwer"&&<div className="numberSchwerNote">🔥 Schwer: echte Felder · 8 Farben</div>}
       <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
