@@ -309,6 +309,8 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
  const completeRef=useRef(false);
 
  const seeds=[
+  // bezpieczne punkty umieszczone z dala od cyfr i konturów
+  [75,335,4],[790,265,4],[620,690,4],[105,700,4],[865,700,4],
   [168,73,3],[83,280,4],[190,380,3],
   [55,535,4],[130,535,4],[207,535,4],[279,535,4],
   [290,660,4],[1025,477,3],[718,675,4],
@@ -341,6 +343,7 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
    const {width:w,height:h,data}=base;
    const labels=new Int32Array(w*h);labels.fill(-1);
    const q=new Int32Array(w*h);
+   const componentSizes=[];
    let nextLabel=0;
    const isWhite=i=>data[i*4]>242&&data[i*4+1]>242&&data[i*4+2]>242&&data[i*4+3]>200;
    for(let p=0;p<w*h;p++){
@@ -354,21 +357,31 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
      if(y>0){n=cur-w;if(labels[n]===-1&&isWhite(n)){labels[n]=nextLabel;q[tail++]=n}}
      if(y<h-1){n=cur+w;if(labels[n]===-1&&isWhite(n)){labels[n]=nextLabel;q[tail++]=n}}
     }
+    componentSizes[nextLabel]=tail;
     nextLabel++;
    }
    const findLabel=(sx,sy)=>{
-    sx=Math.max(0,Math.min(w-1,Math.round(sx)));sy=Math.max(0,Math.min(h-1,Math.round(sy)));
-    const direct=labels[sy*w+sx];if(direct>=0)return direct;
-    for(let r=1;r<=18;r++){
-     for(let dy=-r;dy<=r;dy++){
-      for(let dx=-r;dx<=r;dx++){
-       if(Math.abs(dx)!==r&&Math.abs(dy)!==r)continue;
-       const x=sx+dx,y=sy+dy;if(x<0||y<0||x>=w||y>=h)continue;
-       const lab=labels[y*w+x];if(lab>=0)return lab;
+    sx=Math.max(0,Math.min(w-1,Math.round(sx)));
+    sy=Math.max(0,Math.min(h-1,Math.round(sy)));
+    let best=-1,bestSize=-1,bestDist=1e9;
+    const seen=new Set();
+    for(let r=0;r<=30;r++){
+     for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){
+      if(r&&Math.abs(dx)!==r&&Math.abs(dy)!==r)continue;
+      const x=sx+dx,y=sy+dy;
+      if(x<0||y<0||x>=w||y>=h)continue;
+      const lab=labels[y*w+x];
+      if(lab<0||seen.has(lab))continue;
+      seen.add(lab);
+      const size=componentSizes[lab]||0;
+      if(size<120)continue;
+      const dist=dx*dx+dy*dy;
+      if(size>bestSize||(size===bestSize&&dist<bestDist)){
+       best=lab;bestSize=size;bestDist=dist;
       }
      }
     }
-    return -1;
+    return best;
    };
    const required=new Map();
    seeds.forEach(([x,y,n])=>{const lab=findLabel(x,y);if(lab>=0)required.set(lab,n)});
@@ -378,7 +391,7 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
     if(!members.has(lab))members.set(lab,[]);
     members.get(lab).push(p);
    }
-   modelRef.current={base,labels,required,members,w,h};
+   modelRef.current={base,labels,required,members,componentSizes,w,h};
    onReady?.(required.size);
    // Replay saved progress.
    const out=new ImageData(new Uint8ClampedArray(base.data),w,h);
@@ -409,21 +422,30 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
  const tap=e=>{
   const m=modelRef.current,canvas=canvasRef.current;if(!m||!canvas)return;
   const r=canvas.getBoundingClientRect();
-  let x=Math.round((e.clientX-r.left)*m.w/r.width),y=Math.round((e.clientY-r.top)*m.h/r.height);
-  const findMapped=(sx,sy)=>{
-   for(let rad=0;rad<=16;rad++){
-    for(let dy=-rad;dy<=rad;dy++)for(let dx=-rad;dx<=rad;dx++){
-     if(rad&&Math.abs(dx)!==rad&&Math.abs(dy)!==rad)continue;
-     const xx=sx+dx,yy=sy+dy;if(xx<0||yy<0||xx>=m.w||yy>=m.h)continue;
-     const lab=m.labels[yy*m.w+xx];if(m.required.has(lab))return lab;
+  const x=Math.round((e.clientX-r.left)*m.w/r.width);
+  const y=Math.round((e.clientY-r.top)*m.h/r.height);
+  let best=-1,bestDist=1e9,bestSize=-1;
+  const seen=new Set();
+  for(let rad=0;rad<=34;rad++){
+   for(let dy=-rad;dy<=rad;dy++)for(let dx=-rad;dx<=rad;dx++){
+    if(rad&&Math.abs(dx)!==rad&&Math.abs(dy)!==rad)continue;
+    const xx=x+dx,yy=y+dy;
+    if(xx<0||yy<0||xx>=m.w||yy>=m.h)continue;
+    const lab=m.labels[yy*m.w+xx];
+    if(!m.required.has(lab)||seen.has(lab))continue;
+    seen.add(lab);
+    const dist=dx*dx+dy*dy;
+    const size=m.componentSizes?.[lab]||0;
+    if(dist<bestDist||(dist===bestDist&&size>bestSize)){
+     best=lab;bestDist=dist;bestSize=size;
     }
    }
-   return -1;
-  };
-  const lab=findMapped(x,y);if(lab<0)return;
-  const required=m.required.get(lab);
+   if(best>=0&&rad>=10)break;
+  }
+  if(best<0)return;
+  const required=m.required.get(best);
   if(required!==selectedNumber)return;
-  const id=String(lab);if(painted.includes(id))return;
+  const id=String(best);if(painted.includes(id))return;
   onFill?.({id,n:required},m.required.size);
  };
 
