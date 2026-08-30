@@ -309,8 +309,6 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
  const completeRef=useRef(false);
 
  const seeds=[
-  // bezpieczne punkty umieszczone z dala od cyfr i konturów
-  [75,335,4],[790,265,4],[620,690,4],[105,700,4],[865,700,4],
   [168,73,3],[83,280,4],[190,380,3],
   [55,535,4],[130,535,4],[207,535,4],[279,535,4],
   [290,660,4],[1025,477,3],[718,675,4],
@@ -318,7 +316,7 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
   [432,111,3],[523,74,3],[614,92,3],[690,140,3],
   [339,259,3],[695,348,3],[641,393,3],
   [376,192,1],[691,280,1],[512,230,1],
-  [421,426,3],[465,500,2],[355,508,1],[616,525,1],
+  [421,426,3],[557,426,3],[465,500,2],[355,508,1],[616,525,1],
   [414,653,2],[572,613,2],[413,744,1],[580,744,1],
   [844,437,3],[174,613,1],[970,577,1],
   [101,743,4],[842,733,4]
@@ -422,16 +420,6 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
 
  const tap=e=>{
   const m=modelRef.current,canvas=canvasRef.current;if(!m||!canvas)return;
-
-  // Jeśli został tylko jeden region, nie pozwól żeby ukryty/mały seed blokował ukończenie planszy.
-  const remaining=[...m.required.entries()].filter(([lab])=>!painted.includes(String(lab)));
-  if(remaining.length===1){
-   const [lastLab,lastNumber]=remaining[0];
-   if(lastNumber===selectedNumber){
-    onFill?.({id:String(lastLab),n:lastNumber},m.required.size);
-    return;
-   }
-  }
   const r=canvas.getBoundingClientRect();
   const x=Math.round((e.clientX-r.left)*m.w/r.width);
   const y=Math.round((e.clientY-r.top)*m.h/r.height);
@@ -439,16 +427,12 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
   const direct=(x>=0&&y>=0&&x<m.w&&y<m.h)?m.labels[y*m.w+x]:-1;
   let best=(direct>=0&&m.required.has(direct))?direct:-1;
 
+  // Jeśli dotyk trafił w czarną cyfrę lub kontur, szukamy najbliższego
+  // NUMEROWANEGO pola. Nigdy nie tworzymy nowego pola automatycznie.
   if(best<0){
-   const candidates=[...m.required.entries()].filter(([lab,num])=>!painted.includes(String(lab))&&num===selectedNumber);
-   if(candidates.length===1){
-    const [candidateLab,candidateNumber]=candidates[0];
-    onFill?.({id:String(candidateLab),n:candidateNumber},m.required.size);
-    return;
-   }
    let bestDist=1e9,bestSize=-1;
    const seen=new Set();
-   for(let rad=0;rad<=36;rad++){
+   for(let rad=0;rad<=34;rad++){
     for(let dy=-rad;dy<=rad;dy++)for(let dx=-rad;dx<=rad;dx++){
      if(rad&&Math.abs(dx)!==rad&&Math.abs(dy)!==rad)continue;
      const xx=x+dx,yy=y+dy;
@@ -461,40 +445,16 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
       best=lab;bestDist=dist;bestSize=size;
      }
     }
-    if(best>=0&&rad>=8)break;
+    if(best>=0&&rad>=9)break;
    }
   }
 
-  if(best>=0){
-   const required=m.required.get(best);
-   if(required!==selectedNumber)return;
-   const id=String(best);if(painted.includes(id))return;
-   onFill?.({id,n:required},m.required.size);
-   return;
-  }
-
-  // Awaryjne przypisanie dla poprawnego, zamkniętego pola,
-  // którego punkt startowy nie został wcześniej rozpoznany.
-  let fallback=-1;
-  for(let rad=0;rad<=20&&fallback<0;rad++){
-   for(let dy=-rad;dy<=rad&&fallback<0;dy++)for(let dx=-rad;dx<=rad;dx++){
-    if(rad&&Math.abs(dx)!==rad&&Math.abs(dy)!==rad)continue;
-    const xx=x+dx,yy=y+dy;
-    if(xx<0||yy<0||xx>=m.w||yy>=m.h)continue;
-    const lab=m.labels[yy*m.w+xx];
-    if(lab>=0&&(m.componentSizes?.[lab]||0)>=120){fallback=lab;break}
-   }
-  }
-  if(fallback<0)return;
-  if(!m.required.has(fallback)){
-   m.required.set(fallback,selectedNumber);
-   const members=[];
-   for(let p=0;p<m.labels.length;p++)if(m.labels[p]===fallback)members.push(p);
-   m.members.set(fallback,members);
-   onReady?.(m.required.size);
-  }
-  const id=String(fallback);if(painted.includes(id))return;
-  onFill?.({id,n:selectedNumber},m.required.size);
+  if(best<0)return;
+  const required=m.required.get(best);
+  if(required!==selectedNumber)return;
+  const id=String(best);
+  if(painted.includes(id))return;
+  onFill?.({id,n:required},m.required.size);
  };
 
  return <div className="numberFloodBoard">
@@ -1144,7 +1104,7 @@ export default function Page(){
   mittel:{label:"Mittel",age:"5–7",colors:6,cols:5,rows:5},
   schwer:{label:"Schwer",age:"7+",colors:8,cols:6,rows:6}
  };
- const numberPalette=["#f5b642","#ef6f61","#58a6e7","#63bd72","#9b72d2","#f28fbd","#56c7c2","#8d6e63"];
+ const numberPalette=["#f6b73c","#2fa84f","#ec4e7a","#3d8bea","#9b72d2","#f28fbd","#56c7c2","#8d6e63"];
  const activeNumberTheme=numberThemes.find(x=>x.id===numberThemeId)||numberThemes[0];
  const activeNumberDifficulty=numberDifficultyMeta[numberDifficulty]||numberDifficultyMeta.leicht;
  const numberCells=useMemo(()=>{
@@ -3001,7 +2961,7 @@ export default function Page(){
        <div><small>Bild wählen</small><div className="numberThemes">{numberThemes.map(t=><button key={t.id} className={numberThemeId===t.id?"active":""} onClick={()=>setNumberThemeId(t.id)}><span>{t.icon}</span><b>{t.title}</b></button>)}</div></div>
        <div><small>Schwierigkeit</small><div className="hiddenDiff">{Object.entries(numberDifficultyMeta).map(([id,m])=><button key={id} className={numberDifficulty===id?"active":""} onClick={()=>setNumberDifficulty(id)}>{m.label}<em>{m.colors} Farben</em></button>)}</div></div>
       </div>
-      {useFloodNumberBoard&&<div className="numberImageNote">✨ Tippe auf die Zahl oder direkt in das Feld. Auch kleine Restfelder werden erkannt.</div>}
+      {useFloodNumberBoard&&<div className="numberImageNote">✨ Nur nummerierte Felder zählen zum Fortschritt.</div>}
             {numberDifficulty==="mittel"&&<div className="numberMittelNote">{"✨ Mittel: echte Felder · 6 Farben"}</div>}
       {numberDifficulty==="schwer"&&<div className="numberSchwerNote">🔥 Schwer: echte Felder · 8 Farben</div>}
       <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
