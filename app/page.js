@@ -3023,10 +3023,12 @@ export default function Page(){
            // Einhorn final 1254×1254 — pola zamknięte, cyfry 1–4.
            // 1 — twarz, ciało i nogi
            [400,475,1],[625,720,1],[300,805,1],[500,995,1],[735,995,1],[885,995,1],
+           // 1 — twarz, ciało, nogi + dolny segment rogu
+           [400,475,1],[625,720,1],[300,805,1],[500,995,1],[735,995,1],[885,995,1],[270,255,1],
            // 2 — grzywa, ogon, róg i kopyta
            [365,215,2],[650,500,2],[1040,605,2],[260,195,2],[300,940,2],[475,1135,2],[690,1100,2],[855,1135,2],
-           // 3 — grzywa, lewa część grzywy i środkowe pole ogona
-           [640,245,3],[215,305,3],[1010,710,3],
+           // 3 — grzywa, lewa część grzywy, środkowe pole ogona + segment rogu
+           [640,245,3],[215,305,3],[1010,710,3],[225,145,3],
            // 4 — róg, grzywa i dolne pole ogona
            [195,95,4],[620,340,4],[1040,900,4]
           ]:null}
