@@ -704,8 +704,6 @@ export default function Page(){
   setHiddenComplete(false);
  },[hiddenThemeId,hiddenDifficulty,hiddenSeed]);
 
- useEffect(()=>{setNumberPainted([]);setSelectedNumber(1)},[numberThemeId,numberDifficulty]);
-
  useEffect(()=>{
   if(typeof document==="undefined")return;
   let primed=false;
@@ -1135,8 +1133,39 @@ export default function Page(){
   schwer:{label:"Schwer",age:"7+",colors:8,cols:6,rows:6}
  };
  const numberPalette=["#f6b73c","#2fa84f","#ec4e7a","#3d8bea","#9b72d2","#f28fbd","#56c7c2","#8d6e63"];
- const activeNumberTheme=numberThemes.find(x=>x.id===numberThemeId)||numberThemes[0];
- const activeNumberDifficulty=numberDifficultyMeta[numberDifficulty]||numberDifficultyMeta.leicht;
+ const numberBoards=[
+  {
+   id:"malino",title:"Malino",icon:"🦁",imagePath:"/assets/malino-number-lineart.png",seeds:null
+  },
+  {
+   id:"rocket",title:"Rakete",icon:"🚀",imagePath:"/assets/rocket-number-lineart.png",
+   seeds:[
+    [586,130,2],[586,285,1],[586,390,3],[586,475,4],[586,650,1],
+    [586,805,2],[350,755,1],[825,755,1],[586,965,2],[586,1160,1]
+   ]
+  },
+  {
+   id:"dino",title:"Dinosaurier",icon:"🦕",imagePath:"/assets/dinosaur-number-lineart.png",
+   seeds:[
+    [270,325,1],[680,560,1],[320,675,1],[535,675,1],[455,1000,1],[735,900,1],
+    [405,92,2],[715,320,2],[935,590,2],[425,690,2],
+    [580,125,3],[780,455,3],[1010,675,3],[455,520,3],[470,805,3],
+    [665,230,4],[860,545,4],[455,605,4],[550,875,4]
+   ]
+  },
+  {
+   id:"unicorn",title:"Einhorn",icon:"🦄",imagePath:"/assets/unicorn-number-lineart.png",
+   seeds:[
+    [400,475,1],[625,720,1],[300,805,1],[500,995,1],[735,995,1],[885,995,1],[270,255,1],
+    [365,215,2],[650,500,2],[1040,605,2],[260,195,2],[300,940,2],[475,1135,2],[690,1100,2],[855,1135,2],
+    [640,245,3],[215,305,3],[1010,710,3],[225,145,3],
+    [195,95,4],[620,340,4],[1040,900,4]
+   ]
+  }
+ ];
+ const activeNumberBoard=numberBoards.find(x=>x.id===numberThemeId)||numberBoards[0];
+ const activeNumberTheme=activeNumberBoard;
+ const activeNumberDifficulty=numberDifficultyMeta.leicht;
  const numberCells=useMemo(()=>{
   const {cols,rows,colors}=activeNumberDifficulty;
   const seed=[...`${numberThemeId}-${numberDifficulty}`].reduce((v,ch)=>((v*31)+ch.charCodeAt(0))>>>0,17);
@@ -1570,7 +1599,7 @@ export default function Page(){
  const useRealNumberBoard=numberDifficulty==="leicht"||useMittelRealNumberBoard||useSchwerRealNumberBoard;
  const realNumberDone=useRealNumberBoard&&numberPainted.length===activeRealNumberRegions.length;
  const useImageNumberBoard=false;
- const useFloodNumberBoard=(numberThemeId==="malino"||numberThemeId==="rocket"||numberThemeId==="dino"||numberThemeId==="unicorn")&&numberDifficulty==="leicht";
+ const useFloodNumberBoard=true;
  const malinoImageMasks=[
   // Tło — osobne, nie nachodzi na postać
   {id:"treeCrown",baseN:8,label:[100,80],d:"M0 0 H260 C270 70 238 132 176 153 C120 171 54 155 0 124 Z"},
@@ -1706,12 +1735,17 @@ export default function Page(){
   const total=totalOverride||numberCells.length;
   if(next.length===total){setStars(stars+3);playSound("stars")}
  };
+ const selectNumberBoard=id=>{
+  if(id===numberThemeId)return;
+  setNumberThemeId(id);setNumberDifficulty("leicht");setNumberPainted([]);setSelectedNumber(1);
+ };
  const saveNumberArt=()=>{
-  const item={id:`number-${Date.now()}`,themeId:numberThemeId,difficulty:numberDifficulty,painted:numberPainted,createdAt:new Date().toISOString()};
+  const item={id:`number-${Date.now()}`,themeId:numberThemeId,difficulty:"leicht",painted:numberPainted,createdAt:new Date().toISOString()};
   setSavedNumberArt([item,...savedNumberArt].slice(0,18));playSound("success");
  };
  const openSavedNumberArt=item=>{
-  setCraftMode("numbers");setNumberThemeId(item.themeId);setNumberDifficulty(item.difficulty);setNumberPainted(item.painted||[]);playSound("click");
+  const board=numberBoards.find(x=>x.id===item.themeId)||numberBoards[0];
+  setCraftMode("numbers");setNumberThemeId(board.id);setNumberDifficulty("leicht");setNumberPainted(item.painted||[]);playSound("click");
  };
  const shareNumberPdf=()=>{
   if(typeof window==="undefined")return;
@@ -2985,54 +3019,19 @@ export default function Page(){
       <p>Wähle eine Nummer und tippe auf alle Felder mit derselben Zahl.</p>
      </aside>
      <main className="numberMain">
-      <div className="numberControls">
-       <div><small>Bild wählen</small><div className="numberThemes">{numberThemes.map(t=><button key={t.id} className={numberThemeId===t.id?"active":""} onClick={()=>setNumberThemeId(t.id)}><span>{t.icon}</span><b>{t.title}</b></button>)}</div></div>
-       <div><small>Schwierigkeit</small><div className="hiddenDiff">{Object.entries(numberDifficultyMeta).map(([id,m])=><button key={id} className={numberDifficulty===id?"active":""} onClick={()=>setNumberDifficulty(id)}>{m.label}<em>{m.colors} Farben</em></button>)}</div></div>
+      <div className="numberLibrary">
+       <div className="numberLibraryHead"><small>Bild wählen</small><b>Unsere Zahlenbilder</b></div>
+       <div className="numberThemes">{numberBoards.map(board=><button key={board.id} className={numberThemeId===board.id?"active":""} onClick={()=>selectNumberBoard(board.id)}><span>{board.icon}</span><b>{board.title}</b><em>1–4</em></button>)}</div>
       </div>
-      {useFloodNumberBoard&&<div className="numberImageNote">{numberThemeId==="rocket"?"🚀 Tippe direkt in die nummerierten Flächen der Rakete.":numberThemeId==="dino"?"🦕 Tippe direkt in die nummerierten Flächen des Dinosauriers.":numberThemeId==="unicorn"?"🦄 Tippe direkt in die nummerierten Flächen jednorożca.":"✨ Weißes T-Shirt bleibt frei. Beide Träger sind Feld 2. Die Mähne nutzt alle 4 Farben."}</div>}
-            {numberDifficulty==="mittel"&&<div className="numberMittelNote">{"✨ Mittel: echte Felder · 6 Farben"}</div>}
-      {numberDifficulty==="schwer"&&<div className="numberSchwerNote">🔥 Schwer: echte Felder · 8 Farben</div>}
-      <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
+      <div className="numberImageNote">{numberThemeId==="rocket"?"🚀 Tippe direkt in die nummerierten Flächen der Rakete.":numberThemeId==="dino"?"🦕 Tippe direkt in die nummerierten Flächen des Dinosauriers.":numberThemeId==="unicorn"?"🦄 Tippe direkt in die nummerierten Flächen des Einhorns.":"✨ Weißes T-Shirt bleibt frei. Beide Träger sind Feld 2. Die Mähne nutzt alle 4 Farben."}</div>
+      <div className="numberLegend">{Array.from({length:4},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
       {useFloodNumberBoard
        ?<div className="numberFloodWrap">
          <MalinoNumberFloodBoard selectedNumber={selectedNumber} palette={numberPalette} painted={numberPainted}
           onFill={(cell,total)=>paintNumberCell(cell,total)} onReady={setNumberFloodTotal}
-          imagePath={numberThemeId==="rocket"?"/assets/rocket-number-lineart.png":numberThemeId==="dino"?"/assets/dinosaur-number-lineart.png":numberThemeId==="unicorn"?"/assets/unicorn-number-lineart.png":"/assets/malino-number-lineart.png"}
-          customSeeds={numberThemeId==="rocket"?[
-           // Rakieta final 1173×1341 — tylko zamknięte, widoczne pola.
-           [586,130,2],
-           [586,285,1],
-           [586,390,3],
-           [586,475,4],
-           [586,650,1],
-           [586,805,2],
-           [350,755,1],[825,755,1],
-           [586,965,2],
-           [586,1160,1]
-          ]:numberThemeId==="dino"?[
-           // Dino final 1325×1187 — wszystkie aktywne pola 1–4 są zamknięte.
-           // 1 — głowa/korpus/ogon, ręce i obie nogi
-           [270,325,1],[680,560,1],[320,675,1],[535,675,1],[455,1000,1],[735,900,1],
-           // 2 — czub na głowie + wybrane łuski i podbrzusze
-           [405,92,2],[715,320,2],[935,590,2],[425,690,2],
-           // 3 — łuski i pasy podbrzusza
-           [580,125,3],[780,455,3],[1010,675,3],[455,520,3],[470,805,3],
-           // 4 — łuski i pasy podbrzusza
-           [665,230,4],[860,545,4],[455,605,4],[550,875,4]
-          ]:numberThemeId==="unicorn"?[
-           // Einhorn final 1254×1254 — pola zamknięte, cyfry 1–4.
-           // 1 — twarz, ciało i nogi
-           [400,475,1],[625,720,1],[300,805,1],[500,995,1],[735,995,1],[885,995,1],
-           // 1 — twarz, ciało, nogi + dolny segment rogu
-           [400,475,1],[625,720,1],[300,805,1],[500,995,1],[735,995,1],[885,995,1],[270,255,1],
-           // 2 — grzywa, ogon, róg i kopyta
-           [365,215,2],[650,500,2],[1040,605,2],[260,195,2],[300,940,2],[475,1135,2],[690,1100,2],[855,1135,2],
-           // 3 — grzywa, lewa część grzywy, środkowe pole ogona + segment rogu
-           [640,245,3],[215,305,3],[1010,710,3],[225,145,3],
-           // 4 — róg, grzywa i dolne pole ogona
-           [195,95,4],[620,340,4],[1040,900,4]
-          ]:null}
-          resetKey={`${numberThemeId}-${numberDifficulty}`}/>
+          imagePath={activeNumberBoard.imagePath}
+          customSeeds={activeNumberBoard.seeds}
+          resetKey={activeNumberBoard.id}/>
          {numberPainted.length>=numberFloodTotal&&numberFloodTotal>1&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
         </div>
        :useImageNumberBoard
@@ -3112,7 +3111,7 @@ export default function Page(){
      </main>
     </div>
     <div className="craftSavedHead"><div><span className="eyebrow">Meine Sammlung</span><h2>Gespeicherte Zahlenbilder</h2></div><span>{savedNumberArt.length}</span></div>
-    {savedNumberArt.length===0?<div className="craftEmpty"><span>🎨</span><div><b>Noch kein Zahlenbild gespeichert</b><small>Male oben dein erstes Bild.</small></div></div>:<div className="differenceSavedGrid">{savedNumberArt.map(item=>{const t=numberThemes.find(x=>x.id===item.themeId)||numberThemes[0],d=numberDifficultyMeta[item.difficulty]||numberDifficultyMeta.leicht;return <article key={item.id} className="differenceSavedCard" role="button" onClick={()=>openSavedNumberArt(item)}><span>{t.icon}</span><div><b>{t.title}</b><small>{d.label} · {d.colors} Farben</small><em>Öffnen ›</em></div><button onClick={e=>{e.stopPropagation();setSavedNumberArt(savedNumberArt.filter(x=>x.id!==item.id))}}>×</button></article>})}</div>}
+    {savedNumberArt.length===0?<div className="craftEmpty"><span>🎨</span><div><b>Noch kein Zahlenbild gespeichert</b><small>Male oben dein erstes Bild.</small></div></div>:<div className="differenceSavedGrid">{savedNumberArt.map(item=>{const board=numberBoards.find(x=>x.id===item.themeId)||numberBoards[0];return <article key={item.id} className="differenceSavedCard" role="button" onClick={()=>openSavedNumberArt(item)}><span>{board.icon}</span><div><b>{board.title}</b><small>4 Farben · Zahlen 1–4</small><em>Öffnen ›</em></div><button onClick={e=>{e.stopPropagation();setSavedNumberArt(savedNumberArt.filter(x=>x.id!==item.id))}}>×</button></article>})}</div>}
    </>}
 </section>}
 

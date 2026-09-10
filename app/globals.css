@@ -6923,6 +6923,19 @@ nav,
 .realNumberBoard .numberRegion:hover path{filter:brightness(.985)}
 .realNumberDetails{vector-effect:non-scaling-stroke}
 .numberThemes button.active span{transform:scale(1.08)}
+
+/* Malen nach Zahlen — single four-board library */
+.numberLibrary{display:grid;gap:8px}
+.numberLibraryHead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.numberLibraryHead small{color:#6d7b8e;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+.numberLibraryHead b{color:#173d78;font-size:15px}
+.numberLibrary .numberThemes{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.numberLibrary .numberThemes button{min-height:82px;padding:8px 5px}
+.numberLibrary .numberThemes span{font-size:31px}
+.numberLibrary .numberThemes b{font-size:10px}
+.numberLibrary .numberThemes em{display:block;margin-top:3px;color:#7b8797;font-size:8px;font-style:normal;font-weight:900}
+.numberLibrary .numberThemes button.active em{color:#bd6a1f}
+@media(max-width:650px){.numberLibrary .numberThemes{grid-template-columns:repeat(2,minmax(0,1fr))}.numberLibrary .numberThemes button{min-height:74px}}
 @media(max-width:650px){
  .realNumberBoard{border-radius:18px}
 }
