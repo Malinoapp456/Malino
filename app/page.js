@@ -1747,41 +1747,25 @@ export default function Page(){
   const board=numberBoards.find(x=>x.id===item.themeId)||numberBoards[0];
   setCraftMode("numbers");setNumberThemeId(board.id);setNumberDifficulty("leicht");setNumberPainted(item.painted||[]);playSound("click");
  };
- const shareNumberPdf=()=>{
+ const shareNumberPdf=async()=>{
   if(typeof window==="undefined")return;
   try{
    const W=1240,H=1754,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");if(!x)return;
-   x.fillStyle="#fff";x.fillRect(0,0,W,H);x.textAlign="center";x.fillStyle="#173d78";x.font="800 38px system-ui";x.fillText(`🎨 Malen nach Zahlen – ${activeNumberTheme.title}`,W/2,90);
-   x.fillStyle="#66778c";x.font="500 20px system-ui";x.fillText(`${activeNumberDifficulty.label} · Male jedes Feld in der Farbe seiner Nummer aus.`,W/2,135);
-   let paletteY=0;
-   if(useRealNumberBoard&&typeof Path2D!=="undefined"){
-    const bx=170,by=210,scale=1.8;
-    x.save();x.translate(bx,by);x.scale(scale,scale);
-    x.fillStyle="#fff";x.fillRect(8,8,484,484);
-    x.strokeStyle="#173d78";x.lineWidth=3;x.strokeRect(8,8,484,484);
-    activeRealNumberRegions.forEach(region=>{
-     const p=new Path2D(region.d);
-     x.fillStyle="#fff";x.fill(p);
-     x.strokeStyle="#173d78";x.lineWidth=3;x.stroke(p);
-     x.fillStyle="#173d78";x.font="800 16px system-ui";x.textAlign="center";
-     x.fillText(String(region.n),region.label[0],region.label[1]);
-    });
-    x.restore();
-    paletteY=by+500*scale+55;
-   }else{
-    const cols=activeNumberDifficulty.cols,rows=activeNumberDifficulty.rows,size=Math.min(900/cols,1050/rows),bw=cols*size,bh=rows*size,bx=(W-bw)/2,by=220;
-    numberCells.forEach((cell,i)=>{const col=i%cols,row=(i/cols)|0,xx=bx+col*size,yy=by+row*size;x.fillStyle="#fff";x.fillRect(xx,yy,size,size);x.strokeStyle="#718096";x.lineWidth=2;x.strokeRect(xx,yy,size,size);x.fillStyle="#42546b";x.font=`700 ${Math.max(18,size*.18)}px system-ui`;x.textAlign="center";x.fillText(String(cell.n),xx+size/2,yy+size/2+8)});
-    paletteY=by+bh+70;
-   }
+   x.fillStyle="#fff";x.fillRect(0,0,W,H);x.textAlign="center";x.fillStyle="#173d78";x.font="800 38px system-ui";x.fillText(`🎨 Malen nach Zahlen – ${activeNumberBoard.title}`,W/2,90);
+   x.fillStyle="#66778c";x.font="500 20px system-ui";x.fillText("Male jedes Feld in der Farbe seiner Nummer aus.",W/2,135);
+   const boardImage=await new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=activeNumberBoard.imagePath});
+   const maxW=1040,maxH=1300,scale=Math.min(maxW/boardImage.naturalWidth,maxH/boardImage.naturalHeight),bw=boardImage.naturalWidth*scale,bh=boardImage.naturalHeight*scale,bx=(W-bw)/2,by=170;
+   x.drawImage(boardImage,bx,by,bw,bh);
+   const paletteY=by+bh+35;
    x.fillStyle="#173d78";x.font="800 22px system-ui";x.textAlign="center";x.fillText("Farben:",W/2,paletteY);
-   const n=activeNumberDifficulty.colors;
+   const n=4;
    for(let i=0;i<n;i++){const xx=W/2-(n-1)*55+i*110;x.fillStyle=numberPalette[i];x.beginPath();x.arc(xx,paletteY+55,30,0,Math.PI*2);x.fill();x.fillStyle="#173d78";x.font="800 18px system-ui";x.fillText(String(i+1),xx,paletteY+62)}
    x.fillStyle="#8a96a5";x.font="500 16px system-ui";x.fillText("Malino – kreative Spielzeit ohne Bildschirm",W/2,H-35);
    const data=c.toDataURL("image/jpeg",.95).split(",")[1],bin=atob(data),jpg=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)jpg[i]=bin.charCodeAt(i);
    const enc=new TextEncoder(),chunks=[];let off=0;const ofs=[0],add=d=>{const b=typeof d==="string"?enc.encode(d):d;chunks.push(b);off+=b.length},obj=(n,b)=>{ofs[n]=off;add(`${n} 0 obj\n${b}\nendobj\n`)};
    add("%PDF-1.4\n");obj(1,"<< /Type /Catalog /Pages 2 0 R >>");obj(2,"<< /Type /Pages /Kids [3 0 R] /Count 1 >>");obj(3,"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>");
    ofs[4]=off;add(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${W} /Height ${H} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`);add(jpg);add("\nendstream\nendobj\n");const ct="q\n595.28 0 0 841.89 0 0 cm\n/Im0 Do\nQ\n";ofs[5]=off;add(`5 0 obj\n<< /Length ${ct.length} >>\nstream\n${ct}endstream\nendobj\n`);const xr=off;add("xref\n0 6\n0000000000 65535 f \n");for(let i=1;i<=5;i++)add(String(ofs[i]).padStart(10,"0")+" 00000 n \n");add(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF`);const total=chunks.reduce((q,b)=>q+b.length,0),pdf=new Uint8Array(total);let p=0;chunks.forEach(b=>{pdf.set(b,p);p+=b.length});
-   const blob=new Blob([pdf],{type:"application/pdf"}),file=new File([blob],`malino-malen-nach-zahlen-${numberThemeId}.pdf`,{type:"application/pdf"});
+   const blob=new Blob([pdf],{type:"application/pdf"}),file=new File([blob],`malino-malen-nach-zahlen-${activeNumberBoard.id}.pdf`,{type:"application/pdf"});
    if(navigator.share&&navigator.canShare?.({files:[file]}))navigator.share({files:[file],title:"Malino – Malen nach Zahlen"}).catch(()=>{});else{const u=URL.createObjectURL(blob),aa=document.createElement("a");aa.href=u;aa.download=file.name;aa.click();setTimeout(()=>URL.revokeObjectURL(u),120000)}
   }catch{}
  };
