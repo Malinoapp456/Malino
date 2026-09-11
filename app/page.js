@@ -704,8 +704,6 @@ export default function Page(){
   setHiddenComplete(false);
  },[hiddenThemeId,hiddenDifficulty,hiddenSeed]);
 
- useEffect(()=>{setNumberPainted([]);setSelectedNumber(1)},[numberThemeId,numberDifficulty]);
-
  useEffect(()=>{
   if(typeof document==="undefined")return;
   let primed=false;
@@ -1135,8 +1133,39 @@ export default function Page(){
   schwer:{label:"Schwer",age:"7+",colors:8,cols:6,rows:6}
  };
  const numberPalette=["#f6b73c","#2fa84f","#ec4e7a","#3d8bea","#9b72d2","#f28fbd","#56c7c2","#8d6e63"];
- const activeNumberTheme=numberThemes.find(x=>x.id===numberThemeId)||numberThemes[0];
- const activeNumberDifficulty=numberDifficultyMeta[numberDifficulty]||numberDifficultyMeta.leicht;
+ const numberBoards=[
+  {
+   id:"malino",title:"Malino",icon:"🦁",imagePath:"/assets/malino-number-lineart.png",seeds:null
+  },
+  {
+   id:"rocket",title:"Rakete",icon:"🚀",imagePath:"/assets/rocket-number-lineart.png",
+   seeds:[
+    [586,130,2],[586,285,1],[586,390,3],[586,475,4],[586,650,1],
+    [586,805,2],[350,755,1],[825,755,1],[586,965,2],[586,1160,1]
+   ]
+  },
+  {
+   id:"dino",title:"Dinosaurier",icon:"🦕",imagePath:"/assets/dinosaur-number-lineart.png",
+   seeds:[
+    [270,325,1],[680,560,1],[320,675,1],[535,675,1],[455,1000,1],[735,900,1],
+    [405,92,2],[715,320,2],[935,590,2],[425,690,2],
+    [580,125,3],[780,455,3],[1010,675,3],[455,520,3],[470,805,3],
+    [665,230,4],[860,545,4],[455,605,4],[550,875,4]
+   ]
+  },
+  {
+   id:"unicorn",title:"Einhorn",icon:"🦄",imagePath:"/assets/unicorn-number-lineart.png",
+   seeds:[
+    [400,475,1],[625,720,1],[300,805,1],[500,995,1],[735,995,1],[885,995,1],[270,255,1],
+    [365,215,2],[650,500,2],[1040,605,2],[260,195,2],[300,940,2],[475,1135,2],[690,1100,2],[855,1135,2],
+    [640,245,3],[215,305,3],[1010,710,3],[225,145,3],
+    [195,95,4],[620,340,4],[1040,900,4]
+   ]
+  }
+ ];
+ const activeNumberBoard=numberBoards.find(x=>x.id===numberThemeId)||numberBoards[0];
+ const activeNumberTheme=activeNumberBoard;
+ const activeNumberDifficulty=numberDifficultyMeta.leicht;
  const numberCells=useMemo(()=>{
   const {cols,rows,colors}=activeNumberDifficulty;
   const seed=[...`${numberThemeId}-${numberDifficulty}`].reduce((v,ch)=>((v*31)+ch.charCodeAt(0))>>>0,17);
@@ -1570,7 +1599,7 @@ export default function Page(){
  const useRealNumberBoard=numberDifficulty==="leicht"||useMittelRealNumberBoard||useSchwerRealNumberBoard;
  const realNumberDone=useRealNumberBoard&&numberPainted.length===activeRealNumberRegions.length;
  const useImageNumberBoard=false;
- const useFloodNumberBoard=(numberThemeId==="malino"||numberThemeId==="rocket"||numberThemeId==="dino"||numberThemeId==="unicorn")&&numberDifficulty==="leicht";
+ const useFloodNumberBoard=true;
  const malinoImageMasks=[
   // Tło — osobne, nie nachodzi na postać
   {id:"treeCrown",baseN:8,label:[100,80],d:"M0 0 H260 C270 70 238 132 176 153 C120 171 54 155 0 124 Z"},
@@ -1706,48 +1735,37 @@ export default function Page(){
   const total=totalOverride||numberCells.length;
   if(next.length===total){setStars(stars+3);playSound("stars")}
  };
+ const selectNumberBoard=id=>{
+  if(id===numberThemeId)return;
+  setNumberThemeId(id);setNumberDifficulty("leicht");setNumberPainted([]);setSelectedNumber(1);
+ };
  const saveNumberArt=()=>{
-  const item={id:`number-${Date.now()}`,themeId:numberThemeId,difficulty:numberDifficulty,painted:numberPainted,createdAt:new Date().toISOString()};
+  const item={id:`number-${Date.now()}`,themeId:numberThemeId,difficulty:"leicht",painted:numberPainted,createdAt:new Date().toISOString()};
   setSavedNumberArt([item,...savedNumberArt].slice(0,18));playSound("success");
  };
  const openSavedNumberArt=item=>{
-  setCraftMode("numbers");setNumberThemeId(item.themeId);setNumberDifficulty(item.difficulty);setNumberPainted(item.painted||[]);playSound("click");
+  const board=numberBoards.find(x=>x.id===item.themeId)||numberBoards[0];
+  setCraftMode("numbers");setNumberThemeId(board.id);setNumberDifficulty("leicht");setNumberPainted(item.painted||[]);playSound("click");
  };
- const shareNumberPdf=()=>{
+ const shareNumberPdf=async()=>{
   if(typeof window==="undefined")return;
   try{
    const W=1240,H=1754,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");if(!x)return;
-   x.fillStyle="#fff";x.fillRect(0,0,W,H);x.textAlign="center";x.fillStyle="#173d78";x.font="800 38px system-ui";x.fillText(`🎨 Malen nach Zahlen – ${activeNumberTheme.title}`,W/2,90);
-   x.fillStyle="#66778c";x.font="500 20px system-ui";x.fillText(`${activeNumberDifficulty.label} · Male jedes Feld in der Farbe seiner Nummer aus.`,W/2,135);
-   let paletteY=0;
-   if(useRealNumberBoard&&typeof Path2D!=="undefined"){
-    const bx=170,by=210,scale=1.8;
-    x.save();x.translate(bx,by);x.scale(scale,scale);
-    x.fillStyle="#fff";x.fillRect(8,8,484,484);
-    x.strokeStyle="#173d78";x.lineWidth=3;x.strokeRect(8,8,484,484);
-    activeRealNumberRegions.forEach(region=>{
-     const p=new Path2D(region.d);
-     x.fillStyle="#fff";x.fill(p);
-     x.strokeStyle="#173d78";x.lineWidth=3;x.stroke(p);
-     x.fillStyle="#173d78";x.font="800 16px system-ui";x.textAlign="center";
-     x.fillText(String(region.n),region.label[0],region.label[1]);
-    });
-    x.restore();
-    paletteY=by+500*scale+55;
-   }else{
-    const cols=activeNumberDifficulty.cols,rows=activeNumberDifficulty.rows,size=Math.min(900/cols,1050/rows),bw=cols*size,bh=rows*size,bx=(W-bw)/2,by=220;
-    numberCells.forEach((cell,i)=>{const col=i%cols,row=(i/cols)|0,xx=bx+col*size,yy=by+row*size;x.fillStyle="#fff";x.fillRect(xx,yy,size,size);x.strokeStyle="#718096";x.lineWidth=2;x.strokeRect(xx,yy,size,size);x.fillStyle="#42546b";x.font=`700 ${Math.max(18,size*.18)}px system-ui`;x.textAlign="center";x.fillText(String(cell.n),xx+size/2,yy+size/2+8)});
-    paletteY=by+bh+70;
-   }
+   x.fillStyle="#fff";x.fillRect(0,0,W,H);x.textAlign="center";x.fillStyle="#173d78";x.font="800 38px system-ui";x.fillText(`🎨 Malen nach Zahlen – ${activeNumberBoard.title}`,W/2,90);
+   x.fillStyle="#66778c";x.font="500 20px system-ui";x.fillText("Male jedes Feld in der Farbe seiner Nummer aus.",W/2,135);
+   const boardImage=await new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=activeNumberBoard.imagePath});
+   const maxW=1040,maxH=1300,scale=Math.min(maxW/boardImage.naturalWidth,maxH/boardImage.naturalHeight),bw=boardImage.naturalWidth*scale,bh=boardImage.naturalHeight*scale,bx=(W-bw)/2,by=170;
+   x.drawImage(boardImage,bx,by,bw,bh);
+   const paletteY=by+bh+35;
    x.fillStyle="#173d78";x.font="800 22px system-ui";x.textAlign="center";x.fillText("Farben:",W/2,paletteY);
-   const n=activeNumberDifficulty.colors;
+   const n=4;
    for(let i=0;i<n;i++){const xx=W/2-(n-1)*55+i*110;x.fillStyle=numberPalette[i];x.beginPath();x.arc(xx,paletteY+55,30,0,Math.PI*2);x.fill();x.fillStyle="#173d78";x.font="800 18px system-ui";x.fillText(String(i+1),xx,paletteY+62)}
    x.fillStyle="#8a96a5";x.font="500 16px system-ui";x.fillText("Malino – kreative Spielzeit ohne Bildschirm",W/2,H-35);
    const data=c.toDataURL("image/jpeg",.95).split(",")[1],bin=atob(data),jpg=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)jpg[i]=bin.charCodeAt(i);
    const enc=new TextEncoder(),chunks=[];let off=0;const ofs=[0],add=d=>{const b=typeof d==="string"?enc.encode(d):d;chunks.push(b);off+=b.length},obj=(n,b)=>{ofs[n]=off;add(`${n} 0 obj\n${b}\nendobj\n`)};
    add("%PDF-1.4\n");obj(1,"<< /Type /Catalog /Pages 2 0 R >>");obj(2,"<< /Type /Pages /Kids [3 0 R] /Count 1 >>");obj(3,"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>");
    ofs[4]=off;add(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${W} /Height ${H} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`);add(jpg);add("\nendstream\nendobj\n");const ct="q\n595.28 0 0 841.89 0 0 cm\n/Im0 Do\nQ\n";ofs[5]=off;add(`5 0 obj\n<< /Length ${ct.length} >>\nstream\n${ct}endstream\nendobj\n`);const xr=off;add("xref\n0 6\n0000000000 65535 f \n");for(let i=1;i<=5;i++)add(String(ofs[i]).padStart(10,"0")+" 00000 n \n");add(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF`);const total=chunks.reduce((q,b)=>q+b.length,0),pdf=new Uint8Array(total);let p=0;chunks.forEach(b=>{pdf.set(b,p);p+=b.length});
-   const blob=new Blob([pdf],{type:"application/pdf"}),file=new File([blob],`malino-malen-nach-zahlen-${numberThemeId}.pdf`,{type:"application/pdf"});
+   const blob=new Blob([pdf],{type:"application/pdf"}),file=new File([blob],`malino-malen-nach-zahlen-${activeNumberBoard.id}.pdf`,{type:"application/pdf"});
    if(navigator.share&&navigator.canShare?.({files:[file]}))navigator.share({files:[file],title:"Malino – Malen nach Zahlen"}).catch(()=>{});else{const u=URL.createObjectURL(blob),aa=document.createElement("a");aa.href=u;aa.download=file.name;aa.click();setTimeout(()=>URL.revokeObjectURL(u),120000)}
   }catch{}
  };
@@ -2985,54 +3003,19 @@ export default function Page(){
       <p>Wähle eine Nummer und tippe auf alle Felder mit derselben Zahl.</p>
      </aside>
      <main className="numberMain">
-      <div className="numberControls">
-       <div><small>Bild wählen</small><div className="numberThemes">{numberThemes.map(t=><button key={t.id} className={numberThemeId===t.id?"active":""} onClick={()=>setNumberThemeId(t.id)}><span>{t.icon}</span><b>{t.title}</b></button>)}</div></div>
-       <div><small>Schwierigkeit</small><div className="hiddenDiff">{Object.entries(numberDifficultyMeta).map(([id,m])=><button key={id} className={numberDifficulty===id?"active":""} onClick={()=>setNumberDifficulty(id)}>{m.label}<em>{m.colors} Farben</em></button>)}</div></div>
+      <div className="numberLibrary">
+       <div className="numberLibraryHead"><small>Bild wählen</small><b>Unsere Zahlenbilder</b></div>
+       <div className="numberThemes">{numberBoards.map(board=><button key={board.id} className={numberThemeId===board.id?"active":""} onClick={()=>selectNumberBoard(board.id)}><span>{board.icon}</span><b>{board.title}</b><em>1–4</em></button>)}</div>
       </div>
-      {useFloodNumberBoard&&<div className="numberImageNote">{numberThemeId==="rocket"?"🚀 Tippe direkt in die nummerierten Flächen der Rakete.":numberThemeId==="dino"?"🦕 Tippe direkt in die nummerierten Flächen des Dinosauriers.":numberThemeId==="unicorn"?"🦄 Tippe direkt in die nummerierten Flächen jednorożca.":"✨ Weißes T-Shirt bleibt frei. Beide Träger sind Feld 2. Die Mähne nutzt alle 4 Farben."}</div>}
-            {numberDifficulty==="mittel"&&<div className="numberMittelNote">{"✨ Mittel: echte Felder · 6 Farben"}</div>}
-      {numberDifficulty==="schwer"&&<div className="numberSchwerNote">🔥 Schwer: echte Felder · 8 Farben</div>}
-      <div className="numberLegend">{Array.from({length:activeNumberDifficulty.colors},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
+      <div className="numberImageNote">{numberThemeId==="rocket"?"🚀 Tippe direkt in die nummerierten Flächen der Rakete.":numberThemeId==="dino"?"🦕 Tippe direkt in die nummerierten Flächen des Dinosauriers.":numberThemeId==="unicorn"?"🦄 Tippe direkt in die nummerierten Flächen des Einhorns.":"✨ Weißes T-Shirt bleibt frei. Beide Träger sind Feld 2. Die Mähne nutzt alle 4 Farben."}</div>
+      <div className="numberLegend">{Array.from({length:4},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
       {useFloodNumberBoard
        ?<div className="numberFloodWrap">
          <MalinoNumberFloodBoard selectedNumber={selectedNumber} palette={numberPalette} painted={numberPainted}
           onFill={(cell,total)=>paintNumberCell(cell,total)} onReady={setNumberFloodTotal}
-          imagePath={numberThemeId==="rocket"?"/assets/rocket-number-lineart.png":numberThemeId==="dino"?"/assets/dinosaur-number-lineart.png":numberThemeId==="unicorn"?"/assets/unicorn-number-lineart.png":"/assets/malino-number-lineart.png"}
-          customSeeds={numberThemeId==="rocket"?[
-           // Rakieta final 1173×1341 — tylko zamknięte, widoczne pola.
-           [586,130,2],
-           [586,285,1],
-           [586,390,3],
-           [586,475,4],
-           [586,650,1],
-           [586,805,2],
-           [350,755,1],[825,755,1],
-           [586,965,2],
-           [586,1160,1]
-          ]:numberThemeId==="dino"?[
-           // Dino final 1325×1187 — wszystkie aktywne pola 1–4 są zamknięte.
-           // 1 — głowa/korpus/ogon, ręce i obie nogi
-           [270,325,1],[680,560,1],[320,675,1],[535,675,1],[455,1000,1],[735,900,1],
-           // 2 — czub na głowie + wybrane łuski i podbrzusze
-           [405,92,2],[715,320,2],[935,590,2],[425,690,2],
-           // 3 — łuski i pasy podbrzusza
-           [580,125,3],[780,455,3],[1010,675,3],[455,520,3],[470,805,3],
-           // 4 — łuski i pasy podbrzusza
-           [665,230,4],[860,545,4],[455,605,4],[550,875,4]
-          ]:numberThemeId==="unicorn"?[
-           // Einhorn final 1254×1254 — pola zamknięte, cyfry 1–4.
-           // 1 — twarz, ciało i nogi
-           [400,475,1],[625,720,1],[300,805,1],[500,995,1],[735,995,1],[885,995,1],
-           // 1 — twarz, ciało, nogi + dolny segment rogu
-           [400,475,1],[625,720,1],[300,805,1],[500,995,1],[735,995,1],[885,995,1],[270,255,1],
-           // 2 — grzywa, ogon, róg i kopyta
-           [365,215,2],[650,500,2],[1040,605,2],[260,195,2],[300,940,2],[475,1135,2],[690,1100,2],[855,1135,2],
-           // 3 — grzywa, lewa część grzywy, środkowe pole ogona + segment rogu
-           [640,245,3],[215,305,3],[1010,710,3],[225,145,3],
-           // 4 — róg, grzywa i dolne pole ogona
-           [195,95,4],[620,340,4],[1040,900,4]
-          ]:null}
-          resetKey={`${numberThemeId}-${numberDifficulty}`}/>
+          imagePath={activeNumberBoard.imagePath}
+          customSeeds={activeNumberBoard.seeds}
+          resetKey={activeNumberBoard.id}/>
          {numberPainted.length>=numberFloodTotal&&numberFloodTotal>1&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
         </div>
        :useImageNumberBoard
@@ -3112,7 +3095,7 @@ export default function Page(){
      </main>
     </div>
     <div className="craftSavedHead"><div><span className="eyebrow">Meine Sammlung</span><h2>Gespeicherte Zahlenbilder</h2></div><span>{savedNumberArt.length}</span></div>
-    {savedNumberArt.length===0?<div className="craftEmpty"><span>🎨</span><div><b>Noch kein Zahlenbild gespeichert</b><small>Male oben dein erstes Bild.</small></div></div>:<div className="differenceSavedGrid">{savedNumberArt.map(item=>{const t=numberThemes.find(x=>x.id===item.themeId)||numberThemes[0],d=numberDifficultyMeta[item.difficulty]||numberDifficultyMeta.leicht;return <article key={item.id} className="differenceSavedCard" role="button" onClick={()=>openSavedNumberArt(item)}><span>{t.icon}</span><div><b>{t.title}</b><small>{d.label} · {d.colors} Farben</small><em>Öffnen ›</em></div><button onClick={e=>{e.stopPropagation();setSavedNumberArt(savedNumberArt.filter(x=>x.id!==item.id))}}>×</button></article>})}</div>}
+    {savedNumberArt.length===0?<div className="craftEmpty"><span>🎨</span><div><b>Noch kein Zahlenbild gespeichert</b><small>Male oben dein erstes Bild.</small></div></div>:<div className="differenceSavedGrid">{savedNumberArt.map(item=>{const board=numberBoards.find(x=>x.id===item.themeId)||numberBoards[0];return <article key={item.id} className="differenceSavedCard" role="button" onClick={()=>openSavedNumberArt(item)}><span>{board.icon}</span><div><b>{board.title}</b><small>4 Farben · Zahlen 1–4</small><em>Öffnen ›</em></div><button onClick={e=>{e.stopPropagation();setSavedNumberArt(savedNumberArt.filter(x=>x.id!==item.id))}}>×</button></article>})}</div>}
    </>}
 </section>}
 
