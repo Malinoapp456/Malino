@@ -1119,11 +1119,13 @@ export default function Page(){
  },[hiddenThemeId,hiddenDifficulty,hiddenSeed]);
  const hiddenBoardKey=`${hiddenThemeId}:${hiddenDifficulty}:${hiddenSeed}`;
  const hiddenAlreadySolved=hiddenSolved.includes(hiddenBoardKey);
+ const robotNumberThemeId="robot";
  const numberThemes=[
   {id:"malino",title:"Malino",icon:"🦁"},
   {id:"rocket",title:"Rakete",icon:"🚀"},
   {id:"dino",title:"Dinosaurier",icon:"🦕"},
   {id:"unicorn",title:"Einhorn",icon:"🦄"},
+  {id:robotNumberThemeId,title:"Roboter",icon:"🤖"},
   {id:"tractor",title:"Traktor",icon:"🚜"},
   {id:"fish",title:"Unterwasser",icon:"🐠"}
  ];
@@ -1163,7 +1165,7 @@ export default function Page(){
    ]
   },
   {
-   id:"robot",title:"Roboter",icon:"🤖",imagePath:"/assets/robot-number-lineart.png",
+   id:robotNumberThemeId,title:"Roboter",icon:"🤖",imagePath:"/assets/robot-number-lineart.png",
    seeds:[
     [655,224,1],[655,397,1],[558,700,1],[655,866,1],[221,1104,1],
     [661,135,2],[505,230,2],[808,231,2],[351,397,2],[909,399,2],[962,397,2],
@@ -1748,8 +1750,9 @@ export default function Page(){
   if(next.length===total){setStars(stars+3);playSound("stars")}
  };
  const selectNumberBoard=id=>{
-  if(id===numberThemeId)return;
-  setNumberThemeId(id);setNumberDifficulty("leicht");setNumberPainted([]);setSelectedNumber(1);
+  const board=numberBoards.find(item=>item.id===id);
+  if(!board||board.id===numberThemeId)return;
+  setNumberThemeId(board.id);setNumberDifficulty("leicht");setNumberPainted([]);setSelectedNumber(1);
  };
  const saveNumberArt=()=>{
   const item={id:`number-${Date.now()}`,themeId:numberThemeId,difficulty:"leicht",painted:numberPainted,createdAt:new Date().toISOString()};
@@ -3019,11 +3022,11 @@ export default function Page(){
        <div className="numberLibraryHead"><small>Bild wählen</small><b>Unsere Zahlenbilder</b></div>
        <div className="numberThemes">{numberBoards.map(board=><button key={board.id} className={numberThemeId===board.id?"active":""} onClick={()=>selectNumberBoard(board.id)}><span>{board.icon}</span><b>{board.title}</b><em>1–4</em></button>)}</div>
       </div>
-      <div className="numberImageNote">{numberThemeId==="rocket"?"🚀 Tippe direkt in die nummerierten Flächen der Rakete.":numberThemeId==="dino"?"🦕 Tippe direkt in die nummerierten Flächen des Dinosauriers.":numberThemeId==="unicorn"?"🦄 Tippe direkt in die nummerierten Flächen des Einhorns.":numberThemeId==="robot"?"🤖 Tippe direkt in die nummerierten Flächen des Roboters.":"✨ Weißes T-Shirt bleibt frei. Beide Träger sind Feld 2. Die Mähne nutzt alle 4 Farben."}</div>
+      <div className="numberImageNote">{numberThemeId==="rocket"?"🚀 Tippe direkt in die nummerierten Flächen der Rakete.":numberThemeId==="dino"?"🦕 Tippe direkt in die nummerierten Flächen des Dinosauriers.":numberThemeId==="unicorn"?"🦄 Tippe direkt in die nummerierten Flächen des Einhorns.":numberThemeId===robotNumberThemeId?"🤖 Tippe direkt in die nummerierten Flächen des Roboters.":"✨ Weißes T-Shirt bleibt frei. Beide Träger sind Feld 2. Die Mähne nutzt alle 4 Farben."}</div>
       <div className="numberLegend">{Array.from({length:4},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
       {useFloodNumberBoard
        ?<div className="numberFloodWrap">
-         <MalinoNumberFloodBoard selectedNumber={selectedNumber} palette={numberPalette} painted={numberPainted}
+         <MalinoNumberFloodBoard key={activeNumberBoard.id} selectedNumber={selectedNumber} palette={numberPalette} painted={numberPainted}
           onFill={(cell,total)=>paintNumberCell(cell,total)} onReady={setNumberFloodTotal}
           imagePath={activeNumberBoard.imagePath}
           customSeeds={activeNumberBoard.seeds}
