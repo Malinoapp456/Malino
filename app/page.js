@@ -1119,11 +1119,13 @@ export default function Page(){
  },[hiddenThemeId,hiddenDifficulty,hiddenSeed]);
  const hiddenBoardKey=`${hiddenThemeId}:${hiddenDifficulty}:${hiddenSeed}`;
  const hiddenAlreadySolved=hiddenSolved.includes(hiddenBoardKey);
+ const robotNumberThemeId="robot";
  const numberThemes=[
   {id:"malino",title:"Malino",icon:"🦁"},
   {id:"rocket",title:"Rakete",icon:"🚀"},
   {id:"dino",title:"Dinosaurier",icon:"🦕"},
   {id:"unicorn",title:"Einhorn",icon:"🦄"},
+  {id:robotNumberThemeId,title:"Roboter",icon:"🤖"},
   {id:"tractor",title:"Traktor",icon:"🚜"},
   {id:"fish",title:"Unterwasser",icon:"🐠"}
  ];
@@ -1160,6 +1162,18 @@ export default function Page(){
     [365,215,2],[650,500,2],[1040,605,2],[260,195,2],[300,940,2],[475,1135,2],[690,1100,2],[855,1135,2],
     [640,245,3],[215,305,3],[1010,710,3],[225,145,3],
     [195,95,4],[620,340,4],[1040,900,4]
+   ]
+  },
+  {
+   id:robotNumberThemeId,title:"Roboter",icon:"🤖",imagePath:"/assets/robot-number-lineart.png",
+   seeds:[
+    [655,224,1],[655,397,1],[558,700,1],[655,866,1],[221,1104,1],
+    [661,135,2],[505,230,2],[808,231,2],[351,397,2],[909,399,2],[962,397,2],
+    [234,533,2],[443,615,2],[873,615,2],[1026,803,2],[486,1032,2],[825,1032,2],
+    [662,68,3],[258,168,3],[1037,168,3],[403,405,3],[656,490,3],[655,581,3],
+    [655,711,3],[655,806,3],[485,1106,3],[824,1106,3],[145,818,3],[1185,700,3],
+    [153,321,4],[1138,367,4],[322,618,4],[965,700,4],[534,916,4],[779,916,4],
+    [307,883,4],[1195,954,4]
    ]
   }
  ];
@@ -1736,8 +1750,9 @@ export default function Page(){
   if(next.length===total){setStars(stars+3);playSound("stars")}
  };
  const selectNumberBoard=id=>{
-  if(id===numberThemeId)return;
-  setNumberThemeId(id);setNumberDifficulty("leicht");setNumberPainted([]);setSelectedNumber(1);
+  const board=numberBoards.find(item=>item.id===id);
+  if(!board||board.id===numberThemeId)return;
+  setNumberThemeId(board.id);setNumberDifficulty("leicht");setNumberPainted([]);setSelectedNumber(1);
  };
  const saveNumberArt=()=>{
   const item={id:`number-${Date.now()}`,themeId:numberThemeId,difficulty:"leicht",painted:numberPainted,createdAt:new Date().toISOString()};
@@ -3007,11 +3022,11 @@ export default function Page(){
        <div className="numberLibraryHead"><small>Bild wählen</small><b>Unsere Zahlenbilder</b></div>
        <div className="numberThemes">{numberBoards.map(board=><button key={board.id} className={numberThemeId===board.id?"active":""} onClick={()=>selectNumberBoard(board.id)}><span>{board.icon}</span><b>{board.title}</b><em>1–4</em></button>)}</div>
       </div>
-      <div className="numberImageNote">{numberThemeId==="rocket"?"🚀 Tippe direkt in die nummerierten Flächen der Rakete.":numberThemeId==="dino"?"🦕 Tippe direkt in die nummerierten Flächen des Dinosauriers.":numberThemeId==="unicorn"?"🦄 Tippe direkt in die nummerierten Flächen des Einhorns.":"✨ Weißes T-Shirt bleibt frei. Beide Träger sind Feld 2. Die Mähne nutzt alle 4 Farben."}</div>
+      <div className="numberImageNote">{numberThemeId==="rocket"?"🚀 Tippe direkt in die nummerierten Flächen der Rakete.":numberThemeId==="dino"?"🦕 Tippe direkt in die nummerierten Flächen des Dinosauriers.":numberThemeId==="unicorn"?"🦄 Tippe direkt in die nummerierten Flächen des Einhorns.":numberThemeId===robotNumberThemeId?"🤖 Tippe direkt in die nummerierten Flächen des Roboters.":"✨ Weißes T-Shirt bleibt frei. Beide Träger sind Feld 2. Die Mähne nutzt alle 4 Farben."}</div>
       <div className="numberLegend">{Array.from({length:4},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
       {useFloodNumberBoard
        ?<div className="numberFloodWrap">
-         <MalinoNumberFloodBoard selectedNumber={selectedNumber} palette={numberPalette} painted={numberPainted}
+         <MalinoNumberFloodBoard key={activeNumberBoard.id} selectedNumber={selectedNumber} palette={numberPalette} painted={numberPainted}
           onFill={(cell,total)=>paintNumberCell(cell,total)} onReady={setNumberFloodTotal}
           imagePath={activeNumberBoard.imagePath}
           customSeeds={activeNumberBoard.seeds}
