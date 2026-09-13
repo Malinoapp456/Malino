@@ -303,7 +303,7 @@ function MazeBoard({maze,startEmoji,endEmoji,className=""}){
 }
 
 
-function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,resetKey,imagePath="/assets/malino-number-lineart.png",customSeeds=null}){
+function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,resetKey,imagePath="/assets/malino-number-lineart.png",customSeeds=null,allowBorderSeeds=false}){
  const canvasRef=useRef(null);
  const modelRef=useRef(null);
  const completeRef=useRef(false);
@@ -413,7 +413,7 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
     if(a>=0)borderLabels.add(a);if(b>=0)borderLabels.add(b);
    }
    const required=new Map();
-   seeds.forEach(([x,y,n])=>{const lab=findLabel(x,y);if(lab>=0&&!borderLabels.has(lab))required.set(lab,n)});
+   seeds.forEach(([x,y,n])=>{const lab=findLabel(x,y);if(lab>=0&&(allowBorderSeeds||!borderLabels.has(lab)))required.set(lab,n)});
    const members=new Map();
    for(let p=0;p<labels.length;p++){
     const lab=labels[p];if(!required.has(lab))continue;
@@ -1165,15 +1165,16 @@ export default function Page(){
    ]
   },
   {
-   id:robotNumberThemeId,title:"Roboter",icon:"🤖",imagePath:"/assets/robot-number-lineart.png",
+   id:robotNumberThemeId,title:"Roboter",icon:"🤖",imagePath:"/assets/robot-number-lineart.png",allowBorderSeeds:true,
    seeds:[
-    [653,222,1],[653,395,1],[556,698,1],[653,864,1],[219,1102,1],
-    [659,133,2],[504,229,2],[806,229,2],[349,395,2],[908,398,2],[961,396,2],
-    [233,532,2],[442,614,2],[872,614,2],[1025,802,2],[484,1030,2],[823,1030,2],
-    [660,70,3],[257,169,3],[1037,168,3],[400,407,3],[655,489,3],[654,582,3],
-    [652,708,3],[652,803,3],[484,1107,3],[823,1107,3],[142,815,3],[1183,700,3],
-    [148,326,4],[1144,361,4],[317,613,4],[960,695,4],[529,911,4],[773,910,4],
-    [302,878,4],[1192,951,4]
+    [721,189,1],[721,372,1],[721,785,1],[724,1019,1],
+    [722,110,2],[564,206,2],[881,206,2],[423,369,2],[973,372,2],
+    [284,475,2],[510,574,2],[934,570,2],[1092,773,2],[556,940,2],[888,939,2],
+    [725,49,3],[315,137,3],[1116,136,3],[473,369,3],[1023,370,3],
+    [723,454,3],[723,717,3],[723,643,3],[555,1009,3],[888,1008,3],
+    [176,732,3],[1274,635,3],
+    [180,278,4],[1247,342,4],[373,580,4],[1040,654,4],
+    [607,831,4],[854,831,4],[360,815,4],[1294,874,4]
    ]
   }
  ];
@@ -3030,6 +3031,7 @@ export default function Page(){
           onFill={(cell,total)=>paintNumberCell(cell,total)} onReady={setNumberFloodTotal}
           imagePath={activeNumberBoard.imagePath}
           customSeeds={activeNumberBoard.seeds}
+          allowBorderSeeds={!!activeNumberBoard.allowBorderSeeds}
           resetKey={activeNumberBoard.id}/>
          {numberPainted.length>=numberFloodTotal&&numberFloodTotal>1&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
         </div>
