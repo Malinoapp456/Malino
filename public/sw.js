@@ -1,6 +1,6 @@
 // Malino PWA update fix — 2026-10-18.
 // Bump VERSION whenever this worker or its precached resources change.
-const VERSION = "v34-20261018-recorded-trumpet";
+const VERSION = "v35-20261018-recorded-xylo";
 const CACHE = "malino-pwa-" + VERSION;
 const CORE = [
   "/puzzle-astronaut-color.png",
@@ -38,7 +38,7 @@ const CORE = [
   "/apple-touch-icon.png",
   "/malino-hero-mascot.png",
   "/malino-hero-background.png",
-  "/sounds/trumpet-welcome.wav",
+  "/sounds/xylophone-welcome.wav",
   "/sounds/click.wav",
   "/sounds/color.wav",
   "/sounds/success.wav",
