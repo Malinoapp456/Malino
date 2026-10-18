@@ -40,3 +40,11 @@ Dzienny limit czasu zeruje się po zmianie dnia kalendarzowego, również gdy ka
 ## PWA i zasoby
 
 `public/manifest.webmanifest` oraz `public/sw.js` realizują instalację i tryb offline. Obrazy i dźwięki znajdują się w katalogu `public`.
+
+## Dźwięki — wersja testowa
+
+Codzienne efekty kliknięć, wyboru koloru, sukcesu, gwiazdek i serii są odtwarzane lokalnie przez Web Audio. Wykorzystują krótkie, ciche nuty o miękkim ataku i wybrzmiewaniu, inspirowane kalimbą i drewnianymi instrumentami. Pliki WAV nadal służą do wyjątkowych animacji skrzyń oraz jako awaryjna ścieżka na starszych urządzeniach.
+
+Aplikacja zachowuje istniejący przełącznik **Ton / Sound**: po wyłączeniu dźwięku interfejs nie powinien odtwarzać nowych efektów. Nie dodano zewnętrznych bibliotek ani serwisów audio.
+
+Przed publikacją należy odsłuchać wersję testową na telefonie, zwracając uwagę na kliknięcia wielu przycisków, kolorowanie, zdobywanie gwiazdek, otwieranie skrzyń i wyłączenie dźwięku.
