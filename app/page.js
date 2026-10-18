@@ -65,23 +65,6 @@ const chest50Colors=[
 
 function useStore(key,initial){
  const [v,setV]=useState(initial);
- useEffect(()=>{
-  if(typeof window==="undefined"||!("serviceWorker" in navigator))return;
-  let refreshing=false;
-  const register=async()=>{
-   try{
-    const reg=await navigator.serviceWorker.register("/sw.js");
-    reg.update().catch(()=>{});
-    navigator.serviceWorker.addEventListener("controllerchange",()=>{
-     if(refreshing)return;
-     refreshing=true;
-     window.location.reload();
-    });
-   }catch{}
-  };
-  if(document.readyState==="complete")register();
-  else window.addEventListener("load",register,{once:true});
- },[]);
 
  useEffect(()=>{try{const s=localStorage.getItem(key);if(s)setV(JSON.parse(s))}catch{}},[key]);
  useEffect(()=>{try{localStorage.setItem(key,JSON.stringify(v))}catch{}},[key,v]);
@@ -493,6 +476,21 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
 }
 
 export default function Page(){
+ useEffect(()=>{
+  if(!("serviceWorker" in navigator))return;
+  let disposed=false;
+  const register=async()=>{
+   try{
+    const registration=await navigator.serviceWorker.register("/sw.js",{updateViaCache:"none"});
+    if(!disposed)registration.update().catch(()=>{});
+   }catch(error){
+    console.warn("Malino: Service Worker konnte nicht registriert werden.",error);
+   }
+  };
+  register();
+  return ()=>{disposed=true;};
+ },[]);
+
  const emptyProfileData=()=>({fav:[],done:[],gallery:[],stars:0,rewards:[],avatar:"lion",dailyClaims:[],dailyStreak:0,lastDailyDate:"",activeFrame:"classic",puzzleSolved:[],hiddenSolved:[]});
  const [screen,setScreen]=useState("start");
  const [profiles,setProfiles]=useState([{id:"default",name:"Kind 1"}]);
@@ -3792,3 +3790,4 @@ export default function Page(){
   <nav>{[["start","🏠","Start"],["library","📚","Bibliothek"],["paint","🖌️","Malen"],["reward","🏆","Belohnungen"],["gallery","🎨","Galerie"]].map(([s,e,l])=><button key={s} className={(screen===s||(screen==="room"&&s==="reward"))?"active":""} onClick={()=>s==="paint"?open(current):setScreen(s)}>{e}<span>{l}</span></button>)}</nav>
  </main>
 }
+
