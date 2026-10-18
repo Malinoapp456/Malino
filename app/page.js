@@ -726,14 +726,14 @@ export default function Page(){
  useEffect(()=>{
   if(typeof window==="undefined")return;
   const chestTypes=["chest-creak","reward-boom","reward-fanfare","premium-chest-open","premium-reward-fanfare"];
-  const types=(window.AudioContext||window.webkitAudioContext)
-   ? chestTypes : [...storybookSoundTypes,...chestTypes];
+  // Keep original WAVs as a fallback for older browsers or Web Audio errors.
+  const types=[...storybookSoundTypes,...chestTypes];
   const pool={};
   types.forEach(type=>{
    try{
     const audio=new Audio(`/sounds/${type}.wav`);
-    audio.preload="auto";
-    audio.load();
+    audio.preload=storybookSoundTypes.includes(type)?"none":"auto";
+    if(!storybookSoundTypes.includes(type))audio.load();
     pool[type]=audio;
    }catch{}
   });
@@ -813,7 +813,7 @@ export default function Page(){
    if(primed)return;
    primed=true;
    if(soundEnabled)unlockStorybookAudio();
-   Object.values(soundPool.current).forEach(audio=>{
+   Object.entries(soundPool.current).filter(([type])=>!storybookSoundTypes.includes(type)).forEach(([,audio])=>{
     try{
      const oldVolume=audio.volume;
      audio.volume=0;
