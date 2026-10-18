@@ -45,6 +45,8 @@ Dzienny limit czasu zeruje się po zmianie dnia kalendarzowego, również gdy ka
 
 Codzienne efekty kliknięć, wyboru koloru, sukcesu, gwiazdek i serii są odtwarzane lokalnie przez Web Audio. W wersji bajkowej kliknięcie przypomina ciche «puf», wybór koloru — bąbelek, sukces — drewniany dźwięk z magicznym dzwoneczkiem, a gwiazdki — drobny rozświetlony pył. Seriom towarzyszy łagodny ptasi gwizd, nagrodzie dyskretny magiczny szelest. Brzmienia są krótkie, stonowane i różnią się barwą, zamiast korzystać z jednego syntezatorowego sygnału. To syntezowane efekty, nie nagrania natury. Pliki WAV nadal służą do wyjątkowych animacji skrzyń oraz jako awaryjna ścieżka na starszych urządzeniach.
 
-Aplikacja zachowuje istniejący przełącznik **Ton / Sound**: po wyłączeniu dźwięku interfejs nie powinien odtwarzać nowych efektów. Nie dodano zewnętrznych bibliotek ani serwisów audio.
+Do bajkowego pakietu dodano **dźwięk powitalny** (krótki szelest, bąbelek i magiczne iskierki, razem poniżej sekundy). Przeglądarki mobilne nie pozwalają na niezapowiedziane odtwarzanie audio przy samym załadowaniu strony, dlatego powitanie słychać **przy pierwszym dotknięciu ekranu lub naciśnięciu klawisza po otwarciu aplikacji**. Działa raz na załadowanie strony; pierwsze zwykłe kliknięcie nie powinno nałożyć się na powitanie. `welcome.wav` nie jest potrzebny, dźwięk jest generowany lokalnie.
+
+Aplikacja zachowuje istniejący przełącznik **Ton / Sound**: po wyłączeniu dźwięku interfejs nie powinien odtwarzać nowych efektów, włącznie z powitaniem. Nie dodano zewnętrznych bibliotek ani serwisów audio.
 
 Przed publikacją należy odsłuchać wersję testową na telefonie, zwracając uwagę na kliknięcia wielu przycisków, kolorowanie, zdobywanie gwiazdek, otwieranie skrzyń i wyłączenie dźwięku.
