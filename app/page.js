@@ -1,5 +1,8 @@
 "use client";
 import {forwardRef,useEffect,useImperativeHandle,useMemo,useRef,useState} from "react";
+import {advanceDailyUsage,hasVisiblePaint} from "../lib/progress.mjs";
+import {createPinRecord,verifyPinRecord,recordFailedPin,remainingPinLockMs} from "../lib/parent-pin.mjs";
+import {saveArtwork,loadArtwork,deleteProfileArtwork} from "../lib/artwork-storage.mjs";
 
 const items=[
 {id:"feuerwehrauto",name:"Feuerwehrauto im Einsatz",cat:"Fahrzeuge",emoji:"🚒",bg:"#ffe3d6",image:"/fahrzeuge/feuerwehrauto.webp",mode:"draw"},
@@ -88,6 +91,20 @@ function SaveIcon(){
  </svg>
 }
 function Thumb({it,done}){return <div className="thumb" style={{background:it.bg}}>{it.image?<img src={it.image} alt={it.name}/>:<span>{it.emoji}</span>}{done&&<i>✓</i>}</div>}
+function ArtworkThumb({it,profileId}){
+ const [url,setUrl]=useState(null);
+ useEffect(()=>{
+  let active=true,blobUrl=null;
+  loadArtwork(profileId,it.id).then(record=>{
+   if(!active||!record?.preview)return;
+   blobUrl=URL.createObjectURL(record.preview);
+   setUrl(blobUrl);
+  }).catch(()=>{});
+  return()=>{active=false;if(blobUrl)URL.revokeObjectURL(blobUrl)};
+ },[profileId,it.id]);
+ if(!url)return <Thumb it={it} done/>;
+ return <div className="thumb" style={{background:it.bg}}><img src={url} alt={it.name}/><i>✓</i></div>;
+}
 function Dino({fills,paint}){
  const f=k=>fills[k]||"#fff";
  return <svg viewBox="0 0 800 650">
@@ -105,7 +122,7 @@ function Dino({fills,paint}){
  </svg>
 }
 
-const RasterPainter=forwardRef(function RasterPainter({src,color,tool,onFeedback},ref){
+const RasterPainter=forwardRef(function RasterPainter({src,color,tool,onFeedback,profileId,itemId,restoreArtwork},ref){
  const canvasRef=useRef(null),baseRef=useRef(null),drawing=useRef(false),last=useRef(null),undoStack=useRef([]),barrierRef=useRef(null),fitRectRef=useRef(null);
  const [sparkles,setSparkles]=useState([]),[fillPulse,setFillPulse]=useState(false);
  const sparkleTimer=useRef(null),pulseTimer=useRef(null);
@@ -150,6 +167,24 @@ const RasterPainter=forwardRef(function RasterPainter({src,color,tool,onFeedback
   requestAnimationFrame(drawBase);
  };
  useEffect(()=>{sizeCanvas();window.addEventListener("resize",sizeCanvas);return()=>window.removeEventListener("resize",sizeCanvas)},[src]);
+ useEffect(()=>{
+  if(!restoreArtwork)return;
+  let active=true,url=null;
+  loadArtwork(profileId,itemId).then(record=>{
+   if(!active||!record?.layer)return;
+   url=URL.createObjectURL(record.layer);
+   const image=new Image();
+   image.onload=()=>{
+    if(!active)return;
+    const c=canvasRef.current;
+    if(c?.width&&c?.height)c.getContext("2d").drawImage(image,0,0,c.width,c.height);
+    URL.revokeObjectURL(url);url=null;
+   };
+   image.onerror=()=>{URL.revokeObjectURL(url);url=null};
+   image.src=url;
+  }).catch(()=>{});
+  return()=>{active=false;if(url)URL.revokeObjectURL(url)};
+ },[restoreArtwork,profileId,itemId,src]);
  const snapshot=()=>{const c=canvasRef.current;if(!c)return;undoStack.current.push(c.toDataURL());if(undoStack.current.length>15)undoStack.current.shift()};
  const point=e=>{const r=canvasRef.current.getBoundingClientRect();return{x:Math.max(0,Math.min(canvasRef.current.width-1,Math.round((e.clientX-r.left)*canvasRef.current.width/r.width))),y:Math.max(0,Math.min(canvasRef.current.height-1,Math.round((e.clientY-r.top)*canvasRef.current.height/r.height)))}};
  const celebrate=e=>{
@@ -213,7 +248,20 @@ const RasterPainter=forwardRef(function RasterPainter({src,color,tool,onFeedback
  };
  const clear=()=>{const c=canvasRef.current;if(!c)return;snapshot();c.getContext("2d").clearRect(0,0,c.width,c.height)};
  const undo=()=>{const data=undoStack.current.pop(),c=canvasRef.current;if(!data||!c)return;const ctx=c.getContext("2d");ctx.clearRect(0,0,c.width,c.height);const img=new Image();img.onload=()=>ctx.drawImage(img,0,0,c.width,c.height);img.src=data};
- useImperativeHandle(ref,()=>({undo,clear,save}));
+ const capture=async()=>{
+  const paint=canvasRef.current,base=baseRef.current;
+  if(!paint||!base||!hasVisiblePaint(paint.getContext("2d").getImageData(0,0,paint.width,paint.height).data))return null;
+  const output=document.createElement("canvas");
+  output.width=paint.width;output.height=paint.height;
+  const context=output.getContext("2d");
+  context.fillStyle="#ffffff";context.fillRect(0,0,output.width,output.height);
+  context.drawImage(base,0,0);context.drawImage(paint,0,0);
+  const toBlob=canvas=>new Promise(resolve=>canvas.toBlob(resolve,"image/png"));
+  const [preview,layer]=await Promise.all([toBlob(output),toBlob(paint)]);
+  if(!preview||!layer)throw new Error("Could not capture the painting");
+  return {preview,layer};
+ };
+ useImperativeHandle(ref,()=>({undo,clear,save,capture}));
  return <div className={`rasterPainter ${fillPulse?"fillSuccess":""}`}><img id="malino-paint-image" src={src} alt="Malbild" draggable="false" onLoad={drawBase}/><canvas ref={baseRef} className="baseMap" aria-hidden="true"/><canvas ref={canvasRef} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}/>{sparkles.map(s=><span key={s.id} className="fillSparkle" style={{left:s.x+"%",top:s.y+"%"}} aria-hidden="true"><i>✦</i><i>✧</i><i>★</i></span>)}</div>
 });
 const PROFILE_AVATARS=[
@@ -539,13 +587,16 @@ export default function Page(){
  const [profileDialog,setProfileDialog]=useState(null);
  const [profileNameInput,setProfileNameInput]=useState("");
  const [profileAvatarInput,setProfileAvatarInput]=useState("lion");
- const [parentPin,setParentPin]=useState("");
+ const [parentPin,setParentPin]=useState(null);
+ const [parentPinReady,setParentPinReady]=useState(false);
+ const [parentPinBusy,setParentPinBusy]=useState(false);
  const [parentPinInput,setParentPinInput]=useState("");
  const [parentPinMode,setParentPinMode]=useState("locked");
  const [parentPinError,setParentPinError]=useState("");
  const [parentTool,setParentTool]=useState(null);
  const [screenTimeLimit,setScreenTimeLimit]=useState(0);
  const [screenTimeUsage,setScreenTimeUsage]=useState(0);
+ const screenTimeDateRef=useRef(new Date().toLocaleDateString("sv-SE"));
  const [animationsEnabled,setAnimationsEnabled]=useState(true);
  const [soundEnabled,setSoundEnabled]=useState(true);
  const [parentToolNotice,setParentToolNotice]=useState("");
@@ -559,6 +610,8 @@ export default function Page(){
  const [fills,setFills]=useState({});
  const [history,setHistory]=useState([]);
  const [fillFeedback,setFillFeedback]=useState(null);
+ const [restoreArtwork,setRestoreArtwork]=useState(false);
+ const finishingRef=useRef(false);
  const [celebration,setCelebration]=useState({earned:0,dailyBonus:0,doneCount:0,starsAfter:0,newChest:null,nextChest:null,starsToNext:0,repeat:false});
  const rasterRef=useRef(null);
  const feedbackTimer=useRef(null);
@@ -634,10 +687,34 @@ export default function Page(){
  },[]);
 
  useEffect(()=>{
-  try{
-   const savedPin=localStorage.getItem("malino:parentPin:v1");
-   if(savedPin)setParentPin(savedPin);
-  }catch{}
+  let active=true;
+  (async()=>{
+   try{
+    const saved=localStorage.getItem("malino:parentPinRecord:v2");
+    if(saved){
+     if(active)setParentPin(JSON.parse(saved));
+     return;
+    }
+    const legacy=localStorage.getItem("malino:parentPin:v1");
+    if(!legacy)return;
+    // Existing parents keep their PIN, but it is migrated off plaintext storage.
+    let record;
+    try{
+     record=await createPinRecord(legacy);
+     localStorage.setItem("malino:parentPinRecord:v2",JSON.stringify(record));
+     localStorage.removeItem("malino:parentPin:v1");
+    }catch(error){
+     console.warn("Malino: PIN migration could not complete",error);
+     record={legacyPlain:legacy};
+    }
+    if(active)setParentPin(record);
+   }catch(error){
+    console.warn("Malino: PIN could not be loaded",error);
+   }finally{
+    if(active)setParentPinReady(true);
+   }
+  })();
+  return()=>{active=false};
  },[]);
 
  useEffect(()=>{
@@ -659,6 +736,7 @@ export default function Page(){
    const snd=localStorage.getItem("malino:sound:v1");
    if(snd!==null)setSoundEnabled(snd!=="off");
    const key=new Date().toLocaleDateString("sv-SE");
+   screenTimeDateRef.current=key;
    const raw=localStorage.getItem("malino:screenTimeUsage:v1");
    if(raw){
     const parsed=JSON.parse(raw);
@@ -747,18 +825,25 @@ export default function Page(){
  },[soundEnabled]);
 
  useEffect(()=>{
-  const timer=setInterval(()=>{
-   if(typeof document!=="undefined"&&document.visibilityState!=="visible")return;
+  const syncDay=()=>{
+   const day=new Date().toLocaleDateString("sv-SE");
+   if(day===screenTimeDateRef.current)return;
+   screenTimeDateRef.current=day;
+   setScreenTimeUsage(0);
+   try{localStorage.setItem("malino:screenTimeUsage:v1",JSON.stringify(advanceDailyUsage(null,day)))}catch{}
+  };
+  const tick=()=>{
+   syncDay();
+   if(document.visibilityState!=="visible")return;
    setScreenTimeUsage(prev=>{
-    const next=prev+1;
-    try{
-     const key=new Date().toLocaleDateString("sv-SE");
-     localStorage.setItem("malino:screenTimeUsage:v1",JSON.stringify({date:key,minutes:next}));
-    }catch{}
-    return next;
+    const next=advanceDailyUsage({date:screenTimeDateRef.current,minutes:prev},screenTimeDateRef.current,1);
+    try{localStorage.setItem("malino:screenTimeUsage:v1",JSON.stringify(next))}catch{}
+    return next.minutes;
    });
-  },60000);
-  return()=>clearInterval(timer);
+  };
+  document.addEventListener("visibilitychange",syncDay);
+  const timer=setInterval(tick,60000);
+  return()=>{clearInterval(timer);document.removeEventListener("visibilitychange",syncDay)};
  },[]);
 
 
@@ -2280,7 +2365,8 @@ export default function Page(){
   setScreenTimeUsage(0);
   try{
    const key=new Date().toLocaleDateString("sv-SE");
-   localStorage.setItem("malino:screenTimeUsage:v1",JSON.stringify({date:key,minutes:0}));
+   screenTimeDateRef.current=key;
+   localStorage.setItem("malino:screenTimeUsage:v1",JSON.stringify(advanceDailyUsage(null,key)));
   }catch{}
   setParentToolNotice("Heutige Bildschirmzeit wurde zurückgesetzt.");
  };
@@ -2317,51 +2403,74 @@ export default function Page(){
   }
  };
  const openParentArea=()=>{
+  if(!parentPinReady)return;
   setParentPinInput("");
   setParentPinError("");
   setParentPinMode(parentPin?"locked":"setup");
   setScreen("parent");
  };
- const unlockParentArea=()=>{
-  if(parentPinInput===parentPin){
-   setParentPinInput("");
-   setParentPinError("");
-   setParentPinMode("unlocked");
-  }else{
-   setParentPinError("Falsche PIN. Bitte erneut versuchen.");
+ const unlockParentArea=async()=>{
+  let attempts={count:0,lockedUntil:0};
+  try{attempts=JSON.parse(localStorage.getItem("malino:parentPinAttempts:v1")||"null")||attempts}catch{}
+  const locked=remainingPinLockMs(attempts);
+  if(locked){
+   setParentPinError("Zu viele Versuche. Bitte "+Math.ceil(locked/1000)+" Sekunden warten.");
+   return;
+  }
+  try{
+   const valid=parentPin?.legacyPlain!==undefined
+    ? parentPinInput===parentPin.legacyPlain
+    : await verifyPinRecord(parentPinInput,parentPin);
+   if(valid){
+    try{localStorage.removeItem("malino:parentPinAttempts:v1")}catch{}
+    setParentPinInput("");
+    setParentPinError("");
+    setParentPinMode("unlocked");
+   }else{
+    const next=recordFailedPin(attempts);
+    try{localStorage.setItem("malino:parentPinAttempts:v1",JSON.stringify(next))}catch{}
+    const wait=remainingPinLockMs(next);
+    setParentPinError(wait?"Zu viele Versuche. Bitte 60 Sekunden warten.":"Falsche PIN. Bitte erneut versuchen.");
+   }
+  }catch(error){
+   setParentPinError("PIN konnte nicht geprüft werden. Bitte erneut versuchen.");
   }
  };
- const saveFirstParentPin=()=>{
+ const persistNewParentPin=async()=>{
   if(!/^\d{4}$/.test(parentPinInput)){
    setParentPinError("Bitte genau 4 Ziffern eingeben.");
    return;
   }
-  try{localStorage.setItem("malino:parentPin:v1",parentPinInput)}catch{}
-  setParentPin(parentPinInput);
-  setParentPinInput("");
-  setParentPinError("");
-  setParentPinMode("unlocked");
+  try{
+   const record=await createPinRecord(parentPinInput);
+   localStorage.setItem("malino:parentPinRecord:v2",JSON.stringify(record));
+   localStorage.removeItem("malino:parentPin:v1");
+   localStorage.removeItem("malino:parentPinAttempts:v1");
+   setParentPin(record);
+   setParentPinInput("");
+   setParentPinError("");
+   setParentPinMode("unlocked");
+  }catch(error){
+   setParentPinError("PIN konnte nicht sicher gespeichert werden. Bitte erneut versuchen.");
+  }
  };
+ const saveFirstParentPin=()=>persistNewParentPin();
  const startParentPinChange=()=>{
   setParentPinInput("");
   setParentPinError("");
   setParentPinMode("change");
  };
- const saveChangedParentPin=()=>{
-  if(!/^\d{4}$/.test(parentPinInput)){
-   setParentPinError("Bitte genau 4 Ziffern eingeben.");
-   return;
+ const saveChangedParentPin=()=>persistNewParentPin();
+ const submitParentPin=async()=>{
+  if(!parentPinReady||parentPinBusy)return;
+  setParentPinBusy(true);
+  try{
+   if(parentPinMode==="locked")await unlockParentArea();
+   else if(parentPinMode==="change")await saveChangedParentPin();
+   else await saveFirstParentPin();
+  }finally{
+   setParentPinBusy(false);
   }
-  try{localStorage.setItem("malino:parentPin:v1",parentPinInput)}catch{}
-  setParentPin(parentPinInput);
-  setParentPinInput("");
-  setParentPinError("");
-  setParentPinMode("unlocked");
- };
- const submitParentPin=()=>{
-  if(parentPinMode==="locked")unlockParentArea();
-  else if(parentPinMode==="change")saveChangedParentPin();
-  else saveFirstParentPin();
  };
  const addTestStars=()=>setStars(prev=>Number(prev||0)+50);
 
@@ -2436,6 +2545,7 @@ export default function Page(){
   }
 
   if(profileDialog==="reset"){
+   deleteProfileArtwork(activeProfileId).catch(()=>{});
    setProfileData(prev=>({...prev,[activeProfileId]:{...emptyProfileData(),avatar:prev?.[activeProfileId]?.avatar||"lion",activeFrame:prev?.[activeProfileId]?.activeFrame||"classic"}}));
    setRewardPopup(null);
    setCurrent(items[0]);
@@ -2450,6 +2560,7 @@ export default function Page(){
 
   if(profileDialog==="delete"){
    if(profiles.length<=1){closeProfileDialog();return}
+   deleteProfileArtwork(activeProfileId).catch(()=>{});
    const remaining=profiles.filter(p=>p.id!==activeProfileId);
    const nextId=remaining[0].id;
    setProfiles(remaining);
@@ -2571,7 +2682,7 @@ export default function Page(){
   setUnlockedRewards([...unlockedRewards,"chest200"]);
   startRewardSequence("chest200");
  };
- const open=it=>{setCurrent(it);setFills({});setHistory([]);setTool("fill");setFillFeedback(null);setScreen("paint")};
+ const open=(it,restore=false)=>{setCurrent(it);setRestoreArtwork(restore);setFills({});setHistory([]);setTool("fill");setFillFeedback(null);setScreen("paint")};
  const showFillFeedback=kind=>{clearTimeout(feedbackTimer.current);setFillFeedback(kind);feedbackTimer.current=setTimeout(()=>setFillFeedback(null),1100)};
  const paint=k=>{const old=fills[k]||"#fff",next=tool==="eraser"?"#fff":selected;if(old===next)return;setHistory([...history,{k,old}]);setFills({...fills,[k]:next})};
  const undo=()=>{if(current.mode==="draw"){rasterRef.current?.undo();return}const x=history.at(-1);if(!x)return;setFills({...fills,[x.k]:x.old});setHistory(history.slice(0,-1))};
@@ -2586,7 +2697,25 @@ export default function Page(){
   return 1;
  };
 
- const finish=()=>{
+ const finish=async()=>{
+  if(finishingRef.current)return;
+  finishingRef.current=true;
+  try{
+   if(current.mode==="draw"){
+    let artwork;
+    try{
+     artwork=await rasterRef.current?.capture();
+     if(!artwork){showFillFeedback("empty");return}
+     await saveArtwork(activeProfileId,current.id,artwork);
+    }catch(error){
+     console.error("Malino: artwork could not be saved",error);
+     showFillFeedback("save-failed");
+     return;
+    }
+   }else if(Object.keys(fills).length===0){
+    showFillFeedback("empty");
+    return;
+   }
   const isNew=!done.includes(current.id);
   const baseEarned=isNew?5:0;
   const isTodayChallenge=current.id===dailyItem.id;
@@ -2620,6 +2749,7 @@ export default function Page(){
    repeat:!isNew
   });
   setScreen("celebrate");
+  }finally{finishingRef.current=false}
  };
  return <main>
   <header key={`header-${activeProfileId}-${headerStarCount}`}><button>🇩🇪 Deutsch⌄</button><Logo/><div><span key={`stars-${activeProfileId}-${headerStarCount}`}>⭐ {headerStarCount}</span><button key={`profile-${activeProfileId}`} onClick={openParentArea}><span className="headerProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><span className="headerProfileName">{activeProfile.name}</span></button></div></header>
@@ -3306,8 +3436,8 @@ export default function Page(){
     <button className={tool==="eraser"?"on":""} onClick={()=>setTool("eraser")}><ToolIcon type="eraser"/><span>Radierer</span></button>
     <button className="historyTool" onClick={undo}><ToolIcon type="undo"/><span>Rückgängig</span></button>
     <button className="newTool" onClick={()=>{if(current.mode==="draw")rasterRef.current?.clear();else{setFills({});setHistory([])}}}><ToolIcon type="new"/><span>Neu</span></button>
-   </aside><div className="canvas">{current.mode==="draw"?<RasterPainter ref={rasterRef} src={current.image} color={selected} tool={tool} onFeedback={showFillFeedback}/>:<Dino fills={fills} paint={paint}/>}</div></div>
-   <div className={`toolHelp ${fillFeedback?"feedback "+fillFeedback:""}`}>{fillFeedback==="small"?"👆 Diese Fläche ist sehr klein – probiere eine größere.":fillFeedback==="leak"?"🛡️ Malino hat ein Auslaufen gestoppt – tippe in eine geschlossene Fläche.":tool==="fill"?"🪣 Tippe in eine Fläche – Malino füllt sie für dich aus.":tool==="brush"?"🖌️ Male frei mit dem Finger.":"🧽 Wische über Farbe, um sie zu entfernen."}</div>
+   </aside><div className="canvas">{current.mode==="draw"?<RasterPainter ref={rasterRef} src={current.image} color={selected} tool={tool} onFeedback={showFillFeedback} profileId={activeProfileId} itemId={current.id} restoreArtwork={restoreArtwork}/>:<Dino fills={fills} paint={paint}/>}</div></div>
+   <div className={`toolHelp ${fillFeedback?"feedback "+fillFeedback:""}`}>{fillFeedback==="small"?"👆 Diese Fläche ist sehr klein – probiere eine größere.":fillFeedback==="leak"?"🛡️ Malino hat ein Auslaufen gestoppt – tippe in eine geschlossene Fläche.":fillFeedback==="empty"?"🎨 Male zuerst etwas, bevor du das Bild fertigstellst.":fillFeedback==="save-failed"?"⚠️ Das Bild konnte nicht gespeichert werden. Bitte versuche es erneut.":tool==="fill"?"🪣 Tippe in eine Fläche – Malino füllt sie für dich aus.":tool==="brush"?"🖌️ Male frei mit dem Finger.":"🧽 Wische über Farbe, um sie zu entfernen."}</div>
    <div className={`palette ${hasChest50?"hasBonusColors":""}`}>{paintColors.map(c=>{const bonus=chest50Colors.some(x=>x.value===c);return <button key={c} title={bonus?(chest50Colors.find(x=>x.value===c)?.name||"Bonusfarbe"):""} style={{background:c}} className={`${selected===c&&tool!=="eraser"?"sel":""} ${bonus?"bonusColor":""}`} onClick={()=>{playSound("color");setSelected(c);if(tool==="eraser")setTool("fill")}}>{bonus&&<span className="bonusSpark">✦</span>}</button>})}</div>
    <div className="actions"><button onClick={()=>setScreen("library")}>Vorlagen</button><button className="finish" onClick={finish}>✓ Fertig!</button><button className="saveImageBtn" onClick={()=>rasterRef.current?.save()}><SaveIcon/><span>Bild speichern</span></button></div>
   </section>}
@@ -3438,7 +3568,7 @@ export default function Page(){
      <p>Hier wohnen alle fertigen Malbilder deines aktuellen Profils.</p>
      <div className="galleryHeroActions">
       <button className="galleryNew" onClick={()=>setScreen("library")}>＋ Neues Bild</button>
-      {gallery.length>0&&<button className="galleryOpenLatest" onClick={()=>open(gallery[0])}>🖌️ Letztes Bild öffnen</button>}
+      {gallery.length>0&&<button className="galleryOpenLatest" onClick={()=>open(gallery[0],true)}>🖌️ Letztes Bild öffnen</button>}
      </div>
     </div>
     <div className="galleryCount premiumGalleryCount"><span>🎨</span><div><b>{gallery.length}</b><small>{gallery.length===1?"Kunstwerk":"Kunstwerke"}</small></div></div>
@@ -3451,8 +3581,8 @@ export default function Page(){
       <span>{gallery.length}</span>
      </div>
      <div className="galleryGrid premiumGalleryGrid">{gallery.map((x,index)=><article key={x.id} className={`galleryCard premiumGalleryCard galleryFrame-${activeFrame} ${index===0?"latest":""}`}>
-      <button className="galleryOpen premiumGalleryOpen" onClick={()=>open(x)}>
-       <Thumb it={x} done/>
+      <button className="galleryOpen premiumGalleryOpen" onClick={()=>open(x,true)}>
+       <ArtworkThumb it={x} profileId={activeProfileId}/>
        {index===0&&<span className="latestBadge">✨ Zuletzt gemalt</span>}
       </button>
       <div className="galleryCardText premiumGalleryCardText">
@@ -3460,7 +3590,7 @@ export default function Page(){
        <span>{items.find(it=>it.id===x.id)?.cat||"Malbild"}</span>
       </div>
       <div className="galleryCardActions">
-       <button className="galleryAgain" onClick={()=>open(x)}>🖌️ Noch einmal malen</button>
+       <button className="galleryAgain" onClick={()=>open(x,true)}>🖌️ Noch einmal malen</button>
        <button className="galleryFavorite" onClick={()=>setFav(fav.includes(x.id)?fav.filter(id=>id!==x.id):[...fav,x.id])} aria-label="Favorit">
         {fav.includes(x.id)?"❤️":"🤍"}
        </button>
@@ -3648,7 +3778,7 @@ export default function Page(){
       aria-label="Eltern-PIN"
      />
      {parentPinError&&<div className="parentPinError">{parentPinError}</div>}
-     <button className="parentPinPrimary" onClick={submitParentPin}>
+     <button className="parentPinPrimary" onClick={submitParentPin} disabled={!parentPinReady||parentPinBusy}>
       {parentPinMode==="locked"?"Entsperren":parentPinMode==="change"?"Neue PIN speichern":"PIN speichern"}
      </button>
      <button className="parentPinBack" onClick={()=>setScreen("start")}>Zurück</button>
@@ -3783,7 +3913,7 @@ export default function Page(){
     <span>⏱️</span>
     <h2>Malzeit für heute beendet</h2>
     <p>Das eingestellte Tageslimit von <b>{screenTimeLimit} Minuten</b> wurde erreicht.</p>
-    <button onClick={()=>{setParentPinInput("");setParentPinError("");setParentPinMode(parentPin?"locked":"setup");setScreen("parent")}}>🔐 Elternbereich öffnen</button>
+    <button onClick={openParentArea}>🔐 Elternbereich öffnen</button>
    </div>
   </div>}
 
