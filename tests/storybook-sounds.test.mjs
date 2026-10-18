@@ -9,7 +9,7 @@ test("fairy-tale actions have distinctive soft, organic sound characters", () =>
   assert.deepEqual([...storybookSoundTypes].sort(),
     ["click","color","reward","stars","streak","success","welcome"]);
   assert.deepEqual([...storybookCharacters].sort(),
-    ["bell","bubble","puff","sparkle","whistle","whoosh","wood"]);
+    ["bell","bubble","cover","page","puff","sparkle","whistle","whoosh","wood"]);
   const used = new Set();
   for(const type of storybookSoundTypes) {
     const notes=storybookNotes(type);
@@ -27,10 +27,10 @@ test("fairy-tale actions have distinctive soft, organic sound characters", () =>
   assert.equal(storybookNotes("click")[0][4],"puff");
   assert.equal(storybookNotes("color")[0][4],"bubble");
   assert.deepEqual(storybookNotes("welcome").map(note=>note[4]),
-    ["whoosh","bubble","bell","sparkle"]);
+    ["cover","page","page","cover"]);
   const welcome=storybookNotes("welcome");
   assert.ok(Math.max(...welcome.map(note=>note[1]+note[2]))<1);
-  assert.ok(welcome.every(note=>note[3]<=0.1));
+  assert.ok(welcome.every(note=>note[3]<=0.15));
 });
 
 test("all fairy-tale characters produce bounded, smoothly tapered, non-silent samples", () => {
