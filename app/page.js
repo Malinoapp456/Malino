@@ -4,6 +4,7 @@ import {advanceDailyUsage,hasVisiblePaint} from "../lib/progress.mjs";
 import {createPinRecord,verifyPinRecord,recordFailedPin,remainingPinLockMs} from "../lib/parent-pin.mjs";
 import {saveArtwork,loadArtwork,deleteProfileArtwork} from "../lib/artwork-storage.mjs";
 import {legacyActivityKeys,migrateLegacyActivities,profileActivities} from "../lib/profile-activities.mjs";
+import {dabStyle} from "../lib/paint-input.mjs";
 
 const items=[
 {id:"feuerwehrauto",name:"Feuerwehrauto im Einsatz",cat:"Fahrzeuge",emoji:"🚒",bg:"#ffe3d6",image:"/fahrzeuge/feuerwehrauto.webp",mode:"draw"},
@@ -96,6 +97,7 @@ function ArtworkThumb({it,profileId}){
  const [url,setUrl]=useState(null);
  useEffect(()=>{
   let active=true,blobUrl=null;
+  setUrl(null);
   loadArtwork(profileId,it.id).then(record=>{
    if(!active||!record?.preview)return;
    blobUrl=URL.createObjectURL(record.preview);
@@ -161,10 +163,12 @@ const RasterPainter=forwardRef(function RasterPainter({src,color,tool,onFeedback
  const sizeCanvas=()=>{
   const c=canvasRef.current,base=baseRef.current;if(!c||!base)return;
   const r=c.getBoundingClientRect();if(!r.width||!r.height)return;
-  const old=c.width&&c.height?c.toDataURL():null;
+  const old=c.width&&c.height?document.createElement("canvas"):null;
+  if(old){old.width=c.width;old.height=c.height;old.getContext("2d").drawImage(c,0,0)}
   c.width=Math.max(1,Math.round(r.width));c.height=Math.max(1,Math.round(r.height));base.width=c.width;base.height=c.height;
   const ctx=c.getContext("2d");ctx.lineCap="round";ctx.lineJoin="round";
-  if(old&&old!=="data:,"){const im=new Image();im.onload=()=>ctx.drawImage(im,0,0,c.width,c.height);im.src=old}
+  // Synchronous restore: asynchronous image decoding may overwrite a new stroke.
+  if(old)ctx.drawImage(old,0,0,c.width,c.height);
   requestAnimationFrame(drawBase);
  };
  useEffect(()=>{sizeCanvas();window.addEventListener("resize",sizeCanvas);return()=>window.removeEventListener("resize",sizeCanvas)},[src]);
@@ -211,7 +215,18 @@ const RasterPainter=forwardRef(function RasterPainter({src,color,tool,onFeedback
   if(painted>area*.62){undoStack.current.pop();onFeedback?.("leak");return}
   ctx.putImageData(img,0,0);celebrate(e);
  };
- const down=e=>{e.currentTarget.setPointerCapture?.(e.pointerId);if(tool==="fill"){fillAt(e);return}snapshot();drawing.current=true;last.current=point(e)};
+ const down=e=>{
+  e.currentTarget.setPointerCapture?.(e.pointerId);
+  if(tool==="fill"){fillAt(e);return}
+  snapshot();drawing.current=true;last.current=point(e);
+  // A child often taps without dragging. One touch must leave a visible dab.
+  const c=canvasRef.current,ctx=c.getContext("2d"),p=last.current;
+  const fit=fitRectRef.current||{x:0,y:0,w:c.width,h:c.height};
+  const {radius,composite,fill}=dabStyle(tool,color,magicHueRef.current);
+  ctx.save();ctx.beginPath();ctx.rect(fit.x,fit.y,fit.w,fit.h);ctx.clip();
+  ctx.globalCompositeOperation=composite;ctx.fillStyle=fill;
+  ctx.beginPath();ctx.arc(p.x,p.y,radius,0,Math.PI*2);ctx.fill();ctx.restore();
+ };
  const move=e=>{if(!drawing.current)return;const c=canvasRef.current,ctx=c.getContext("2d"),p=point(e),a=last.current,fit=fitRectRef.current||{x:0,y:0,w:c.width,h:c.height};ctx.save();ctx.beginPath();ctx.rect(fit.x,fit.y,fit.w,fit.h);ctx.clip();ctx.globalCompositeOperation=tool==="eraser"?"destination-out":"source-over";
  if(tool==="magic"){
   const hue=magicHueRef.current%360;
