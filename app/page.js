@@ -5,6 +5,7 @@ import {createPinRecord,verifyPinRecord,recordFailedPin,remainingPinLockMs} from
 import {saveArtwork,loadArtwork,deleteProfileArtwork} from "../lib/artwork-storage.mjs";
 import {legacyActivityKeys,migrateLegacyActivities,profileActivities} from "../lib/profile-activities.mjs";
 import {dabStyle} from "../lib/paint-input.mjs";
+import {playStorybookSound,storybookSoundTypes} from "../lib/storybook-sounds.mjs";
 
 const items=[
 {id:"feuerwehrauto",name:"Feuerwehrauto im Einsatz",cat:"Fahrzeuge",emoji:"🚒",bg:"#ffe3d6",image:"/fahrzeuge/feuerwehrauto.webp",mode:"draw"},
@@ -627,13 +628,47 @@ export default function Page(){
  const rasterRef=useRef(null);
  const feedbackTimer=useRef(null);
  const soundPool=useRef({});
+ const storybookContext=useRef(null);
+ const lastSoundAt=useRef({});
+ const unlockStorybookAudio=()=>{
+  if(typeof window==="undefined")return null;
+  try{
+   const Context=window.AudioContext||window.webkitAudioContext;
+   if(!Context)return null;
+   if(!storybookContext.current||storybookContext.current.state==="closed"){
+    storybookContext.current=new Context();
+   }
+   const context=storybookContext.current;
+   if(context.state==="suspended"){
+    const result=context.resume();
+    if(result?.catch)result.catch(()=>{});
+   }
+   return context;
+  }catch{return null}
+ };
  const playSound=type=>{
   if(!soundEnabled||typeof window==="undefined")return;
+  // Keep rapid menu taps quiet instead of layering many effects.
+  if(type==="click"||type==="color"){
+   const now=typeof performance!=="undefined"?performance.now():Date.now();
+   if(now-(lastSoundAt.current[type]??-1000)<85)return;
+   lastSoundAt.current[type]=now;
+  }
+  if(storybookSoundTypes.includes(type)){
+   try{
+    const context=unlockStorybookAudio();
+    if(context&&playStorybookSound(context,type))return;
+   }catch(error){
+    console.warn("Malino: couldn't play storybook sound",error);
+   }
+  }
+  // Rare chest animations retain their full-length effects.
+  // Unsupported browsers use the original WAVs as a fallback.
   try{
    const base=soundPool.current[type];
    if(!base)return;
    const audio=base.cloneNode();
-   audio.volume=type==="click"?0.35:(type==="premium-reward-fanfare"?0.92:(type==="premium-chest-open"?0.72:0.55));
+   audio.volume=type==="click"?0.20:(type==="premium-reward-fanfare"?0.75:(type==="premium-chest-open"?0.62:0.48));
    audio.currentTime=0;
    const p=audio.play();
    if(p?.catch)p.catch(()=>{});
@@ -690,7 +725,9 @@ export default function Page(){
 
  useEffect(()=>{
   if(typeof window==="undefined")return;
-  const types=["click","color","success","stars","reward","streak","chest-creak","reward-boom","reward-fanfare","premium-chest-open","premium-reward-fanfare"];
+  const chestTypes=["chest-creak","reward-boom","reward-fanfare","premium-chest-open","premium-reward-fanfare"];
+  const types=(window.AudioContext||window.webkitAudioContext)
+   ? chestTypes : [...storybookSoundTypes,...chestTypes];
   const pool={};
   types.forEach(type=>{
    try{
@@ -775,6 +812,7 @@ export default function Page(){
   const prime=()=>{
    if(primed)return;
    primed=true;
+   if(soundEnabled)unlockStorybookAudio();
    Object.values(soundPool.current).forEach(audio=>{
     try{
      const oldVolume=audio.volume;
