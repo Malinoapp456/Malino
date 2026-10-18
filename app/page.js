@@ -587,7 +587,9 @@ export default function Page(){
  const [profileDialog,setProfileDialog]=useState(null);
  const [profileNameInput,setProfileNameInput]=useState("");
  const [profileAvatarInput,setProfileAvatarInput]=useState("lion");
- const [parentPin,setParentPin]=useState("");
+ const [parentPin,setParentPin]=useState(null);
+ const [parentPinReady,setParentPinReady]=useState(false);
+ const [parentPinBusy,setParentPinBusy]=useState(false);
  const [parentPinInput,setParentPinInput]=useState("");
  const [parentPinMode,setParentPinMode]=useState("locked");
  const [parentPinError,setParentPinError]=useState("");
@@ -685,10 +687,34 @@ export default function Page(){
  },[]);
 
  useEffect(()=>{
-  try{
-   const savedPin=localStorage.getItem("malino:parentPin:v1");
-   if(savedPin)setParentPin(savedPin);
-  }catch{}
+  let active=true;
+  (async()=>{
+   try{
+    const saved=localStorage.getItem("malino:parentPinRecord:v2");
+    if(saved){
+     if(active)setParentPin(JSON.parse(saved));
+     return;
+    }
+    const legacy=localStorage.getItem("malino:parentPin:v1");
+    if(!legacy)return;
+    // Existing parents keep their PIN, but it is migrated off plaintext storage.
+    let record;
+    try{
+     record=await createPinRecord(legacy);
+     localStorage.setItem("malino:parentPinRecord:v2",JSON.stringify(record));
+     localStorage.removeItem("malino:parentPin:v1");
+    }catch(error){
+     console.warn("Malino: PIN migration could not complete",error);
+     record={legacyPlain:legacy};
+    }
+    if(active)setParentPin(record);
+   }catch(error){
+    console.warn("Malino: PIN could not be loaded",error);
+   }finally{
+    if(active)setParentPinReady(true);
+   }
+  })();
+  return()=>{active=false};
  },[]);
 
  useEffect(()=>{
@@ -2377,51 +2403,74 @@ export default function Page(){
   }
  };
  const openParentArea=()=>{
+  if(!parentPinReady)return;
   setParentPinInput("");
   setParentPinError("");
   setParentPinMode(parentPin?"locked":"setup");
   setScreen("parent");
  };
- const unlockParentArea=()=>{
-  if(parentPinInput===parentPin){
-   setParentPinInput("");
-   setParentPinError("");
-   setParentPinMode("unlocked");
-  }else{
-   setParentPinError("Falsche PIN. Bitte erneut versuchen.");
+ const unlockParentArea=async()=>{
+  let attempts={count:0,lockedUntil:0};
+  try{attempts=JSON.parse(localStorage.getItem("malino:parentPinAttempts:v1")||"null")||attempts}catch{}
+  const locked=remainingPinLockMs(attempts);
+  if(locked){
+   setParentPinError("Zu viele Versuche. Bitte "+Math.ceil(locked/1000)+" Sekunden warten.");
+   return;
+  }
+  try{
+   const valid=parentPin?.legacyPlain!==undefined
+    ? parentPinInput===parentPin.legacyPlain
+    : await verifyPinRecord(parentPinInput,parentPin);
+   if(valid){
+    try{localStorage.removeItem("malino:parentPinAttempts:v1")}catch{}
+    setParentPinInput("");
+    setParentPinError("");
+    setParentPinMode("unlocked");
+   }else{
+    const next=recordFailedPin(attempts);
+    try{localStorage.setItem("malino:parentPinAttempts:v1",JSON.stringify(next))}catch{}
+    const wait=remainingPinLockMs(next);
+    setParentPinError(wait?"Zu viele Versuche. Bitte 60 Sekunden warten.":"Falsche PIN. Bitte erneut versuchen.");
+   }
+  }catch(error){
+   setParentPinError("PIN konnte nicht geprüft werden. Bitte erneut versuchen.");
   }
  };
- const saveFirstParentPin=()=>{
+ const persistNewParentPin=async()=>{
   if(!/^\d{4}$/.test(parentPinInput)){
    setParentPinError("Bitte genau 4 Ziffern eingeben.");
    return;
   }
-  try{localStorage.setItem("malino:parentPin:v1",parentPinInput)}catch{}
-  setParentPin(parentPinInput);
-  setParentPinInput("");
-  setParentPinError("");
-  setParentPinMode("unlocked");
+  try{
+   const record=await createPinRecord(parentPinInput);
+   localStorage.setItem("malino:parentPinRecord:v2",JSON.stringify(record));
+   localStorage.removeItem("malino:parentPin:v1");
+   localStorage.removeItem("malino:parentPinAttempts:v1");
+   setParentPin(record);
+   setParentPinInput("");
+   setParentPinError("");
+   setParentPinMode("unlocked");
+  }catch(error){
+   setParentPinError("PIN konnte nicht sicher gespeichert werden. Bitte erneut versuchen.");
+  }
  };
+ const saveFirstParentPin=()=>persistNewParentPin();
  const startParentPinChange=()=>{
   setParentPinInput("");
   setParentPinError("");
   setParentPinMode("change");
  };
- const saveChangedParentPin=()=>{
-  if(!/^\d{4}$/.test(parentPinInput)){
-   setParentPinError("Bitte genau 4 Ziffern eingeben.");
-   return;
+ const saveChangedParentPin=()=>persistNewParentPin();
+ const submitParentPin=async()=>{
+  if(!parentPinReady||parentPinBusy)return;
+  setParentPinBusy(true);
+  try{
+   if(parentPinMode==="locked")await unlockParentArea();
+   else if(parentPinMode==="change")await saveChangedParentPin();
+   else await saveFirstParentPin();
+  }finally{
+   setParentPinBusy(false);
   }
-  try{localStorage.setItem("malino:parentPin:v1",parentPinInput)}catch{}
-  setParentPin(parentPinInput);
-  setParentPinInput("");
-  setParentPinError("");
-  setParentPinMode("unlocked");
- };
- const submitParentPin=()=>{
-  if(parentPinMode==="locked")unlockParentArea();
-  else if(parentPinMode==="change")saveChangedParentPin();
-  else saveFirstParentPin();
  };
  const addTestStars=()=>setStars(prev=>Number(prev||0)+50);
 
@@ -3729,7 +3778,7 @@ export default function Page(){
       aria-label="Eltern-PIN"
      />
      {parentPinError&&<div className="parentPinError">{parentPinError}</div>}
-     <button className="parentPinPrimary" onClick={submitParentPin}>
+     <button className="parentPinPrimary" onClick={submitParentPin} disabled={!parentPinReady||parentPinBusy}>
       {parentPinMode==="locked"?"Entsperren":parentPinMode==="change"?"Neue PIN speichern":"PIN speichern"}
      </button>
      <button className="parentPinBack" onClick={()=>setScreen("start")}>Zurück</button>
@@ -3864,7 +3913,7 @@ export default function Page(){
     <span>⏱️</span>
     <h2>Malzeit für heute beendet</h2>
     <p>Das eingestellte Tageslimit von <b>{screenTimeLimit} Minuten</b> wurde erreicht.</p>
-    <button onClick={()=>{setParentPinInput("");setParentPinError("");setParentPinMode(parentPin?"locked":"setup");setScreen("parent")}}>🔐 Elternbereich öffnen</button>
+    <button onClick={openParentArea}>🔐 Elternbereich öffnen</button>
    </div>
   </div>}
 
