@@ -2486,6 +2486,7 @@ export default function Page(){
   }
 
   if(profileDialog==="reset"){
+   deleteProfileArtwork(activeProfileId).catch(()=>{});
    setProfileData(prev=>({...prev,[activeProfileId]:{...emptyProfileData(),avatar:prev?.[activeProfileId]?.avatar||"lion",activeFrame:prev?.[activeProfileId]?.activeFrame||"classic"}}));
    setRewardPopup(null);
    setCurrent(items[0]);
@@ -2500,6 +2501,7 @@ export default function Page(){
 
   if(profileDialog==="delete"){
    if(profiles.length<=1){closeProfileDialog();return}
+   deleteProfileArtwork(activeProfileId).catch(()=>{});
    const remaining=profiles.filter(p=>p.id!==activeProfileId);
    const nextId=remaining[0].id;
    setProfiles(remaining);
@@ -3507,7 +3509,7 @@ export default function Page(){
      <p>Hier wohnen alle fertigen Malbilder deines aktuellen Profils.</p>
      <div className="galleryHeroActions">
       <button className="galleryNew" onClick={()=>setScreen("library")}>＋ Neues Bild</button>
-      {gallery.length>0&&<button className="galleryOpenLatest" onClick={()=>open(gallery[0])}>🖌️ Letztes Bild öffnen</button>}
+      {gallery.length>0&&<button className="galleryOpenLatest" onClick={()=>open(gallery[0],true)}>🖌️ Letztes Bild öffnen</button>}
      </div>
     </div>
     <div className="galleryCount premiumGalleryCount"><span>🎨</span><div><b>{gallery.length}</b><small>{gallery.length===1?"Kunstwerk":"Kunstwerke"}</small></div></div>
@@ -3520,8 +3522,8 @@ export default function Page(){
       <span>{gallery.length}</span>
      </div>
      <div className="galleryGrid premiumGalleryGrid">{gallery.map((x,index)=><article key={x.id} className={`galleryCard premiumGalleryCard galleryFrame-${activeFrame} ${index===0?"latest":""}`}>
-      <button className="galleryOpen premiumGalleryOpen" onClick={()=>open(x)}>
-       <Thumb it={x} done/>
+      <button className="galleryOpen premiumGalleryOpen" onClick={()=>open(x,true)}>
+       <ArtworkThumb it={x} profileId={activeProfileId}/>
        {index===0&&<span className="latestBadge">✨ Zuletzt gemalt</span>}
       </button>
       <div className="galleryCardText premiumGalleryCardText">
@@ -3529,7 +3531,7 @@ export default function Page(){
        <span>{items.find(it=>it.id===x.id)?.cat||"Malbild"}</span>
       </div>
       <div className="galleryCardActions">
-       <button className="galleryAgain" onClick={()=>open(x)}>🖌️ Noch einmal malen</button>
+       <button className="galleryAgain" onClick={()=>open(x,true)}>🖌️ Noch einmal malen</button>
        <button className="galleryFavorite" onClick={()=>setFav(fav.includes(x.id)?fav.filter(id=>id!==x.id):[...fav,x.id])} aria-label="Favorit">
         {fav.includes(x.id)?"❤️":"🤍"}
        </button>
