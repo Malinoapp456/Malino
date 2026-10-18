@@ -594,6 +594,7 @@ export default function Page(){
  const [parentTool,setParentTool]=useState(null);
  const [screenTimeLimit,setScreenTimeLimit]=useState(0);
  const [screenTimeUsage,setScreenTimeUsage]=useState(0);
+ const screenTimeDateRef=useRef(new Date().toLocaleDateString("sv-SE"));
  const [animationsEnabled,setAnimationsEnabled]=useState(true);
  const [soundEnabled,setSoundEnabled]=useState(true);
  const [parentToolNotice,setParentToolNotice]=useState("");
@@ -709,6 +710,7 @@ export default function Page(){
    const snd=localStorage.getItem("malino:sound:v1");
    if(snd!==null)setSoundEnabled(snd!=="off");
    const key=new Date().toLocaleDateString("sv-SE");
+   screenTimeDateRef.current=key;
    const raw=localStorage.getItem("malino:screenTimeUsage:v1");
    if(raw){
     const parsed=JSON.parse(raw);
@@ -797,18 +799,25 @@ export default function Page(){
  },[soundEnabled]);
 
  useEffect(()=>{
-  const timer=setInterval(()=>{
-   if(typeof document!=="undefined"&&document.visibilityState!=="visible")return;
+  const syncDay=()=>{
+   const day=new Date().toLocaleDateString("sv-SE");
+   if(day===screenTimeDateRef.current)return;
+   screenTimeDateRef.current=day;
+   setScreenTimeUsage(0);
+   try{localStorage.setItem("malino:screenTimeUsage:v1",JSON.stringify(advanceDailyUsage(null,day)))}catch{}
+  };
+  const tick=()=>{
+   syncDay();
+   if(document.visibilityState!=="visible")return;
    setScreenTimeUsage(prev=>{
-    const next=prev+1;
-    try{
-     const key=new Date().toLocaleDateString("sv-SE");
-     localStorage.setItem("malino:screenTimeUsage:v1",JSON.stringify({date:key,minutes:next}));
-    }catch{}
-    return next;
+    const next=advanceDailyUsage({date:screenTimeDateRef.current,minutes:prev},screenTimeDateRef.current,1);
+    try{localStorage.setItem("malino:screenTimeUsage:v1",JSON.stringify(next))}catch{}
+    return next.minutes;
    });
-  },60000);
-  return()=>clearInterval(timer);
+  };
+  document.addEventListener("visibilitychange",syncDay);
+  const timer=setInterval(tick,60000);
+  return()=>{clearInterval(timer);document.removeEventListener("visibilitychange",syncDay)};
  },[]);
 
 
@@ -2330,7 +2339,8 @@ export default function Page(){
   setScreenTimeUsage(0);
   try{
    const key=new Date().toLocaleDateString("sv-SE");
-   localStorage.setItem("malino:screenTimeUsage:v1",JSON.stringify({date:key,minutes:0}));
+   screenTimeDateRef.current=key;
+   localStorage.setItem("malino:screenTimeUsage:v1",JSON.stringify(advanceDailyUsage(null,key)));
   }catch{}
   setParentToolNotice("Heutige Bildschirmzeit wurde zurückgesetzt.");
  };
