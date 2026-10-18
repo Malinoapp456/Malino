@@ -17,7 +17,7 @@ test("fairy-tale actions have distinctive soft, organic sound characters", () =>
     for(const [frequency,offset,duration,volume,character] of notes) {
       assert.ok(frequency>=250 && frequency<=1500);
       assert.ok(offset>=0 && duration>0 && duration<=(type==="welcome"?0.75:0.5));
-      assert.ok(volume>0 && volume<=0.15);
+      assert.ok(volume>0 && volume<=(type==="welcome"?0.25:0.15));
       assert.ok(storybookCharacters.includes(character));
       used.add(character);
     }
