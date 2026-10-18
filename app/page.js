@@ -632,8 +632,10 @@ export default function Page(){
    const storedActive=localStorage.getItem("malino:activeProfile:v1");
    const storedData=localStorage.getItem("malino:profileData:v1");
    const legacyActivities={};
-   for(const [field,key] of Object.entries(legacyActivityKeys)){
-    try{const raw=localStorage.getItem(key);if(raw!==null)legacyActivities[field]=JSON.parse(raw)}catch{}
+   if(localStorage.getItem("malino:activityMigration:v1")!=="done"){
+    for(const [field,key] of Object.entries(legacyActivityKeys)){
+     try{const raw=localStorage.getItem(key);if(raw!==null)legacyActivities[field]=JSON.parse(raw)}catch{}
+    }
    }
 
    if(storedProfiles&&storedData){
@@ -825,6 +827,8 @@ export default function Page(){
    localStorage.setItem("malino:profiles:v1",JSON.stringify(profiles));
    localStorage.setItem("malino:activeProfile:v1",activeProfileId);
    localStorage.setItem("malino:profileData:v1",JSON.stringify(profileData));
+    // Only mark the migration complete after its profile records are persisted.
+    localStorage.setItem("malino:activityMigration:v1","done");
   }catch{}
  },[profiles,activeProfileId,profileData,profilesReady]);
 
