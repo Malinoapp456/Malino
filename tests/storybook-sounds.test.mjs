@@ -91,8 +91,8 @@ test("Web Audio plays notes in sequence without network downloads", () => {
   assert.equal(playStorybookSound({...context,state:"closed"},"click"),false);
 });
 
-test("real CC0 trumpet recording is a playable PCM WAV, not a synthesizer", () => {
-  const file=readFileSync(new URL("../public/sounds/trumpet-welcome.wav",import.meta.url));
+test("real CC0 xylophone recording is a playable PCM WAV, not a synthesizer", () => {
+  const file=readFileSync(new URL("../public/sounds/xylophone-welcome.wav",import.meta.url));
   assert.ok(file.length>16000 && file.length<500000);
   assert.equal(file.toString("ascii",0,4),"RIFF");
   assert.equal(file.toString("ascii",8,12),"WAVE");
