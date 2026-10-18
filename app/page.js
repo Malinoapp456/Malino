@@ -3,6 +3,7 @@ import {forwardRef,useEffect,useImperativeHandle,useMemo,useRef,useState} from "
 import {advanceDailyUsage,hasVisiblePaint} from "../lib/progress.mjs";
 import {createPinRecord,verifyPinRecord,recordFailedPin,remainingPinLockMs} from "../lib/parent-pin.mjs";
 import {saveArtwork,loadArtwork,deleteProfileArtwork} from "../lib/artwork-storage.mjs";
+import {legacyActivityKeys,migrateLegacyActivities,profileActivities} from "../lib/profile-activities.mjs";
 
 const items=[
 {id:"feuerwehrauto",name:"Feuerwehrauto im Einsatz",cat:"Fahrzeuge",emoji:"🚒",bg:"#ffe3d6",image:"/fahrzeuge/feuerwehrauto.webp",mode:"draw"},
@@ -554,27 +555,22 @@ export default function Page(){
  const [craftImageId,setCraftImageId]=useState(null);
  const [craftPieces,setCraftPieces]=useState(6);
  const [craftStyle,setCraftStyle]=useState("bw");
- const [savedCraftPuzzles,setSavedCraftPuzzles]=useState([]);
  const [craftMode,setCraftMode]=useState("puzzle");
  const [mazeThemeId,setMazeThemeId]=useState("fox");
  const [mazeDifficulty,setMazeDifficulty]=useState("leicht");
  const [mazeSeed,setMazeSeed]=useState(2311);
- const [savedMazes,setSavedMazes]=useState([]);
  const [differenceThemeId,setDifferenceThemeId]=useState("farm");
  const [differenceDifficulty,setDifferenceDifficulty]=useState("leicht");
  const [differenceSeed,setDifferenceSeed]=useState(2401);
- const [savedDifferences,setSavedDifferences]=useState([]);
  const [hiddenThemeId,setHiddenThemeId]=useState("forest");
  const [hiddenDifficulty,setHiddenDifficulty]=useState("leicht");
  const [hiddenSeed,setHiddenSeed]=useState(2501);
- const [savedHidden,setSavedHidden]=useState([]);
  const [hiddenFound,setHiddenFound]=useState([]);
  const [hiddenMiss,setHiddenMiss]=useState(null);
  const [hiddenComplete,setHiddenComplete]=useState(false);
  const [numberThemeId,setNumberThemeId]=useState("malino");
  const [numberDifficulty,setNumberDifficulty]=useState("leicht");
  const [numberPainted,setNumberPainted]=useState([]);
- const [savedNumberArt,setSavedNumberArt]=useState([]);
  const [selectedNumber,setSelectedNumber]=useState(1);
  const [numberFloodTotal,setNumberFloodTotal]=useState(1);
 
@@ -635,6 +631,10 @@ export default function Page(){
    const storedProfiles=localStorage.getItem("malino:profiles:v1");
    const storedActive=localStorage.getItem("malino:activeProfile:v1");
    const storedData=localStorage.getItem("malino:profileData:v1");
+   const legacyActivities={};
+   for(const [field,key] of Object.entries(legacyActivityKeys)){
+    try{const raw=localStorage.getItem(key);if(raw!==null)legacyActivities[field]=JSON.parse(raw)}catch{}
+   }
 
    if(storedProfiles&&storedData){
     const parsedProfiles=JSON.parse(storedProfiles);
@@ -643,7 +643,7 @@ export default function Page(){
     const safeActive=safeProfiles.some(p=>p.id===storedActive)?storedActive:safeProfiles[0].id;
     setProfiles(safeProfiles);
     setActiveProfileId(safeActive);
-    setProfileData(parsedData&&typeof parsedData==="object"?parsedData:{[safeActive]:emptyProfileData()});
+    setProfileData(migrateLegacyActivities(parsedData&&typeof parsedData==="object"?parsedData:{[safeActive]:emptyProfileData()},safeActive,legacyActivities));
    }else{
     const readLegacy=(key,fallback)=>{
      try{
@@ -661,7 +661,7 @@ export default function Page(){
     }:emptyProfileData();
     setProfiles([{id:"default",name:hasLegacy?"Aktuelles Profil":"Kind 1"}]);
     setActiveProfileId("default");
-    setProfileData({default:migrated});
+    setProfileData(migrateLegacyActivities({default:migrated},"default",legacyActivities));
    }
   }catch{
    setProfiles([{id:"default",name:"Kind 1"}]);
@@ -723,16 +723,6 @@ export default function Page(){
    setScreenTimeLimit(Number.isFinite(limit)?limit:0);
    const anim=localStorage.getItem("malino:animations:v1");
    if(anim!==null)setAnimationsEnabled(anim!=="off");
-   const numberArt=localStorage.getItem("malino:numberArt:v1");
-   if(numberArt){try{setSavedNumberArt(JSON.parse(numberArt)||[])}catch{}}
-   const hidden=localStorage.getItem("malino:hidden:v1");
-   if(hidden){try{setSavedHidden(JSON.parse(hidden)||[])}catch{}}
-   const diffs=localStorage.getItem("malino:differences:v1");
-   if(diffs){try{setSavedDifferences(JSON.parse(diffs)||[])}catch{}}
-   const mazes=localStorage.getItem("malino:mazes:v1");
-   if(mazes){try{setSavedMazes(JSON.parse(mazes)||[])}catch{}}
-   const crafts=localStorage.getItem("malino:craftPuzzles:v1");
-   if(crafts){try{setSavedCraftPuzzles(JSON.parse(crafts)||[])}catch{}}
    const snd=localStorage.getItem("malino:sound:v1");
    if(snd!==null)setSoundEnabled(snd!=="off");
    const key=new Date().toLocaleDateString("sv-SE");
@@ -755,24 +745,6 @@ export default function Page(){
  useEffect(()=>{
   try{localStorage.setItem("malino:sound:v1",soundEnabled?"on":"off")}catch{}
  },[soundEnabled]);
-
- useEffect(()=>{
-  try{localStorage.setItem("malino:craftPuzzles:v1",JSON.stringify(savedCraftPuzzles))}catch{}
- },[savedCraftPuzzles]);
-
- useEffect(()=>{
-  try{localStorage.setItem("malino:mazes:v1",JSON.stringify(savedMazes))}catch{}
- },[savedMazes]);
-
- useEffect(()=>{
-  try{localStorage.setItem("malino:differences:v1",JSON.stringify(savedDifferences))}catch{}
- },[savedDifferences]);
-
- useEffect(()=>{
-  try{localStorage.setItem("malino:hidden:v1",JSON.stringify(savedHidden))}catch{}
- },[savedHidden]);
-
- useEffect(()=>{try{localStorage.setItem("malino:numberArt:v1",JSON.stringify(savedNumberArt))}catch{}},[savedNumberArt]);
 
  useEffect(()=>{
   setHiddenFound([]);
@@ -858,6 +830,7 @@ export default function Page(){
 
  const activeProfile=profiles.find(p=>p.id===activeProfileId)||profiles[0]||{id:"default",name:"Kind 1"};
  const activeData=profileData[activeProfileId]||emptyProfileData();
+ const {savedCraftPuzzles,savedMazes,savedDifferences,savedHidden,savedNumberArt}=profileActivities(profileData,activeProfileId);
  const fav=activeData.fav||[];
  const done=activeData.done||[];
  const gallery=activeData.gallery||[];
@@ -1823,6 +1796,11 @@ export default function Page(){
  const setHiddenSolved=value=>updateProfileField("hiddenSolved",value);
  const setDailyStreak=value=>updateProfileField("dailyStreak",value);
  const setLastDailyDate=value=>updateProfileField("lastDailyDate",value);
+ const setSavedCraftPuzzles=value=>updateProfileField("savedCraftPuzzles",value);
+ const setSavedMazes=value=>updateProfileField("savedMazes",value);
+ const setSavedDifferences=value=>updateProfileField("savedDifferences",value);
+ const setSavedHidden=value=>updateProfileField("savedHidden",value);
+ const setSavedNumberArt=value=>updateProfileField("savedNumberArt",value);
 
  const paintNumberCell=(cell,totalOverride)=>{
   if(numberPainted.includes(cell.id))return;
