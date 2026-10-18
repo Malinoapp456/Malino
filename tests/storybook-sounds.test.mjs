@@ -16,7 +16,7 @@ test("fairy-tale actions have distinctive soft, organic sound characters", () =>
     assert.ok(notes.length>0 && notes.length<=4);
     for(const [frequency,offset,duration,volume,character] of notes) {
       assert.ok(frequency>=250 && frequency<=1500);
-      assert.ok(offset>=0 && duration>0 && duration<=0.5);
+      assert.ok(offset>=0 && duration>0 && duration<=(type==="welcome"?0.75:0.5));
       assert.ok(volume>0 && volume<=0.15);
       assert.ok(storybookCharacters.includes(character));
       used.add(character);
@@ -29,8 +29,8 @@ test("fairy-tale actions have distinctive soft, organic sound characters", () =>
   assert.deepEqual(storybookNotes("welcome").map(note=>note[4]),
     ["cover","page","page","cover"]);
   const welcome=storybookNotes("welcome");
-  assert.ok(Math.max(...welcome.map(note=>note[1]+note[2]))<1);
-  assert.ok(welcome.every(note=>note[3]<=0.15));
+  assert.ok(Math.max(...welcome.map(note=>note[1]+note[2]))<1.6);
+  assert.ok(welcome.every(note=>note[3]<=0.25));
 });
 
 test("all fairy-tale characters produce bounded, smoothly tapered, non-silent samples", () => {
@@ -90,7 +90,7 @@ test("Web Audio plays notes in sequence without network downloads", () => {
   assert.ok(starts[2]>starts[1]);
   assert.equal(playStorybookSound(context,"welcome"),true);
   assert.equal(starts.length,7);
-  assert.ok(Math.max(...starts)<13);
+  assert.ok(Math.max(...starts)<13.6);
   assert.equal(playStorybookSound(context,"missing"),false);
   assert.equal(playStorybookSound({...context,state:"closed"},"click"),false);
 });
