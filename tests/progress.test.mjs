@@ -1,7 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { advanceDailyUsage, hasVisiblePaint } from "../lib/progress.mjs";
-import { remainingPinLockMs, recordFailedPin } from "../lib/parent-pin.mjs";
+import { createPinRecord, verifyPinRecord, remainingPinLockMs, recordFailedPin } from "../lib/parent-pin.mjs";
+import { webcrypto } from "node:crypto";
+if (!globalThis.crypto) globalThis.crypto = webcrypto;
 import { artworkKey } from "../lib/artwork-storage.mjs";
 
 test("minutes increment within one day", () => {
@@ -32,4 +34,15 @@ test("PIN temporarily locks after five incorrect attempts", () => {
 
 test("artwork keys isolate profiles", () => {
   assert.notEqual(artworkKey("kid-1", "fox"), artworkKey("kid-2", "fox"));
+});
+
+test("new PIN records are salted, verified and do not reveal plaintext", async () => {
+  const first = await createPinRecord("1234");
+  const second = await createPinRecord("1234");
+  assert.notEqual(first.salt, second.salt);
+  assert.notEqual(first.hash, second.hash);
+  assert.equal(JSON.stringify(first).includes("1234"), false);
+  assert.equal(await verifyPinRecord("1234", first), true);
+  assert.equal(await verifyPinRecord("4321", first), false);
+  assert.equal(await verifyPinRecord("1234", null), false);
 });
