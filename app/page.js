@@ -826,12 +826,12 @@ export default function Page(){
   let primed=false;
   const prime=event=>{
    if(primed)return;
-   // Preview button plays the sound itself; avoid two overlapping book effects.
-   if(event.target?.closest?.("[data-welcome-preview]")){
-    primed=true;
-    return;
-   }
    primed=true;
+   document.removeEventListener("pointerdown",prime,true);
+   document.removeEventListener("touchstart",prime,true);
+   document.removeEventListener("keydown",prime,true);
+   // Preview button owns the first audio gesture; prevent double-book playback.
+   if(event.target?.closest?.("[data-welcome-preview]"))return;
    // Mobile browsers block autoplay until an actual user gesture.
    // Respect the saved mute setting even before the first React state update.
    let enabled=soundEnabled;
@@ -877,6 +877,7 @@ export default function Page(){
    if(!soundEnabled)return;
    const btn=e.target?.closest?.("button");
    if(!btn)return;
+   if(btn.hasAttribute("data-welcome-preview"))return;
    if(btn.classList.contains("finish")||btn.classList.contains("openChestBtn"))return;
    if(btn.closest(".palette"))return;
    playSound("click");
