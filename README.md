@@ -1,19 +1,39 @@
-# Malino 1.1
+# Malino 2.0
 
-Aktualizacja aplikacji Malino dla GitHub + Vercel.
+Kreatywna aplikacja dla dzieci: kolorowanki, puzzle, gry edukacyjne, gwiazdki, nagrody i panel rodzica. Projekt korzysta z Next.js 15 i React 19, a interfejs aplikacji jest obecnie po niemiecku.
 
-## Nowości
-- pasek postępu dziecka,
-- pierwsza odznaka,
-- sekcja ostatnio otwieranych kolorowanek,
-- panel rodzica ze statystykami,
-- zapamiętywanie otwieranych i ukończonych obrazków,
-- ulepszone nagłówki bezpieczeństwa.
+## Uruchamianie
 
-## Aktualizacja
-1. Rozpakuj ZIP.
-2. W GitHub otwórz repozytorium Malino.
-3. Kliknij Add file → Upload files.
-4. Prześlij `index.html`, `vercel.json`, `README.md`.
-5. Zatwierdź jako `Malino 1.1`.
-6. Vercel wdroży wersję automatycznie.
+```bash
+npm install
+npm run dev
+```
+
+Aplikacja będzie dostępna pod adresem http://localhost:3000.
+
+## Testy i publikacja
+
+```bash
+npm test
+npm run build
+```
+
+GitHub Actions uruchamia testy i kompilację przy otwieraniu pull requestów. Projekt może być publikowany na Vercel, ale zmiany należy najpierw sprawdzić w podglądzie gałęzi.
+
+## Zapisywanie danych
+
+- Profile, statystyki, gwiazdki i metadane galerii są przechowywane lokalnie w `localStorage`.
+- Ukończone kolorowanki zapisują **rzeczywisty podgląd obrazka i warstwę rysowania** w IndexedDB, oddzielnie dla każdego profilu. Można je potem zobaczyć w galerii i ponownie otworzyć do malowania.
+- Dane **nie są synchronizowane między urządzeniami**. Wyczyszczenie danych witryny lub usunięcie aplikacji może spowodować utratę prac. Ważne obrazy można zapisać jako pliki na urządzeniu.
+- W razie braku miejsca lub niedostępności IndexedDB zapis ukończonej pracy zostanie wstrzymany i pokazany zostanie komunikat.
+- Starsze pozycje galerii mogą nadal pokazywać oryginalny szablon, ponieważ wcześniejsze wersje nie zapisywały namalowanych kolorów.
+
+## Panel rodzica
+
+PIN jest lokalnym zabezpieczeniem przed przypadkowym dostępem dzieci do ustawień, **a nie serwerowym systemem uwierzytelniania**. Zapis nowego PIN-u korzysta z losowej soli i PBKDF2-SHA-256. Po pięciu nieudanych próbach następuje 60 sekund blokady. Starsze czterocyfrowe PIN-y są migrowane przy otwarciu aplikacji bez konieczności ich zmiany.
+
+Dzienny limit czasu zeruje się po zmianie dnia kalendarzowego, również gdy karta pozostaje otwarta.
+
+## PWA i zasoby
+
+`public/manifest.webmanifest` oraz `public/sw.js` realizują instalację i tryb offline. Obrazy i dźwięki znajdują się w katalogu `public`.
