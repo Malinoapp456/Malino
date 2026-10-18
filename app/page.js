@@ -5,6 +5,7 @@ import {createPinRecord,verifyPinRecord,recordFailedPin,remainingPinLockMs} from
 import {saveArtwork,loadArtwork,deleteProfileArtwork} from "../lib/artwork-storage.mjs";
 import {legacyActivityKeys,migrateLegacyActivities,profileActivities} from "../lib/profile-activities.mjs";
 import {dabStyle} from "../lib/paint-input.mjs";
+import {playStorybookSound,storybookSoundTypes} from "../lib/storybook-sounds.mjs";
 
 const items=[
 {id:"feuerwehrauto",name:"Feuerwehrauto im Einsatz",cat:"Fahrzeuge",emoji:"🚒",bg:"#ffe3d6",image:"/fahrzeuge/feuerwehrauto.webp",mode:"draw"},
@@ -627,13 +628,78 @@ export default function Page(){
  const rasterRef=useRef(null);
  const feedbackTimer=useRef(null);
  const soundPool=useRef({});
+ const storybookContext=useRef(null);
+ const lastSoundAt=useRef({});
+ const welcomePlayedAt=useRef(0);
+ const welcomeAudio=useRef(null);
+ const unlockStorybookAudio=()=>{
+  if(typeof window==="undefined")return null;
+  try{
+   const Context=window.AudioContext||window.webkitAudioContext;
+   if(!Context)return null;
+   if(!storybookContext.current||storybookContext.current.state==="closed"){
+    storybookContext.current=new Context();
+   }
+   const context=storybookContext.current;
+   if(context.state==="suspended"){
+    const result=context.resume();
+    if(result?.catch)result.catch(()=>{});
+   }
+   return context;
+  }catch{return null}
+ };
+ const playRecordedWelcome=(variant="welcome")=>{
+  if(typeof window==="undefined")return false;
+  const base=soundPool.current[variant];
+  if(!base)return false;
+  try{
+   if(welcomeAudio.current){welcomeAudio.current.pause();welcomeAudio.current.currentTime=0;}
+   const audio=base.cloneNode();
+   audio.volume=variant==="welcomeOriginal"?0.60:0.56;
+   welcomeAudio.current=audio;
+   audio.currentTime=0;
+   const p=audio.play();
+   if(p?.catch)p.catch(error=>console.warn("Malino: recorded xylophone could not play",error));
+   welcomePlayedAt.current=Date.now();
+   return true;
+  }catch(error){
+   console.warn("Malino: recorded xylophone unavailable",error);
+   return false;
+  }
+ };
+ const playWelcomePreview=()=>{
+  if(!soundEnabled)return;
+  playRecordedWelcome();
+ };
+ const playOriginalWelcomePreview=()=>{
+  if(!soundEnabled)return;
+  playRecordedWelcome("welcomeOriginal");
+ };
  const playSound=type=>{
   if(!soundEnabled||typeof window==="undefined")return;
+  // Do not layer the very first click over the welcome animation.
+  if(type==="click"&&Date.now()-welcomePlayedAt.current<1950)return;
+  // Keep rapid menu taps quiet instead of layering many effects.
+  if(type==="click"||type==="color"){
+   const now=typeof performance!=="undefined"?performance.now():Date.now();
+   if(now-(lastSoundAt.current[type]??-1000)<85)return;
+   lastSoundAt.current[type]=now;
+  }
+  if(storybookSoundTypes.includes(type)){
+   try{
+    const context=unlockStorybookAudio();
+    if(context&&playStorybookSound(context,type))return;
+   }catch(error){
+    console.warn("Malino: couldn't play storybook sound",error);
+   }
+  }
+  // Rare chest animations retain their full-length effects.
+  // Unsupported browsers use the original WAVs as a fallback.
   try{
    const base=soundPool.current[type];
    if(!base)return;
    const audio=base.cloneNode();
-   audio.volume=type==="click"?0.35:(type==="premium-reward-fanfare"?0.92:(type==="premium-chest-open"?0.72:0.55));
+   audio.volume=type==="click"?0.20:(type==="premium-reward-fanfare"?0.75:(type==="premium-chest-open"?0.62:0.48));
    audio.currentTime=0;
    const p=audio.play();
    if(p?.catch)p.catch(()=>{});
@@ -690,13 +756,16 @@ export default function Page(){
 
  useEffect(()=>{
   if(typeof window==="undefined")return;
-  const types=["click","color","success","stars","reward","streak","chest-creak","reward-boom","reward-fanfare","premium-chest-open","premium-reward-fanfare"];
+  const chestTypes=["chest-creak","reward-boom","reward-fanfare","premium-chest-open","premium-reward-fanfare"];
+  // Keep original WAVs as a fallback for older browsers or Web Audio errors.
+  // The welcome uses real CC0 xylophone recordings; other small feedback remains synthetic.
+  const types=[...storybookSoundTypes,...chestTypes,"welcome","welcomeOriginal"];
   const pool={};
   types.forEach(type=>{
    try{
-    const audio=new Audio(`/sounds/${type}.wav`);
-    audio.preload="auto";
-    audio.load();
+    const audio=new Audio(type==="welcome"?"/sounds/magical-welcome.wav":type==="welcomeOriginal"?"/sounds/xylophone-welcome.wav":`/sounds/${type}.wav`);
+    audio.preload=storybookSoundTypes.includes(type)&&type!=="welcome"?"none":"auto";
+    if(type==="welcome"||!storybookSoundTypes.includes(type))audio.load();
     pool[type]=audio;
    }catch{}
   });
@@ -772,10 +841,23 @@ export default function Page(){
  useEffect(()=>{
   if(typeof document==="undefined")return;
   let primed=false;
-  const prime=()=>{
+  const prime=event=>{
    if(primed)return;
    primed=true;
-   Object.values(soundPool.current).forEach(audio=>{
+   document.removeEventListener("pointerdown",prime,true);
+   document.removeEventListener("touchstart",prime,true);
+   document.removeEventListener("keydown",prime,true);
+   // Preview button owns the first audio gesture; prevent double-book playback.
+   if(event.target?.closest?.("[data-welcome-preview]"))return;
+   // Mobile browsers block autoplay until an actual user gesture.
+   // Respect the saved mute setting even before the first React state update.
+   let enabled=soundEnabled;
+   try{enabled=localStorage.getItem("malino:sound:v1")!=="off"}catch{}
+   if(enabled){
+    unlockStorybookAudio();
+    playRecordedWelcome();
+   }
+   Object.entries(soundPool.current).filter(([type])=>!storybookSoundTypes.includes(type)&&type!=="welcome"&&type!=="welcomeOriginal").forEach(([,audio])=>{
     try{
      const oldVolume=audio.volume;
      audio.volume=0;
@@ -791,12 +873,15 @@ export default function Page(){
    });
    document.removeEventListener("pointerdown",prime,true);
    document.removeEventListener("touchstart",prime,true);
+   document.removeEventListener("keydown",prime,true);
   };
   document.addEventListener("pointerdown",prime,true);
   document.addEventListener("touchstart",prime,true);
+  document.addEventListener("keydown",prime,true);
   return()=>{
    document.removeEventListener("pointerdown",prime,true);
    document.removeEventListener("touchstart",prime,true);
+   document.removeEventListener("keydown",prime,true);
   };
  },[]);
 
@@ -805,6 +890,7 @@ export default function Page(){
    if(!soundEnabled)return;
    const btn=e.target?.closest?.("button");
    if(!btn)return;
+   if(btn.hasAttribute("data-welcome-preview"))return;
    if(btn.classList.contains("finish")||btn.classList.contains("openChestBtn"))return;
    if(btn.closest(".palette"))return;
    playSound("click");
@@ -2760,6 +2846,8 @@ export default function Page(){
      <div className="premiumHeroActions">
       <button className="primary" onClick={()=>open(dailyItem)}>🌟 Tages-Challenge</button>
       <button className="secondaryHeroBtn" onClick={()=>setScreen("library")}>📚 Bibliothek</button>
+      <button className="secondaryHeroBtn" data-welcome-preview="true" disabled={!soundEnabled} onClick={playWelcomePreview} title="Xylofon mit leisen echten Glöckchen abspielen">✨ Magisches Xylofon anhören</button>
+      <button className="secondaryHeroBtn" data-welcome-preview="true" disabled={!soundEnabled} onClick={playOriginalWelcomePreview} title="Vorherige Version zum Vergleichen">🎶 Vorherige Version anhören</button>
      </div>
     </div>
     <div className="premiumHeroMascot" aria-hidden="true">

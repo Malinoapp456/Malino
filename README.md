@@ -40,3 +40,17 @@ Dzienny limit czasu zeruje się po zmianie dnia kalendarzowego, również gdy ka
 ## PWA i zasoby
 
 `public/manifest.webmanifest` oraz `public/sw.js` realizują instalację i tryb offline. Obrazy i dźwięki znajdują się w katalogu `public`.
+
+## Dźwięki — wersja testowa
+
+Codzienne efekty kliknięć, wyboru koloru, sukcesu, gwiazdek i serii są odtwarzane lokalnie przez Web Audio. W wersji bajkowej kliknięcie przypomina ciche «puf», wybór koloru — bąbelek, sukces — drewniany dźwięk z magicznym dzwoneczkiem, a gwiazdki — drobny rozświetlony pył. Seriom towarzyszy łagodny ptasi gwizd, nagrodzie dyskretny magiczny szelest. Brzmienia są krótkie, stonowane i różnią się barwą, zamiast korzystać z jednego syntezatorowego sygnału. To syntezowane efekty, nie nagrania natury. Pliki WAV nadal służą do wyjątkowych animacji skrzyń oraz jako awaryjna ścieżka na starszych urządzeniach.
+
+Do bajkowego pakietu dodano **naturalne powitanie z ksylofonu i delikatnych dzwonków**. Obecna wersja `public/sounds/magical-welcome.wav` zachowuje cztery nuty prawdziwego ksylofonu, a na końcu ma ciche dzwonki (glockenspiel) i miękki pogłos/zanikanie. To około 1,85 sekundy; poprzednie brzmienie `xylophone-welcome.wav` zostaje do porównania. Próbki mają licencję CC0 z VSCO 2 Community Edition, szczegóły: `public/sounds/MAGICAL-SOURCE.md`.
+
+Poprzednia wersja bazowa: **prawdziwe nagranie ksylofonu**: krótka pogodna czteronutowa melodyjka z sampli akustycznego instrumentu (około 1,3 sekundy). Źródłem jest **VSCO 2 Community Edition** nagrane przez Sama Gossnera i Simona Dalzella (CC0 1.0). Zmontowany plik `public/sounds/xylophone-welcome.wav` jest odtwarzany lokalnie, bez komputerowej imitacji ksylofonu. Szczegóły w `public/sounds/XYLOPHONE-SOURCE.md`. Przeglądarki mobilne nie pozwalają na niezapowiedziane odtwarzanie audio przy samym załadowaniu strony, dlatego powitanie słychać **przy pierwszym dotknięciu ekranu lub naciśnięciu klawisza po otwarciu aplikacji**. Działa raz na załadowanie strony; pierwsze zwykłe kliknięcie nie powinno nałożyć się na powitanie. Powitanie działa również offline po zapisaniu przez PWA.
+
+**Odsłuch na telefonie:** na stronie startowej dostępny jest przycisk **✨ Magisches Xylofon anhören** i **🎶 Vorherige Version anhören**, które pozwalają porównać dźwięk z poprzednią wersją bez przeładowywania strony. Pomaga to odróżnić problem pierwszego automatycznego odtwarzania od problemu z samym dźwiękiem. Włącz dźwięk w ustawieniach telefonu i aplikacji.
+
+Aplikacja zachowuje istniejący przełącznik **Ton / Sound**: po wyłączeniu dźwięku interfejs nie powinien odtwarzać nowych efektów, włącznie z powitaniem. Nie dodano zewnętrznych bibliotek ani serwisów audio.
+
+Przed publikacją należy odsłuchać wersję testową na telefonie, zwracając uwagę na kliknięcia wielu przycisków, kolorowanie, zdobywanie gwiazdek, otwieranie skrzyń i wyłączenie dźwięku.
