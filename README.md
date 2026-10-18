@@ -23,10 +23,13 @@ GitHub Actions uruchamia testy i kompilację przy otwieraniu pull requestów. Pr
 ## Zapisywanie danych
 
 - Profile, statystyki, gwiazdki i metadane galerii są przechowywane lokalnie w `localStorage`.
+- Zapisane gry edukacyjne (labirynty, wyszukiwanki, różnice, puzzle i malowanie po numerach) są przypisane do **konkretnego profilu dziecka**, a nie współdzielone na całym urządzeniu.
+- Przy pierwszym uruchomieniu po aktualizacji stare kolekcje są przypisywane do aktywnego profilu. Migracja wykonywana jest tylko raz, po potwierdzeniu zapisu danych profili. Stare klucze pozostają nietknięte, aby możliwy był powrót do wcześniejszej wersji.
 - Ukończone kolorowanki zapisują **rzeczywisty podgląd obrazka i warstwę rysowania** w IndexedDB, oddzielnie dla każdego profilu. Można je potem zobaczyć w galerii i ponownie otworzyć do malowania.
 - Dane **nie są synchronizowane między urządzeniami**. Wyczyszczenie danych witryny lub usunięcie aplikacji może spowodować utratę prac. Ważne obrazy można zapisać jako pliki na urządzeniu.
 - W razie braku miejsca lub niedostępności IndexedDB zapis ukończonej pracy zostanie wstrzymany i pokazany zostanie komunikat.
 - Starsze pozycje galerii mogą nadal pokazywać oryginalny szablon, ponieważ wcześniejsze wersje nie zapisywały namalowanych kolorów.
+- Pojedyncze dotknięcie pędzlem, magicznym pędzlem lub gumką również rysuje/wymazuje punkt. Zmiana rozmiaru płótna przywraca kolory synchronicznie, aby uniknąć nadpisania nowych ruchów.
 
 ## Panel rodzica
 
