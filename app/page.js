@@ -661,7 +661,7 @@ export default function Page(){
  const playSound=type=>{
   if(!soundEnabled||typeof window==="undefined")return;
   // Do not layer the very first click over the welcome animation.
-  if(type==="click"&&Date.now()-welcomePlayedAt.current<850)return;
+  if(type==="click"&&Date.now()-welcomePlayedAt.current<1200)return;
   // Keep rapid menu taps quiet instead of layering many effects.
   if(type==="click"||type==="color"){
    const now=typeof performance!=="undefined"?performance.now():Date.now();
@@ -2833,7 +2833,7 @@ export default function Page(){
      <div className="premiumHeroActions">
       <button className="primary" onClick={()=>open(dailyItem)}>🌟 Tages-Challenge</button>
       <button className="secondaryHeroBtn" onClick={()=>setScreen("library")}>📚 Bibliothek</button>
-      <button className="secondaryHeroBtn" data-welcome-preview="true" disabled={!soundEnabled} onClick={playWelcomePreview} title="Geräusch eines sich öffnenden Märchenbuchs abspielen">📖 Buch öffnen · Ton anhören</button>
+      <button className="secondaryHeroBtn" data-welcome-preview="true" disabled={!soundEnabled} onClick={playWelcomePreview} title="Fröhliche Trompeten-Fanfare abspielen">🎺 Trompete anhören</button>
      </div>
     </div>
     <div className="premiumHeroMascot" aria-hidden="true">
