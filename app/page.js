@@ -631,6 +631,7 @@ export default function Page(){
  const storybookContext=useRef(null);
  const lastSoundAt=useRef({});
  const welcomePlayedAt=useRef(0);
+ const welcomeAudio=useRef(null);
  const unlockStorybookAudio=()=>{
   if(typeof window==="undefined")return null;
   try{
@@ -647,13 +648,15 @@ export default function Page(){
    return context;
   }catch{return null}
  };
- const playRecordedWelcome=()=>{
+ const playRecordedWelcome=(variant="welcome")=>{
   if(typeof window==="undefined")return false;
-  const base=soundPool.current.welcome;
+  const base=soundPool.current[variant];
   if(!base)return false;
   try{
+   if(welcomeAudio.current){welcomeAudio.current.pause();welcomeAudio.current.currentTime=0;}
    const audio=base.cloneNode();
-   audio.volume=0.60;
+   audio.volume=variant==="welcomeOriginal"?0.60:0.56;
+   welcomeAudio.current=audio;
    audio.currentTime=0;
    const p=audio.play();
    if(p?.catch)p.catch(error=>console.warn("Malino: recorded xylophone could not play",error));
@@ -668,10 +671,14 @@ export default function Page(){
   if(!soundEnabled)return;
   playRecordedWelcome();
  };
+ const playOriginalWelcomePreview=()=>{
+  if(!soundEnabled)return;
+  playRecordedWelcome("welcomeOriginal");
+ };
  const playSound=type=>{
   if(!soundEnabled||typeof window==="undefined")return;
   // Do not layer the very first click over the welcome animation.
-  if(type==="click"&&Date.now()-welcomePlayedAt.current<1500)return;
+  if(type==="click"&&Date.now()-welcomePlayedAt.current<1950)return;
   // Keep rapid menu taps quiet instead of layering many effects.
   if(type==="click"||type==="color"){
    const now=typeof performance!=="undefined"?performance.now():Date.now();
@@ -752,11 +759,11 @@ export default function Page(){
   const chestTypes=["chest-creak","reward-boom","reward-fanfare","premium-chest-open","premium-reward-fanfare"];
   // Keep original WAVs as a fallback for older browsers or Web Audio errors.
   // The welcome uses real CC0 xylophone recordings; other small feedback remains synthetic.
-  const types=[...storybookSoundTypes.filter(type=>type!=="welcome"),...chestTypes,"welcome"];
+  const types=[...storybookSoundTypes,...chestTypes,"welcome","welcomeOriginal"];
   const pool={};
   types.forEach(type=>{
    try{
-    const audio=new Audio(type==="welcome"?"/sounds/xylophone-welcome.wav":`/sounds/${type}.wav`);
+    const audio=new Audio(type==="welcome"?"/sounds/magical-welcome.wav":type==="welcomeOriginal"?"/sounds/xylophone-welcome.wav":`/sounds/${type}.wav`);
     audio.preload=storybookSoundTypes.includes(type)&&type!=="welcome"?"none":"auto";
     if(type==="welcome"||!storybookSoundTypes.includes(type))audio.load();
     pool[type]=audio;
@@ -850,7 +857,7 @@ export default function Page(){
     unlockStorybookAudio();
     playRecordedWelcome();
    }
-   Object.entries(soundPool.current).filter(([type])=>!storybookSoundTypes.includes(type)).forEach(([,audio])=>{
+   Object.entries(soundPool.current).filter(([type])=>!storybookSoundTypes.includes(type)&&type!=="welcome"&&type!=="welcomeOriginal").forEach(([,audio])=>{
     try{
      const oldVolume=audio.volume;
      audio.volume=0;
@@ -2839,7 +2846,8 @@ export default function Page(){
      <div className="premiumHeroActions">
       <button className="primary" onClick={()=>open(dailyItem)}>🌟 Tages-Challenge</button>
       <button className="secondaryHeroBtn" onClick={()=>setScreen("library")}>📚 Bibliothek</button>
-      <button className="secondaryHeroBtn" data-welcome-preview="true" disabled={!soundEnabled} onClick={playWelcomePreview} title="Echtes Xylofon-Willkommenslied abspielen">🎶 Xylofon anhören</button>
+      <button className="secondaryHeroBtn" data-welcome-preview="true" disabled={!soundEnabled} onClick={playWelcomePreview} title="Xylofon mit leisen echten Glöckchen abspielen">✨ Magisches Xylofon anhören</button>
+      <button className="secondaryHeroBtn" data-welcome-preview="true" disabled={!soundEnabled} onClick={playOriginalWelcomePreview} title="Vorherige Version zum Vergleichen">🎶 Vorherige Version anhören</button>
      </div>
     </div>
     <div className="premiumHeroMascot" aria-hidden="true">
