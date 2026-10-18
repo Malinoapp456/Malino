@@ -3,6 +3,8 @@ import {forwardRef,useEffect,useImperativeHandle,useMemo,useRef,useState} from "
 import {advanceDailyUsage,hasVisiblePaint} from "../lib/progress.mjs";
 import {createPinRecord,verifyPinRecord,recordFailedPin,remainingPinLockMs} from "../lib/parent-pin.mjs";
 import {saveArtwork,loadArtwork,deleteProfileArtwork} from "../lib/artwork-storage.mjs";
+import {legacyActivityKeys,migrateLegacyActivities,profileActivities} from "../lib/profile-activities.mjs";
+import {dabStyle} from "../lib/paint-input.mjs";
 
 const items=[
 {id:"feuerwehrauto",name:"Feuerwehrauto im Einsatz",cat:"Fahrzeuge",emoji:"🚒",bg:"#ffe3d6",image:"/fahrzeuge/feuerwehrauto.webp",mode:"draw"},
@@ -95,6 +97,7 @@ function ArtworkThumb({it,profileId}){
  const [url,setUrl]=useState(null);
  useEffect(()=>{
   let active=true,blobUrl=null;
+  setUrl(null);
   loadArtwork(profileId,it.id).then(record=>{
    if(!active||!record?.preview)return;
    blobUrl=URL.createObjectURL(record.preview);
@@ -160,10 +163,12 @@ const RasterPainter=forwardRef(function RasterPainter({src,color,tool,onFeedback
  const sizeCanvas=()=>{
   const c=canvasRef.current,base=baseRef.current;if(!c||!base)return;
   const r=c.getBoundingClientRect();if(!r.width||!r.height)return;
-  const old=c.width&&c.height?c.toDataURL():null;
+  const old=c.width&&c.height?document.createElement("canvas"):null;
+  if(old){old.width=c.width;old.height=c.height;old.getContext("2d").drawImage(c,0,0)}
   c.width=Math.max(1,Math.round(r.width));c.height=Math.max(1,Math.round(r.height));base.width=c.width;base.height=c.height;
   const ctx=c.getContext("2d");ctx.lineCap="round";ctx.lineJoin="round";
-  if(old&&old!=="data:,"){const im=new Image();im.onload=()=>ctx.drawImage(im,0,0,c.width,c.height);im.src=old}
+  // Synchronous restore: asynchronous image decoding may overwrite a new stroke.
+  if(old)ctx.drawImage(old,0,0,c.width,c.height);
   requestAnimationFrame(drawBase);
  };
  useEffect(()=>{sizeCanvas();window.addEventListener("resize",sizeCanvas);return()=>window.removeEventListener("resize",sizeCanvas)},[src]);
@@ -210,7 +215,18 @@ const RasterPainter=forwardRef(function RasterPainter({src,color,tool,onFeedback
   if(painted>area*.62){undoStack.current.pop();onFeedback?.("leak");return}
   ctx.putImageData(img,0,0);celebrate(e);
  };
- const down=e=>{e.currentTarget.setPointerCapture?.(e.pointerId);if(tool==="fill"){fillAt(e);return}snapshot();drawing.current=true;last.current=point(e)};
+ const down=e=>{
+  e.currentTarget.setPointerCapture?.(e.pointerId);
+  if(tool==="fill"){fillAt(e);return}
+  snapshot();drawing.current=true;last.current=point(e);
+  // A child often taps without dragging. One touch must leave a visible dab.
+  const c=canvasRef.current,ctx=c.getContext("2d"),p=last.current;
+  const fit=fitRectRef.current||{x:0,y:0,w:c.width,h:c.height};
+  const {radius,composite,fill}=dabStyle(tool,color,magicHueRef.current);
+  ctx.save();ctx.beginPath();ctx.rect(fit.x,fit.y,fit.w,fit.h);ctx.clip();
+  ctx.globalCompositeOperation=composite;ctx.fillStyle=fill;
+  ctx.beginPath();ctx.arc(p.x,p.y,radius,0,Math.PI*2);ctx.fill();ctx.restore();
+ };
  const move=e=>{if(!drawing.current)return;const c=canvasRef.current,ctx=c.getContext("2d"),p=point(e),a=last.current,fit=fitRectRef.current||{x:0,y:0,w:c.width,h:c.height};ctx.save();ctx.beginPath();ctx.rect(fit.x,fit.y,fit.w,fit.h);ctx.clip();ctx.globalCompositeOperation=tool==="eraser"?"destination-out":"source-over";
  if(tool==="magic"){
   const hue=magicHueRef.current%360;
@@ -554,27 +570,22 @@ export default function Page(){
  const [craftImageId,setCraftImageId]=useState(null);
  const [craftPieces,setCraftPieces]=useState(6);
  const [craftStyle,setCraftStyle]=useState("bw");
- const [savedCraftPuzzles,setSavedCraftPuzzles]=useState([]);
  const [craftMode,setCraftMode]=useState("puzzle");
  const [mazeThemeId,setMazeThemeId]=useState("fox");
  const [mazeDifficulty,setMazeDifficulty]=useState("leicht");
  const [mazeSeed,setMazeSeed]=useState(2311);
- const [savedMazes,setSavedMazes]=useState([]);
  const [differenceThemeId,setDifferenceThemeId]=useState("farm");
  const [differenceDifficulty,setDifferenceDifficulty]=useState("leicht");
  const [differenceSeed,setDifferenceSeed]=useState(2401);
- const [savedDifferences,setSavedDifferences]=useState([]);
  const [hiddenThemeId,setHiddenThemeId]=useState("forest");
  const [hiddenDifficulty,setHiddenDifficulty]=useState("leicht");
  const [hiddenSeed,setHiddenSeed]=useState(2501);
- const [savedHidden,setSavedHidden]=useState([]);
  const [hiddenFound,setHiddenFound]=useState([]);
  const [hiddenMiss,setHiddenMiss]=useState(null);
  const [hiddenComplete,setHiddenComplete]=useState(false);
  const [numberThemeId,setNumberThemeId]=useState("malino");
  const [numberDifficulty,setNumberDifficulty]=useState("leicht");
  const [numberPainted,setNumberPainted]=useState([]);
- const [savedNumberArt,setSavedNumberArt]=useState([]);
  const [selectedNumber,setSelectedNumber]=useState(1);
  const [numberFloodTotal,setNumberFloodTotal]=useState(1);
 
@@ -635,6 +646,12 @@ export default function Page(){
    const storedProfiles=localStorage.getItem("malino:profiles:v1");
    const storedActive=localStorage.getItem("malino:activeProfile:v1");
    const storedData=localStorage.getItem("malino:profileData:v1");
+   const legacyActivities={};
+   if(localStorage.getItem("malino:activityMigration:v1")!=="done"){
+    for(const [field,key] of Object.entries(legacyActivityKeys)){
+     try{const raw=localStorage.getItem(key);if(raw!==null)legacyActivities[field]=JSON.parse(raw)}catch{}
+    }
+   }
 
    if(storedProfiles&&storedData){
     const parsedProfiles=JSON.parse(storedProfiles);
@@ -643,7 +660,7 @@ export default function Page(){
     const safeActive=safeProfiles.some(p=>p.id===storedActive)?storedActive:safeProfiles[0].id;
     setProfiles(safeProfiles);
     setActiveProfileId(safeActive);
-    setProfileData(parsedData&&typeof parsedData==="object"?parsedData:{[safeActive]:emptyProfileData()});
+    setProfileData(migrateLegacyActivities(parsedData&&typeof parsedData==="object"?parsedData:{[safeActive]:emptyProfileData()},safeActive,legacyActivities));
    }else{
     const readLegacy=(key,fallback)=>{
      try{
@@ -661,7 +678,7 @@ export default function Page(){
     }:emptyProfileData();
     setProfiles([{id:"default",name:hasLegacy?"Aktuelles Profil":"Kind 1"}]);
     setActiveProfileId("default");
-    setProfileData({default:migrated});
+    setProfileData(migrateLegacyActivities({default:migrated},"default",legacyActivities));
    }
   }catch{
    setProfiles([{id:"default",name:"Kind 1"}]);
@@ -723,16 +740,6 @@ export default function Page(){
    setScreenTimeLimit(Number.isFinite(limit)?limit:0);
    const anim=localStorage.getItem("malino:animations:v1");
    if(anim!==null)setAnimationsEnabled(anim!=="off");
-   const numberArt=localStorage.getItem("malino:numberArt:v1");
-   if(numberArt){try{setSavedNumberArt(JSON.parse(numberArt)||[])}catch{}}
-   const hidden=localStorage.getItem("malino:hidden:v1");
-   if(hidden){try{setSavedHidden(JSON.parse(hidden)||[])}catch{}}
-   const diffs=localStorage.getItem("malino:differences:v1");
-   if(diffs){try{setSavedDifferences(JSON.parse(diffs)||[])}catch{}}
-   const mazes=localStorage.getItem("malino:mazes:v1");
-   if(mazes){try{setSavedMazes(JSON.parse(mazes)||[])}catch{}}
-   const crafts=localStorage.getItem("malino:craftPuzzles:v1");
-   if(crafts){try{setSavedCraftPuzzles(JSON.parse(crafts)||[])}catch{}}
    const snd=localStorage.getItem("malino:sound:v1");
    if(snd!==null)setSoundEnabled(snd!=="off");
    const key=new Date().toLocaleDateString("sv-SE");
@@ -755,24 +762,6 @@ export default function Page(){
  useEffect(()=>{
   try{localStorage.setItem("malino:sound:v1",soundEnabled?"on":"off")}catch{}
  },[soundEnabled]);
-
- useEffect(()=>{
-  try{localStorage.setItem("malino:craftPuzzles:v1",JSON.stringify(savedCraftPuzzles))}catch{}
- },[savedCraftPuzzles]);
-
- useEffect(()=>{
-  try{localStorage.setItem("malino:mazes:v1",JSON.stringify(savedMazes))}catch{}
- },[savedMazes]);
-
- useEffect(()=>{
-  try{localStorage.setItem("malino:differences:v1",JSON.stringify(savedDifferences))}catch{}
- },[savedDifferences]);
-
- useEffect(()=>{
-  try{localStorage.setItem("malino:hidden:v1",JSON.stringify(savedHidden))}catch{}
- },[savedHidden]);
-
- useEffect(()=>{try{localStorage.setItem("malino:numberArt:v1",JSON.stringify(savedNumberArt))}catch{}},[savedNumberArt]);
 
  useEffect(()=>{
   setHiddenFound([]);
@@ -853,11 +842,14 @@ export default function Page(){
    localStorage.setItem("malino:profiles:v1",JSON.stringify(profiles));
    localStorage.setItem("malino:activeProfile:v1",activeProfileId);
    localStorage.setItem("malino:profileData:v1",JSON.stringify(profileData));
+    // Only mark the migration complete after its profile records are persisted.
+    localStorage.setItem("malino:activityMigration:v1","done");
   }catch{}
  },[profiles,activeProfileId,profileData,profilesReady]);
 
  const activeProfile=profiles.find(p=>p.id===activeProfileId)||profiles[0]||{id:"default",name:"Kind 1"};
  const activeData=profileData[activeProfileId]||emptyProfileData();
+ const {savedCraftPuzzles,savedMazes,savedDifferences,savedHidden,savedNumberArt}=profileActivities(profileData,activeProfileId);
  const fav=activeData.fav||[];
  const done=activeData.done||[];
  const gallery=activeData.gallery||[];
@@ -1823,6 +1815,11 @@ export default function Page(){
  const setHiddenSolved=value=>updateProfileField("hiddenSolved",value);
  const setDailyStreak=value=>updateProfileField("dailyStreak",value);
  const setLastDailyDate=value=>updateProfileField("lastDailyDate",value);
+ const setSavedCraftPuzzles=value=>updateProfileField("savedCraftPuzzles",value);
+ const setSavedMazes=value=>updateProfileField("savedMazes",value);
+ const setSavedDifferences=value=>updateProfileField("savedDifferences",value);
+ const setSavedHidden=value=>updateProfileField("savedHidden",value);
+ const setSavedNumberArt=value=>updateProfileField("savedNumberArt",value);
 
  const paintNumberCell=(cell,totalOverride)=>{
   if(numberPainted.includes(cell.id))return;
