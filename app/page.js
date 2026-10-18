@@ -653,14 +653,14 @@ export default function Page(){
   if(!base)return false;
   try{
    const audio=base.cloneNode();
-   audio.volume=0.67;
+   audio.volume=0.60;
    audio.currentTime=0;
    const p=audio.play();
-   if(p?.catch)p.catch(error=>console.warn("Malino: recorded trumpet could not play",error));
+   if(p?.catch)p.catch(error=>console.warn("Malino: recorded xylophone could not play",error));
    welcomePlayedAt.current=Date.now();
    return true;
   }catch(error){
-   console.warn("Malino: recorded trumpet unavailable",error);
+   console.warn("Malino: recorded xylophone unavailable",error);
    return false;
   }
  };
@@ -751,12 +751,12 @@ export default function Page(){
   if(typeof window==="undefined")return;
   const chestTypes=["chest-creak","reward-boom","reward-fanfare","premium-chest-open","premium-reward-fanfare"];
   // Keep original WAVs as a fallback for older browsers or Web Audio errors.
-  // The welcome uses real CC0 trumpet recordings; other small feedback remains synthetic.
+  // The welcome uses real CC0 xylophone recordings; other small feedback remains synthetic.
   const types=[...storybookSoundTypes.filter(type=>type!=="welcome"),...chestTypes,"welcome"];
   const pool={};
   types.forEach(type=>{
    try{
-    const audio=new Audio(type==="welcome"?"/sounds/trumpet-welcome.wav":`/sounds/${type}.wav`);
+    const audio=new Audio(type==="welcome"?"/sounds/xylophone-welcome.wav":`/sounds/${type}.wav`);
     audio.preload=storybookSoundTypes.includes(type)&&type!=="welcome"?"none":"auto";
     if(type==="welcome"||!storybookSoundTypes.includes(type))audio.load();
     pool[type]=audio;
@@ -2839,7 +2839,7 @@ export default function Page(){
      <div className="premiumHeroActions">
       <button className="primary" onClick={()=>open(dailyItem)}>🌟 Tages-Challenge</button>
       <button className="secondaryHeroBtn" onClick={()=>setScreen("library")}>📚 Bibliothek</button>
-      <button className="secondaryHeroBtn" data-welcome-preview="true" disabled={!soundEnabled} onClick={playWelcomePreview} title="Echte Trompetenaufnahme abspielen">🎺 Echte Trompete anhören</button>
+      <button className="secondaryHeroBtn" data-welcome-preview="true" disabled={!soundEnabled} onClick={playWelcomePreview} title="Echtes Xylofon-Willkommenslied abspielen">🎶 Xylofon anhören</button>
      </div>
     </div>
     <div className="premiumHeroMascot" aria-hidden="true">
