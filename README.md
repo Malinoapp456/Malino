@@ -43,7 +43,7 @@ Dzienny limit czasu zeruje się po zmianie dnia kalendarzowego, również gdy ka
 
 ## Dźwięki — wersja testowa
 
-Codzienne efekty kliknięć, wyboru koloru, sukcesu, gwiazdek i serii są odtwarzane lokalnie przez Web Audio. Wykorzystują krótkie, ciche nuty o miękkim ataku i wybrzmiewaniu, inspirowane kalimbą i drewnianymi instrumentami. Pliki WAV nadal służą do wyjątkowych animacji skrzyń oraz jako awaryjna ścieżka na starszych urządzeniach.
+Codzienne efekty kliknięć, wyboru koloru, sukcesu, gwiazdek i serii są odtwarzane lokalnie przez Web Audio. W wersji bajkowej kliknięcie przypomina ciche «puf», wybór koloru — bąbelek, sukces — drewniany dźwięk z magicznym dzwoneczkiem, a gwiazdki — drobny rozświetlony pył. Seriom towarzyszy łagodny ptasi gwizd, nagrodzie dyskretny magiczny szelest. Brzmienia są krótkie, stonowane i różnią się barwą, zamiast korzystać z jednego syntezatorowego sygnału. To syntezowane efekty, nie nagrania natury. Pliki WAV nadal służą do wyjątkowych animacji skrzyń oraz jako awaryjna ścieżka na starszych urządzeniach.
 
 Aplikacja zachowuje istniejący przełącznik **Ton / Sound**: po wyłączeniu dźwięku interfejs nie powinien odtwarzać nowych efektów. Nie dodano zewnętrznych bibliotek ani serwisów audio.
 
