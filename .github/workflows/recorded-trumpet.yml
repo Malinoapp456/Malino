@@ -1,0 +1,41 @@
+name: Build sampled trumpet preview asset
+
+on:
+  push:
+    branches:
+      - feat/storybook-sound-design-20261018
+    paths:
+      - .github/workflows/recorded-trumpet.yml
+
+permissions:
+  contents: write
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Assemble real instrument sample
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE='https://raw.githubusercontent.com/sgossner/VSCO-2-CE/440300901dfe9275fd84e0b7763af1f8443ae62e/Brass/Trumpet'
+          curl -fsSL --retry 3 --max-time 30 "${SOURCE}/stac/Sum_SHTrumpet_stac_F4_v1_rr1.wav" -o /tmp/trumpet-f4.wav
+          curl -fsSL --retry 3 --max-time 30 "${SOURCE}/stac/Sum_SHTrumpet_stac_A4_v1_rr1.wav" -o /tmp/trumpet-a4.wav
+          curl -fsSL --retry 3 --max-time 30 "${SOURCE}/stac/Sum_SHTrumpet_stac_C5_v1_rr1.wav" -o /tmp/trumpet-c5.wav
+          curl -fsSL --retry 3 --max-time 30 "${SOURCE}/sus/Sum_SHTrumpet_sus_C5_v3_rr1.wav" -o /tmp/trumpet-c5-sus.wav
+          mkdir -p public/sounds
+          ffmpeg -hide_banner -loglevel error -y \
+            -i /tmp/trumpet-f4.wav -i /tmp/trumpet-a4.wav \
+            -i /tmp/trumpet-c5.wav -i /tmp/trumpet-c5-sus.wav \
+            -filter_complex "[0:a]aresample=24000,aformat=channel_layouts=mono,silenceremove=start_periods=1:start_threshold=-40dB,atrim=duration=0.24,asetpts=PTS-STARTPTS,afade=t=in:st=0:d=0.012,afade=t=out:st=0.17:d=0.07,adelay=0:all=1[v0];[1:a]aresample=24000,aformat=channel_layouts=mono,silenceremove=start_periods=1:start_threshold=-40dB,atrim=duration=0.25,asetpts=PTS-STARTPTS,afade=t=in:st=0:d=0.012,afade=t=out:st=0.18:d=0.07,adelay=235:all=1[v1];[2:a]aresample=24000,aformat=channel_layouts=mono,silenceremove=start_periods=1:start_threshold=-40dB,atrim=duration=0.25,asetpts=PTS-STARTPTS,afade=t=in:st=0:d=0.012,afade=t=out:st=0.18:d=0.07,adelay=470:all=1[v2];[3:a]aresample=24000,aformat=channel_layouts=mono,silenceremove=start_periods=1:start_threshold=-40dB,asetrate=32016,aresample=24000,atrim=duration=0.52,asetpts=PTS-STARTPTS,afade=t=in:st=0:d=0.018,afade=t=out:st=0.44:d=0.08,adelay=730:all=1[v3];[v0][v1][v2][v3]amix=inputs=4:duration=longest:normalize=0,volume=1.25,alimiter=limit=0.86[out]" \
+            -map "[out]" -ac 1 -ar 24000 -c:a pcm_s16le public/sounds/trumpet-welcome.wav
+          test -s public/sounds/trumpet-welcome.wav
+          ffprobe -v error -show_entries format=duration,size -of default=nw=1 public/sounds/trumpet-welcome.wav
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/sounds/trumpet-welcome.wav
+          git commit -m "Add CC0 recorded trumpet fanfare (VSCO 2 Community Edition)"
+          git push origin HEAD:feat/storybook-sound-design-20261018
