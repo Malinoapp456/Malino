@@ -1,0 +1,22 @@
+name: Malino checks
+on:
+  pull_request:
+  push:
+    branches:
+      - fix/child-progress-parental-controls-20261018
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install
+        run: npm install --no-audit --no-fund
+      - name: Unit tests
+        run: npm test
+      - name: Next.js build
+        run: npm run build
