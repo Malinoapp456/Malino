@@ -647,6 +647,17 @@ export default function Page(){
    return context;
   }catch{return null}
  };
+ const playWelcomePreview=()=>{
+  if(!soundEnabled||typeof window==="undefined")return;
+  const context=unlockStorybookAudio();
+  if(!context)return;
+  try{
+   // Replaying from a deliberate tap also works after mobile autoplay restrictions.
+   if(playStorybookSound(context,"welcome")){
+    welcomePlayedAt.current=Date.now();
+   }
+  }catch(error){console.warn("Malino: book preview unavailable",error)}
+ };
  const playSound=type=>{
   if(!soundEnabled||typeof window==="undefined")return;
   // Do not layer the very first click over the welcome animation.
@@ -813,8 +824,13 @@ export default function Page(){
  useEffect(()=>{
   if(typeof document==="undefined")return;
   let primed=false;
-  const prime=()=>{
+  const prime=event=>{
    if(primed)return;
+   // Preview button plays the sound itself; avoid two overlapping book effects.
+   if(event.target?.closest?.("[data-welcome-preview]")){
+    primed=true;
+    return;
+   }
    primed=true;
    // Mobile browsers block autoplay until an actual user gesture.
    // Respect the saved mute setting even before the first React state update.
@@ -2816,6 +2832,7 @@ export default function Page(){
      <div className="premiumHeroActions">
       <button className="primary" onClick={()=>open(dailyItem)}>🌟 Tages-Challenge</button>
       <button className="secondaryHeroBtn" onClick={()=>setScreen("library")}>📚 Bibliothek</button>
+      <button className="secondaryHeroBtn" data-welcome-preview="true" disabled={!soundEnabled} onClick={playWelcomePreview} title="Geräusch eines sich öffnenden Märchenbuchs abspielen">📖 Buch öffnen · Ton anhören</button>
      </div>
     </div>
     <div className="premiumHeroMascot" aria-hidden="true">
