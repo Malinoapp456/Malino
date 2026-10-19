@@ -2016,41 +2016,46 @@ export default function Page(){
 
    ctx.textAlign="center";
    ctx.fillStyle="#6a7d96";ctx.font="700 24px system-ui";
-   ctx.fillText("MALINO · Basteln & Spielen",W/2,58);
+   ctx.fillText(language==="pl"?"MALINO · Twórz i baw się":"MALINO · Basteln & Spielen",W/2,58);
    ctx.fillStyle="#173d78";ctx.font="800 38px system-ui";
-   ctx.fillText(`🔎 Unterschiede finden – ${activeDifferenceTheme.title}`,W/2,108);
+   ctx.fillText(`${language==="pl"?"Znajdź różnice":"Unterschiede finden"} – ${translateGerman(activeDifferenceTheme.title,language)}`,W/2,108);
    ctx.fillStyle="#5c6e87";ctx.font="500 21px system-ui";
-   ctx.fillText(`${activeDifferenceDifficulty.label} · Finde ${activeDifferenceDifficulty.count} Unterschiede.`,W/2,148);
+   ctx.fillText(`${translateGerman(activeDifferenceDifficulty.label,language)} · ${language==="pl"?`Znajdź ${activeDifferenceDifficulty.count} różnic.`:`Finde ${activeDifferenceDifficulty.count} Unterschiede.`}`,W/2,148);
 
-   const panelW=500,panelH=780,gap=46,py=210;
-   const leftX=(W-panelW*2-gap)/2,rightX=leftX+panelW+gap;
+   // Two large horizontal scenes stacked on A4. All nine items remain
+   // visible (the old PDF rendered only two rows and lost the third row).
+   const panelX=130,panelW=980,panelH=530,firstY=210,secondY=785;
+   const artwork=document.querySelector(".differenceArtImage");
+   const drawPanel=(top,tokens,label)=>{
+    ctx.fillStyle="#edf9ef";ctx.fillRect(panelX,top,panelW,panelH);
+    if(artwork?.complete&&artwork.naturalWidth>0){
+     ctx.drawImage(artwork,panelX,top+47,panelW,panelH-47);
+    }
+    ctx.strokeStyle="#a1c8b9";ctx.lineWidth=4;ctx.strokeRect(panelX,top,panelW,panelH);
+    ctx.fillStyle="#173d78";ctx.font="800 26px system-ui";ctx.textAlign="center";
+    ctx.fillText(label,panelX+panelW/2,top+32);
 
-   const drawPanel=(x,tokens,label)=>{
-    ctx.fillStyle="#fbfdff";ctx.fillRect(x,py,panelW,panelH);
-    ctx.strokeStyle="#173d78";ctx.lineWidth=4;ctx.strokeRect(x,py,panelW,panelH);
-    ctx.fillStyle="#173d78";ctx.font="800 22px system-ui";ctx.textAlign="center";
-    ctx.fillText(label,x+panelW/2,py+40);
-
-    const cols=3,rows=2,cellW=panelW/cols,cellH=(panelH-70)/rows;
+    const cellW=panelW/3,cellH=(panelH-47)/3;
     tokens.forEach((tok,i)=>{
-     const cx=x+(i%cols)*cellW+cellW/2;
-     const cy=py+85+((i/cols)|0)*cellH+cellH/2;
-     ctx.font=`${Math.min(cellW,cellH)*.48}px system-ui`;
+     const cx=panelX+(i%3+.5)*cellW;
+     const cy=top+47+(Math.floor(i/3)+.5)*cellH;
+     ctx.fillStyle="rgba(255,255,255,0.72)";
+     ctx.beginPath();ctx.arc(cx,cy,57,0,Math.PI*2);ctx.fill();
+     ctx.font="80px system-ui";ctx.textAlign="center";ctx.textBaseline="middle";
      ctx.fillText(tok,cx,cy);
     });
+    ctx.textBaseline="alphabetic";
    };
+   drawPanel(firstY,differenceTokens,language==="pl"?"Obrazek A":"Bild A");
+   drawPanel(secondY,changedDifferenceTokens,language==="pl"?"Obrazek B":"Bild B");
 
-   drawPanel(leftX,differenceTokens,"Bild A");
-   drawPanel(rightX,changedDifferenceTokens,"Bild B");
-
-   ctx.fillStyle="#6b7787";ctx.font="600 20px system-ui";
-   ctx.fillText(`A4   •   ${activeDifferenceDifficulty.label}   •   ${activeDifferenceDifficulty.count} Unterschiede`,W/2,py+panelH+55);
-
-   ctx.fillStyle="#173d78";ctx.font="800 22px system-ui";
-   ctx.fillText("Kreise die Unterschiede auf Bild B ein.",W/2,py+panelH+100);
+   ctx.fillStyle="#6b7787";ctx.font="600 22px system-ui";
+   ctx.fillText(`A4 · ${translateGerman(activeDifferenceDifficulty.label,language)} · ${activeDifferenceDifficulty.count} ${language==="pl"?"różnic":"Unterschiede"}`,W/2,1390);
+   ctx.fillStyle="#173d78";ctx.font="800 25px system-ui";
+   ctx.fillText(language==="pl"?"Zakreśl różnice na obrazku B.":"Kreise die Unterschiede auf Bild B ein.",W/2,1450);
 
    ctx.fillStyle="#8a96a5";ctx.font="500 16px system-ui";
-   ctx.fillText("Malino – kreative Spielzeit ohne Bildschirm",W/2,H-35);
+   ctx.fillText(language==="pl"?"Malino – kreatywna zabawa bez ekranu":"Malino – kreative Spielzeit ohne Bildschirm",W/2,H-35);
 
    const jpegData=canvas.toDataURL("image/jpeg",0.95);
    const b64=jpegData.split(",")[1],bin=atob(b64),jpg=new Uint8Array(bin.length);
@@ -2077,7 +2082,7 @@ export default function Page(){
    const blob=new Blob([pdf],{type:"application/pdf"});
    const file=new File([blob],`malino-unterschiede-${activeDifferenceTheme.id}-${differenceDifficulty}.pdf`,{type:"application/pdf"});
    if(navigator.share&&navigator.canShare?.({files:[file]})){
-    navigator.share({files:[file],title:`Malino – ${activeDifferenceTheme.title}`,text:"Malino – Unterschiede finden"}).catch(()=>{});
+    navigator.share({files:[file],title:`Malino – ${translateGerman(activeDifferenceTheme.title,language)}`,text:language==="pl"?"Malino – Znajdź różnice":"Malino – Unterschiede finden"}).catch(()=>{});
    }else{
     const url=URL.createObjectURL(blob),a=document.createElement("a");
     a.href=url;a.download=file.name;a.target="_blank";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();
