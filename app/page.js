@@ -1963,20 +1963,27 @@ export default function Page(){
   setSavedHidden([item,...savedHidden].slice(0,18));playSound("success");
  };
  const newHiddenVariant=()=>{setHiddenFound([]);setHiddenComplete(false);setHiddenMiss(null);setHiddenSeed(Math.floor(Date.now()%1000000000));playSound("click")};
- const shareHiddenPdf=()=>{
+ const shareHiddenPdf=async()=>{
   if(typeof window==="undefined")return;
   try{
    const W=1240,H=1754,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");if(!x)return;
    x.fillStyle="#fff";x.fillRect(0,0,W,H);x.textAlign="center";
-   x.fillStyle="#6a7d96";x.font="700 24px system-ui";x.fillText("MALINO · Basteln & Spielen",W/2,58);
-   x.fillStyle="#173d78";x.font="800 38px system-ui";x.fillText(`🔍 Versteckte Dinge – ${activeHiddenTheme.title}`,W/2,108);
-   x.fillStyle="#5c6e87";x.font="500 21px system-ui";x.fillText(`${activeHiddenDifficulty.label} · Finde ${activeHiddenDifficulty.count} Gegenstände.`,W/2,148);
+   const pdfText=value=>translateGerman(value,language);
+   x.fillStyle="#6a7d96";x.font="700 24px system-ui";x.fillText(pdfText("MALINO · Basteln & Spielen"),W/2,58);
+   x.fillStyle="#173d78";x.font="800 38px system-ui";x.fillText(`${pdfText("🔍 Versteckte Dinge")} – ${pdfText(activeHiddenTheme.title)}`,W/2,108);
+   x.fillStyle="#5c6e87";x.font="500 21px system-ui";x.fillText(`${pdfText(activeHiddenDifficulty.label)} · ${language==="pl"?`Znajdź ${activeHiddenDifficulty.count} przedmiotów.`:`Finde ${activeHiddenDifficulty.count} Gegenstände.`}`,W/2,148);
    const px=130,py=210,pw=980,ph=1050;
-   x.fillStyle="#f6fbf2";x.fillRect(px,py,pw,ph);x.strokeStyle="#173d78";x.lineWidth=4;x.strokeRect(px,py,pw,ph);
-   const bg=activeHiddenTheme.bg.split(" ");
-   bg.forEach((t,i)=>{const col=i%4,row=(i/4)|0;x.font="90px system-ui";x.fillText(t,px+125+col*245,py+170+row*280)});
-   hiddenPlacements.forEach(p=>{x.save();x.translate(px+p.x/100*pw,py+p.y/100*ph);x.rotate(p.r*Math.PI/180);x.font=`${58*p.s}px system-ui`;x.fillText(p.item,0,0);x.restore()});
-   x.fillStyle="#173d78";x.font="800 23px system-ui";x.fillText("Finde diese Gegenstände:",W/2,1325);
+   x.fillStyle="#f6fbf2";x.fillRect(px,py,pw,ph);
+   // Use the exact same self-contained scene artwork as the interactive board.
+   await new Promise(resolve=>{
+    const image=new Image();
+    image.onload=()=>{x.drawImage(image,px,py,pw,ph);resolve()};
+    image.onerror=()=>resolve();
+    image.src=hiddenSceneArt;
+   });
+   x.strokeStyle="#9cc8b8";x.lineWidth=4;x.strokeRect(px,py,pw,ph);
+   hiddenPlacements.forEach(p=>{x.save();x.translate(px+p.x/100*pw,py+p.y/100*ph);x.rotate(p.r*Math.PI/180);x.font=`${61*p.s}px system-ui`;x.textAlign="center";x.textBaseline="middle";x.fillText(p.item,0,0);x.restore()});
+   x.fillStyle="#173d78";x.font="800 23px system-ui";x.fillText(pdfText("Finde diese Gegenstände:"),W/2,1325);
    hiddenTargets.forEach((t,i)=>{x.font="46px system-ui";x.fillText(t,250+i*(740/Math.max(1,hiddenTargets.length-1)),1395)});
    x.fillStyle="#8a96a5";x.font="500 16px system-ui";x.fillText("Malino – kreative Spielzeit ohne Bildschirm",W/2,H-35);
    const data=c.toDataURL("image/jpeg",.95).split(",")[1],bin=atob(data),jpg=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)jpg[i]=bin.charCodeAt(i);
