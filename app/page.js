@@ -7,6 +7,7 @@ import {legacyActivityKeys,migrateLegacyActivities,profileActivities} from "../l
 import {dabStyle} from "../lib/paint-input.mjs";
 import {LANGUAGE_KEY,normalizedLanguage,installUiTranslation,translateGerman} from "../lib/i18n.mjs";
 import {worldStatus,worldProgressMessage,worldAccessibilityLabel} from "../lib/world-map.mjs";
+import {createHiddenPlacements,hiddenSceneDataUri} from "../lib/hidden-board.mjs";
 
 const items=[
 {id:"feuerwehrauto",name:"Feuerwehrauto im Einsatz",cat:"Fahrzeuge",emoji:"🚒",bg:"#ffe3d6",image:"/fahrzeuge/feuerwehrauto.webp",mode:"draw"},
@@ -1251,13 +1252,8 @@ export default function Page(){
  const activeHiddenDifficulty=hiddenDifficultyMeta[hiddenDifficulty]||hiddenDifficultyMeta.leicht;
  const hiddenTargets=activeHiddenTheme.items.slice(0,activeHiddenDifficulty.count);
  const hiddenHash=[...`${hiddenThemeId}-${hiddenDifficulty}-${hiddenSeed}`].reduce((a,ch)=>((a*33)^ch.charCodeAt(0))>>>0,5381);
- const hiddenPlacements=useMemo(()=>{
-  const rand=mazeRand(hiddenHash), out=[];
-  hiddenTargets.forEach((item,i)=>{
-   out.push({item,x:8+rand()*84,y:10+rand()*76,r:-18+rand()*36,s:.72+rand()*.34});
-  });
-  return out;
- },[hiddenThemeId,hiddenDifficulty,hiddenSeed]);
+ const hiddenPlacements=useMemo(()=>createHiddenPlacements(hiddenTargets,hiddenHash),[hiddenThemeId,hiddenDifficulty,hiddenSeed]);
+ const hiddenSceneArt=useMemo(()=>hiddenSceneDataUri(hiddenThemeId),[hiddenThemeId]);
  const hiddenBoardKey=`${hiddenThemeId}:${hiddenDifficulty}:${hiddenSeed}`;
  const hiddenAlreadySolved=hiddenSolved.includes(hiddenBoardKey);
  const robotNumberThemeId="robot";
@@ -2941,7 +2937,7 @@ export default function Page(){
 
   {screen==="crafts"&&<section className="craftPage">
    <div className="craftHero">
-    <div className="craftMascot"><img src="/malino-raetsel-mascot.png" alt="Malino"/></div>
+    <div className="craftMascot"><img src="/malino-hero-mascot.png" alt="Malino"/></div>
     <div>
      <span className="eyebrow">Kreativ ohne Bildschirm</span>
      <h1>Basteln & Spielen ✂️</h1>
@@ -3160,7 +3156,7 @@ export default function Page(){
      <aside className="hiddenSide">
       <div className="craftStepHead"><span>🔍</span><div><b>Versteckte Dinge</b><small>Finde die Gegenstände</small></div></div>
       <p>Tippe die versteckten Gegenstände direkt auf der Szene an. Gefundene Dinge bekommen ein ✓.</p>
-      <img src="/assets/malino-raetsel-mascot.png" alt="Malino" className="hiddenMascot"/>
+      <img src="/malino-hero-mascot.png" alt="Malino" className="hiddenMascot"/>
      </aside>
      <div className="hiddenMain">
       <div className="hiddenControls">
@@ -3169,7 +3165,7 @@ export default function Page(){
        <button className="mazeVariantBtn" onClick={newHiddenVariant}>🎲 Neue Variante</button>
       </div>
       <div className={`hiddenScene interactive ${hiddenMiss?"miss":""}`} onClick={tapHiddenMiss}>
-       <div className="hiddenBg">{activeHiddenTheme.bg.split(" ").map((t,i)=><span key={i}>{t}</span>)}</div>
+       <img className="hiddenSceneIllustration" src={hiddenSceneArt} draggable="false" alt="" aria-hidden="true"/>
        {hiddenPlacements.map((p,i)=>{
         const found=hiddenFound.includes(i);
         return <button
