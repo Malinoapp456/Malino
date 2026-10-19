@@ -85,6 +85,7 @@ test("DOM localization restores German and handles dynamically mounted screens a
  assert.equal(heading.nodeValue,"Witaj w Malino");
  // Inputs retain user data; placeholder is translated through the attribute layer.
  assert.equal(button.getAttribute("aria-label"),"Usuń");
+ assert.equal(input.getAttribute("placeholder"),"np. Mia");
  const dynamic=new FakeElement("div");
  const newText=makeText("Bildschirmzeit");
  dynamic.appendChild(newText);
@@ -97,6 +98,7 @@ test("DOM localization restores German and handles dynamically mounted screens a
  assert.equal(heading.nodeValue,"Willkommen bei Malino");
  assert.equal(newText.nodeValue,"Bildschirmzeit");
  assert.equal(button.getAttribute("aria-label"),"Löschen");
+ assert.equal(input.getAttribute("placeholder"),"z. B. Mia");
  stopDe();
 });
 
