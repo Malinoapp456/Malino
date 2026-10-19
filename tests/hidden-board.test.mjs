@@ -61,7 +61,8 @@ test("app displays the correct Malino and renders identical scene artwork into P
  assert.ok(hidden.includes('src="/malino-hero-mascot.png"'));
  assert.ok(hidden.includes('src={hiddenSceneArt}'));
  assert.ok(!hidden.includes('activeHiddenTheme.bg.split(" ")'));
- assert.ok(source.includes('image.src=hiddenSceneArt'));
+ assert.ok(source.includes('document.querySelector(".hiddenSceneIllustration")'));
+ assert.ok(!source.includes('const shareHiddenPdf=async()=>'))
  assert.ok(source.includes('x.drawImage(image,px,py,pw,ph)'));
  assert.ok(source.includes('createHiddenPlacements(hiddenTargets,hiddenHash)'));
  assert.ok(source.includes('tapHiddenTarget(p.item,i)'));
