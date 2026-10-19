@@ -5,7 +5,8 @@ import {createPinRecord,verifyPinRecord,recordFailedPin,remainingPinLockMs} from
 import {saveArtwork,loadArtwork,deleteProfileArtwork} from "../lib/artwork-storage.mjs";
 import {legacyActivityKeys,migrateLegacyActivities,profileActivities} from "../lib/profile-activities.mjs";
 import {dabStyle} from "../lib/paint-input.mjs";
-import {LANGUAGE_KEY,normalizedLanguage,installUiTranslation} from "../lib/i18n.mjs";
+import {LANGUAGE_KEY,normalizedLanguage,installUiTranslation,translateGerman} from "../lib/i18n.mjs";
+import {worldStatus,worldProgressMessage,worldAccessibilityLabel} from "../lib/world-map.mjs";
 
 const items=[
 {id:"feuerwehrauto",name:"Feuerwehrauto im Einsatz",cat:"Fahrzeuge",emoji:"🚒",bg:"#ffe3d6",image:"/fahrzeuge/feuerwehrauto.webp",mode:"draw"},
@@ -538,6 +539,45 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
  return <div className="numberFloodBoard">
   <canvas ref={canvasRef} onClick={tap} aria-label="Malino Malen nach Zahlen"/>
  </div>
+}
+
+function WorldIllustration({id}){
+ return <svg className="worldIllustration" viewBox="0 0 96 96" aria-hidden="true" focusable="false">
+  <circle cx="48" cy="48" r="44" fill={id==="logic"?"#dff4d5":id==="numbers"?"#dceeff":id==="letters"?"#fff0d7":id==="colors"?"#e3f7f4":"#f2e6ff"}/>
+  {id==="logic"&&<g stroke="#456c43" strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round">
+   <path d="M46 54v23M35 76h22" stroke="#996638" strokeWidth="9"/>
+   <path d="M22 51q-9-16 7-24 1-19 20-17 19-2 22 17 17 6 8 24-12 12-28 8-17 9-29-8Z" fill="#77c66b"/>
+   <path d="M32 31q9-11 21-7M59 37q9 5 7 14" fill="none" stroke="#b3e69b"/>
+  </g>}
+  {id==="numbers"&&<g stroke="#617f9b" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round">
+   <path d="M10 70 36 24l14 23 11-16 26 39Z" fill="#91c7ed"/>
+   <path d="m26 42 10-18 14 23-13-4-8 9Z" fill="#fff"/>
+   <path d="m52 44 9-13 13 20-12-5-5 8Z" fill="#fff"/>
+   <path d="M10 70h77" stroke="#79ad82" strokeWidth="5"/>
+  </g>}
+  {id==="letters"&&<g stroke="#94664f" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round">
+   <path d="M15 46 34 30l19 16v30H15Z" fill="#ffe2a2"/>
+   <path d="m10 46 24-22 24 22" fill="none" stroke="#d67a74" strokeWidth="8"/>
+   <path d="M27 76V54h14v22" fill="#bde8ec"/>
+   <path d="M50 42 67 27l17 15v34H50Z" fill="#cbe8fd"/>
+   <path d="m46 42 21-19 21 19" stroke="#a675b9" strokeWidth="7" fill="none"/>
+   <rect x="60" y="52" width="11" height="12" rx="2" fill="#fff"/>
+  </g>}
+  {id==="colors"&&<g strokeWidth="3" strokeLinejoin="round" strokeLinecap="round">
+   <path d="M8 70Q23 55 48 59q26-5 40 11v8H8Z" fill="#f4dda1" stroke="#c5ad77"/>
+   <path d="M8 68q16-12 32-6 21 10 48 6" fill="none" stroke="#5fc5dc" strokeWidth="7"/>
+   <path d="M47 62V29" stroke="#99764d" strokeWidth="5"/>
+   <path d="M48 29Q22 21 20 47q19-12 28-18ZM48 29q7-21 26-12-7 19-26 12ZM48 29q21 0 27 20-22-4-27-20" fill="#71c67c" stroke="#478f55"/>
+  </g>}
+  {id==="magic"&&<g stroke="#9064a1" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round">
+   <path d="M15 76V41h17V26h14v15h10V26h15v15h11v35Z" fill="#e3b8f5"/>
+   <path d="m13 41 10-12 9 12m24 0 8-12 9 12" fill="#bc8edb"/>
+   <path d="M39 76V58q10-14 20 0v18" fill="#8b66ac"/>
+   <rect x="22" y="48" width="9" height="11" rx="3" fill="#fff"/>
+   <rect x="65" y="48" width="9" height="11" rx="3" fill="#fff"/>
+   <path d="M48 10v9M43.5 14.5h9" stroke="#e0b253" strokeWidth="4"/>
+  </g>}
+ </svg>
 }
 
 export default function Page(){
@@ -1103,6 +1143,7 @@ export default function Page(){
  const worldUnlocked=world=>solvedPuzzleCount>=world.unlock;
  const currentPuzzleWorld=activePuzzleWorld?puzzleWorlds.find(w=>w.id===activePuzzleWorld):null;
  const currentWorldPuzzles=currentPuzzleWorld?currentPuzzleWorld.ids.map(id=>puzzleCards.find(p=>p.id===id)).filter(Boolean):[];
+ const puzzleText=value=>translateGerman(value,language);
  const craftTemplates=[
   {id:"rakete",title:"Rakete",emoji:"🚀",srcBw:"/puzzle-rakete.png",srcColor:"/puzzle-rakete-color.png",w:1086,h:1448},
   {id:"triceratops",title:"Triceratops",emoji:"🦕",srcBw:"/puzzle-triceratops.png",srcColor:"/puzzle-triceratops-color.png",w:1086,h:1448},
@@ -3278,7 +3319,7 @@ export default function Page(){
 
   {screen==="puzzles"&&<section className="puzzlePage puzzleWorldPage">
    {!activePuzzleWorld&&!activePuzzle&&<>
-    <div className="worldMapHero">
+    <div className="worldMapHero worldMapRefined">
      <div className="worldMapTitle">
       <span>⭐ Entdecke 5 zauberhafte Welten! ⭐</span>
       <h1>Rätsel & Rebusse</h1>
@@ -3286,36 +3327,40 @@ export default function Page(){
      <div className="worldMapScore"><span>⭐</span><b>{stars}</b></div>
 
      <div className="worldMapScene">
-      <div className="worldCloud cloudOne">☁️</div><div className="worldCloud cloudTwo">☁️</div>
-      <div className="worldPath pathOne"/><div className="worldPath pathTwo"/><div className="worldPath pathThree"/>
-
+      <svg className="worldRoute" viewBox="0 0 900 800" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+       <path className="worldRouteBorder" d="M225 125 C370 95 555 95 675 125 S785 250 675 355 S365 250 225 355 S125 495 225 555 S535 465 675 555 S665 665 450 713"/>
+       <path className="worldRouteInner" d="M225 125 C370 95 555 95 675 125 S785 250 675 355 S365 250 225 355 S125 495 225 555 S535 465 675 555 S665 665 450 713"/>
+      </svg>
+      <div className="worldNodesGrid">
       {puzzleWorlds.map(world=>{
        const solved=worldSolvedCount(world);
        const unlocked=worldUnlocked(world);
        return <button key={world.id}
         className={`worldNode worldNode${world.number} ${unlocked?"unlocked":"locked"} ${solved===world.ids.length?"complete":""}`}
+        aria-label={worldAccessibilityLabel(language==="pl"?({logic:"Las logiki",numbers:"Góry liczb",letters:"Wioska liter",colors:"Wyspa kolorów",magic:"Magiczny świat Malino"}[world.id]||world.title):world.title,solved,world.ids.length,unlocked,world.unlock,language)}
         onClick={()=>{
          if(!unlocked){playSound("click");return}
          setActivePuzzleWorld(world.id);setActivePuzzleId(null);setPuzzleFeedback(null);setPuzzleWrong(null);playSound("click");
         }}>
-        <span className="worldLandscape">{world.icon}</span>
+        <span className="worldLandscape"><WorldIllustration id={world.id}/></span>
         <span className="worldBadge">{world.number}</span>
-        <b>{world.title}</b>
+        <b>{puzzleText(world.title)}</b>
         <small>{world.emoji} {solved}/{world.ids.length}</small>
-        <em>{!unlocked?`🔒 ${world.unlock} Rätsel nötig`:solved===world.ids.length?"✓ Geschafft":"Öffnen ›"}</em>
+        <em>{worldStatus({solved,total:world.ids.length,unlocked,required:world.unlock},language)}</em>
        </button>
       })}
-
-      <div className="worldMalino">
-       <div className="worldSpeech">Wähle eine Welt und los geht’s! ❤️</div>
-       <img src="/malino-raetsel-mascot.png" alt="Malino"/>
       </div>
-
+     </div>
+     <div className="worldMapFooter">
+      <div className="worldMalino">
+       <img src="/malino-hero-mascot.png" alt="Malino" />
+       <div className="worldSpeech">Wähle eine Welt und los geht’s! ❤️</div>
+      </div>
       <div className="worldOverallProgress">
        <b>Dein Fortschritt</b>
        <strong>⭐ {solvedPuzzleCount}/{puzzleCards.length}</strong>
-       <div><i style={{width:`${Math.round((solvedPuzzleCount/puzzleCards.length)*100)}%`}}/></div>
-       <small>{solvedPuzzleCount===20?"Fantastisch! Alle Rätsel geschafft!":"Weiter so! Du bist auf einem tollen Weg!"}</small>
+       <div role="progressbar" aria-label={language==="pl"?"Postęp w zagadkach":"Rätsel-Fortschritt"} aria-valuemin={0} aria-valuemax={puzzleCards.length} aria-valuenow={solvedPuzzleCount}><i style={{width:`${Math.round((solvedPuzzleCount/puzzleCards.length)*100)}%`}}/></div>
+       <small>{worldProgressMessage(solvedPuzzleCount,puzzleCards.length,language)}</small>
       </div>
      </div>
     </div>
@@ -3326,11 +3371,11 @@ export default function Page(){
      <button className="worldBackBtn" onClick={()=>setActivePuzzleWorld(null)}>← Weltkarte</button>
      <div className="worldDetailIcon">{currentPuzzleWorld.icon}</div>
      <div>
-      <span className="eyebrow">Welt {currentPuzzleWorld.number} von 5</span>
-      <h1>{currentPuzzleWorld.title}</h1>
+      <span className="eyebrow">{language==="pl"?`Świat ${currentPuzzleWorld.number} z 5`:`Welt ${currentPuzzleWorld.number} von 5`}</span>
+      <h1>{puzzleText(currentPuzzleWorld.title)}</h1>
       <p>Löse alle 4 Aufgaben und sammle Sterne.</p>
      </div>
-     <div className="worldDetailProgress"><b>{worldSolvedCount(currentPuzzleWorld)}/4</b><small>gelöst</small></div>
+     <div className="worldDetailProgress"><b>{worldSolvedCount(currentPuzzleWorld)}/4</b><small>{language==="pl"?"rozwiązane":"gelöst"}</small></div>
     </div>
 
     <div className="worldLevelGrid">
@@ -3342,9 +3387,9 @@ export default function Page(){
       }}>
        <span className="worldLevelNo">{index+1}</span>
        <span className="worldLevelEmoji">{p.icon}</span>
-       <b>{p.title}</b>
-       <small>Aufgabe {globalIndex+1}</small>
-       <em>{solved?"✓ Gelöst":"+3 ⭐"}</em>
+       <b>{puzzleText(p.title)}</b>
+       <small>{language==="pl"?`Zadanie ${globalIndex+1}`:`Aufgabe ${globalIndex+1}`}</small>
+       <em>{solved?(language==="pl"?"✓ Rozwiązane":"✓ Gelöst"):"+3 ⭐"}</em>
       </button>
      })}
     </div>
@@ -3365,28 +3410,28 @@ export default function Page(){
     const next=idx<list.length-1?list[idx+1]:null;
     return <div className="puzzleFocusWrap">
      <div className="puzzleFocusTop">
-      <button onClick={()=>{setActivePuzzleId(null);setPuzzleFeedback(null);setPuzzleWrong(null)}}>← {currentPuzzleWorld?.title||"Alle Rätsel"}</button>
-      <span>Aufgabe {idx+1} / {list.length}</span>
-      <em>{solved?"✓ Gelöst":`${p.age} Jahre`}</em>
+      <button onClick={()=>{setActivePuzzleId(null);setPuzzleFeedback(null);setPuzzleWrong(null)}}>← {puzzleText(currentPuzzleWorld?.title||"Alle Rätsel")}</button>
+      <span>{language==="pl"?"Zadanie":"Aufgabe"} {idx+1} / {list.length}</span>
+      <em>{solved?puzzleText("✓ Gelöst"):puzzleText(`${p.age} Jahre`)}</em>
      </div>
 
      <article className={`puzzleFocusCard ${solved?"solved":""} ${wrong?"wrong":""}`}>
       <div className="puzzleFocusTitle">
        <div className="puzzleIcon big">{p.icon}</div>
-       <div><span className="eyebrow">{currentPuzzleWorld?.title||"Rätsel"}</span><h2>{p.title}</h2></div>
+       <div><span className="eyebrow">{puzzleText(currentPuzzleWorld?.title||"Rätsel")}</span><h2>{puzzleText(p.title)}</h2></div>
       </div>
       <div className="puzzleTask puzzleTaskLarge">
-       <p>{p.task}</p>{p.pattern&&<strong>{p.pattern}</strong>}
+       <p>{puzzleText(p.task)}</p>{p.pattern&&<strong>{p.pattern}</strong>}
       </div>
       <div className="puzzleOptions puzzleOptionsLarge">
-       {p.options.map(option=><button key={option} className={feedback&&option===p.answer?"correct":""} onClick={()=>answerPuzzle(p,option)}>{option}</button>)}
+       {p.options.map(option=><button key={option} className={feedback&&option===p.answer?"correct":""} onClick={()=>answerPuzzle(p,option)}>{puzzleText(option)}</button>)}
       </div>
       <div className="puzzleFooter puzzleFooterLarge">
        {feedback
-        ?<div className="puzzleSuccess"><span>🎉</span><p><b>Richtig!</b><small>{puzzleFeedback.firstTime?"+3 Sterne für dich!":"Dieses Rätsel kennst du schon."}</small></p></div>
+        ?<div className="puzzleSuccess"><span>🎉</span><p><b>Richtig!</b><small>{puzzleText(puzzleFeedback.firstTime?"+3 Sterne für dich!":"Dieses Rätsel kennst du schon.")}</small></p></div>
         :wrong
-         ?<div className="puzzleTry"><span>💡</span><p><b>Fast!</b><small>{p.hint}</small></p></div>
-         :<div className="puzzleHint"><span>{solved?"✓":"⭐"}</span><p><b>{solved?"Schon gelöst":"Belohnung"}</b><small>{solved?"Du kannst es jederzeit wiederholen.":"3 Sterne beim ersten richtigen Lösen"}</small></p></div>}
+         ?<div className="puzzleTry"><span>💡</span><p><b>Fast!</b><small>{puzzleText(p.hint)}</small></p></div>
+         :<div className="puzzleHint"><span>{solved?"✓":"⭐"}</span><p><b>{puzzleText(solved?"Schon gelöst":"Belohnung")}</b><small>{puzzleText(solved?"Du kannst es jederzeit wiederholen.":"3 Sterne beim ersten richtigen Lösen")}</small></p></div>}
       </div>
      </article>
 
