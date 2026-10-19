@@ -1963,7 +1963,7 @@ export default function Page(){
   setSavedHidden([item,...savedHidden].slice(0,18));playSound("success");
  };
  const newHiddenVariant=()=>{setHiddenFound([]);setHiddenComplete(false);setHiddenMiss(null);setHiddenSeed(Math.floor(Date.now()%1000000000));playSound("click")};
- const shareHiddenPdf=async()=>{
+ const shareHiddenPdf=()=>{
   if(typeof window==="undefined")return;
   try{
    const W=1240,H=1754,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");if(!x)return;
@@ -1974,13 +1974,12 @@ export default function Page(){
    x.fillStyle="#5c6e87";x.font="500 21px system-ui";x.fillText(`${pdfText(activeHiddenDifficulty.label)} · ${language==="pl"?`Znajdź ${activeHiddenDifficulty.count} przedmiotów.`:`Finde ${activeHiddenDifficulty.count} Gegenstände.`}`,W/2,148);
    const px=130,py=210,pw=980,ph=1050;
    x.fillStyle="#f6fbf2";x.fillRect(px,py,pw,ph);
-   // Use the exact same self-contained scene artwork as the interactive board.
-   await new Promise(resolve=>{
-    const image=new Image();
-    image.onload=()=>{x.drawImage(image,px,py,pw,ph);resolve()};
-    image.onerror=()=>resolve();
-    image.src=hiddenSceneArt;
-   });
+   // Reuse the already loaded illustration synchronously. Mobile browsers
+   // require a direct user gesture for the share sheet to open.
+   try{
+    const image=document.querySelector(".hiddenSceneIllustration");
+    if(image?.complete&&image.naturalWidth>0)x.drawImage(image,px,py,pw,ph);
+   }catch{} // Solid background remains a safe print fallback.
    x.strokeStyle="#9cc8b8";x.lineWidth=4;x.strokeRect(px,py,pw,ph);
    hiddenPlacements.forEach(p=>{x.save();x.translate(px+p.x/100*pw,py+p.y/100*ph);x.rotate(p.r*Math.PI/180);x.font=`${61*p.s}px system-ui`;x.textAlign="center";x.textBaseline="middle";x.fillText(p.item,0,0);x.restore()});
    x.fillStyle="#173d78";x.font="800 23px system-ui";x.fillText(pdfText("Finde diese Gegenstände:"),W/2,1325);
