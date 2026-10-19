@@ -3830,7 +3830,7 @@ export default function Page(){
     <h2>👧 Kinderprofile</h2>
     <p style={{color:"#65738c",fontWeight:700}}>Aktiv: <b style={{color:"#123a7a"}}><span className="inlineProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span>{activeProfile.name}</b></p>
     {profiles.map(p=><button key={p.id} onClick={()=>switchProfile(p.id)} style={p.id===activeProfileId?{background:"#e8f1ff",color:"#1769ff",fontWeight:900}:{}}>
-     <span className="profileChoiceAvatar">{avatarEmoji(profileData?.[p.id]?.avatar)}</span>{p.name}
+     <span className="profileChoiceAvatar">{avatarEmoji(profileData?.[p.id]?.avatar)}</span><span data-i18n-ignore="true">{p.name}</span>
      <span>{p.id===activeProfileId?"Aktiv":"›"}</span>
     </button>)}
     <button onClick={addProfile}>➕ Neues Kinderprofil<span>›</span></button>
@@ -3845,7 +3845,7 @@ export default function Page(){
    </div>
    <div className="panel">
     <h2>Profil-Statistik</h2>
-    <p>Profil <b><span className="inlineProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span>{activeProfile.name}</b></p>
+    <p>Profil <b><span className="inlineProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><span data-i18n-ignore="true">{activeProfile.name}</span></b></p>
     <p>Gemalte Bilder <b>{profileStatsDone.length}</b></p>
     <p>Erhaltene Sterne <b>{profileStatsStars} ⭐</b></p>
     <p>Galerie <b>{profileStatsGallery.length}</b></p>
