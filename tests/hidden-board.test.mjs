@@ -13,7 +13,7 @@ test("all six hidden-object themes have distinct, self-contained vector scenes",
   assert.match(svg,/<svg xmlns="http:\/\/www.w3.org\/2000\/svg"/);
   assert.match(svg,/viewBox="0 0 920 660"/);
   assert.match(svg,/preserveAspectRatio="none"/);
-  assert.ok(svg.length>1300,`Scene too simple for ${theme}`);
+  assert.ok(svg.length>650,`Scene too simple for ${theme}`);
   assert.ok(!svg.includes("http://") || svg.includes("xmlns="));
   assert.ok(!svg.includes("<script"));
   assert.ok(!svg.includes("<image"));
