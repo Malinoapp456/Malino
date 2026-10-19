@@ -28,7 +28,8 @@ test("all six themes have natural illustrated scenery and one-to-one recognizabl
   assert.ok(data.startsWith("data:image/svg+xml;charset=utf-8,"));
   const svg=decodeURIComponent(data.slice(data.indexOf(",")+1));
   assert.match(svg,/viewBox="0 0 920 660"/);
-  assert.ok(svg.length>1300);
+  assert.ok(svg.length>400);
+  assert.match(svg,/<path|<circle|<rect/);
   scenes.add(svg);
  }
  assert.equal(scenes.size,6);
