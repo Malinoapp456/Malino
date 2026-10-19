@@ -7271,3 +7271,88 @@ header:has(.languageSwitcher){z-index:31}
  .hiddenFlow .hiddenObjectButton>span{font-size:29px}
  .hiddenFlow .hiddenScene.interactive{min-height:340px}
 }
+
+
+/* Spot the difference: two matching illustrated scenes, nine visible tokens. */
+.differencePreviewPanel{background:linear-gradient(150deg,#f4fbff,#fefaf2)}
+.differenceGuide{
+ display:flex;justify-content:space-between;align-items:center;gap:10px;
+ margin:8px 0 12px;padding:10px 13px;
+ border-radius:15px;background:#eaf6ee;border:1px solid #c7e4d1;
+ color:#315f56;font-size:12px;font-weight:750;line-height:1.5;
+}
+.differenceGuide strong{
+ flex:none;min-width:80px;text-align:center;white-space:nowrap;
+ padding:5px 9px;border-radius:999px;background:#fff;
+ color:#285e55;font-size:12px;
+}
+.differenceCompare{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+.differenceScene{
+ min-width:0;padding:10px;
+ border:2px solid #c0dcce;border-radius:20px;
+ background:#fff;box-shadow:0 7px 18px #2d635d18;
+}
+.differenceScene>b{font-size:14px;letter-spacing:.02em;margin-bottom:9px}
+.differenceScene>div.differenceSceneArt{
+ position:relative;display:block;
+ width:100%;aspect-ratio:920/660;height:auto;min-height:0;
+ isolation:isolate;overflow:hidden;border-radius:14px;
+ background:#c4e4cb;border:1px solid #d6e9e0;
+}
+.differenceArtImage{
+ display:block;position:absolute;inset:0;
+ width:100%;height:100%;object-fit:fill;
+ pointer-events:none;user-select:none;-webkit-user-drag:none;
+}
+.differenceSceneArt>.differenceTokens{
+ position:absolute;inset:0;z-index:2;
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ grid-template-rows:repeat(3,minmax(0,1fr));
+ gap:0;align-items:stretch;
+}
+.differenceScene .differenceToken{
+ position:relative;display:flex;align-items:center;justify-content:center;
+ justify-self:center;align-self:center;
+ width:75%;height:83%;min-height:0;margin:0;padding:0;
+ border:1px solid #ffffffab;border-radius:50%;
+ background:#ffffffb8;box-shadow:0 3px 7px #23534a27;
+ font-family:system-ui,sans-serif;font-size:clamp(18px,2.45vw,40px);
+ line-height:1;text-align:center;
+}
+.differenceScene .differenceTokenButton{cursor:pointer;color:#174b66;touch-action:manipulation}
+.differenceScene .differenceTokenButton:focus-visible{
+ outline:3px solid #156fb6;outline-offset:2px;
+}
+@media(hover:hover){
+ .differenceScene .differenceTokenButton:hover{border-color:#7cb99a;background:#fff}
+}
+.differenceScene .differenceTokenButton.differenceFound{
+ background:#e4ffe8eb;border:2px solid #58b971;
+ box-shadow:0 0 0 4px #b1e6b393,0 3px 8px #284f4c21;
+}
+.differenceScene .differenceTokenButton em{
+ position:absolute;top:-4px;right:-5px;
+ display:grid;place-items:center;
+ width:21px;height:21px;border-radius:50%;
+ background:#289e51;color:white;
+ font:900 12px system-ui;font-style:normal;
+ box-shadow:0 2px 5px #1d78463b;
+}
+.differenceDone{
+ padding:11px 14px;border-radius:14px;
+ background:#e5f8e7;color:#2f7846;
+ text-align:center;font-size:13px;font-weight:850;
+}
+@media(max-width:900px){
+ .differenceScene .differenceToken{font-size:clamp(20px,3.2vw,34px)}
+}
+@media(max-width:650px){
+ .differencePreviewPanel{padding:13px}
+ .differenceCompare{grid-template-columns:1fr;gap:11px}
+ .differenceGuide{font-size:11px;padding:9px;gap:7px}
+ .differenceGuide strong{font-size:11px;min-width:68px}
+ .differenceScene{padding:8px;border-radius:16px}
+ .differenceScene>b{font-size:12px;margin-bottom:6px}
+ .differenceScene .differenceToken{font-size:clamp(25px,7vw,40px);border-radius:17px}
+ .differenceScene .differenceTokenButton em{right:-5px;top:-5px}
+}
