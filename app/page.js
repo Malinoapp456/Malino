@@ -3370,11 +3370,11 @@ export default function Page(){
      <button className="worldBackBtn" onClick={()=>setActivePuzzleWorld(null)}>← Weltkarte</button>
      <div className="worldDetailIcon">{currentPuzzleWorld.icon}</div>
      <div>
-      <span className="eyebrow">Welt {currentPuzzleWorld.number} von 5</span>
+      <span className="eyebrow">{language==="pl"?`Świat ${currentPuzzleWorld.number} z 5`:`Welt ${currentPuzzleWorld.number} von 5`}</span>
       <h1>{currentPuzzleWorld.title}</h1>
       <p>Löse alle 4 Aufgaben und sammle Sterne.</p>
      </div>
-     <div className="worldDetailProgress"><b>{worldSolvedCount(currentPuzzleWorld)}/4</b><small>gelöst</small></div>
+     <div className="worldDetailProgress"><b>{worldSolvedCount(currentPuzzleWorld)}/4</b><small>{language==="pl"?"rozwiązane":"gelöst"}</small></div>
     </div>
 
     <div className="worldLevelGrid">
@@ -3387,8 +3387,8 @@ export default function Page(){
        <span className="worldLevelNo">{index+1}</span>
        <span className="worldLevelEmoji">{p.icon}</span>
        <b>{p.title}</b>
-       <small>Aufgabe {globalIndex+1}</small>
-       <em>{solved?"✓ Gelöst":"+3 ⭐"}</em>
+       <small>{language==="pl"?`Zadanie ${globalIndex+1}`:`Aufgabe ${globalIndex+1}`}</small>
+       <em>{solved?(language==="pl"?"✓ Rozwiązane":"✓ Gelöst"):"+3 ⭐"}</em>
       </button>
      })}
     </div>
@@ -3410,7 +3410,7 @@ export default function Page(){
     return <div className="puzzleFocusWrap">
      <div className="puzzleFocusTop">
       <button onClick={()=>{setActivePuzzleId(null);setPuzzleFeedback(null);setPuzzleWrong(null)}}>← {currentPuzzleWorld?.title||"Alle Rätsel"}</button>
-      <span>Aufgabe {idx+1} / {list.length}</span>
+      <span>{language==="pl"?"Zadanie":"Aufgabe"} {idx+1} / {list.length}</span>
       <em>{solved?"✓ Gelöst":`${p.age} Jahre`}</em>
      </div>
 
