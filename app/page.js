@@ -7,6 +7,7 @@ import {legacyActivityKeys,migrateLegacyActivities,profileActivities} from "../l
 import {dabStyle} from "../lib/paint-input.mjs";
 import {LANGUAGE_KEY,normalizedLanguage,installUiTranslation,translateGerman} from "../lib/i18n.mjs";
 import {worldStatus,worldProgressMessage,worldAccessibilityLabel} from "../lib/world-map.mjs";
+import {createHiddenPlacements,hiddenSceneDataUri} from "../lib/hidden-board.mjs";
 
 const items=[
 {id:"feuerwehrauto",name:"Feuerwehrauto im Einsatz",cat:"Fahrzeuge",emoji:"🚒",bg:"#ffe3d6",image:"/fahrzeuge/feuerwehrauto.webp",mode:"draw"},
@@ -1251,13 +1252,8 @@ export default function Page(){
  const activeHiddenDifficulty=hiddenDifficultyMeta[hiddenDifficulty]||hiddenDifficultyMeta.leicht;
  const hiddenTargets=activeHiddenTheme.items.slice(0,activeHiddenDifficulty.count);
  const hiddenHash=[...`${hiddenThemeId}-${hiddenDifficulty}-${hiddenSeed}`].reduce((a,ch)=>((a*33)^ch.charCodeAt(0))>>>0,5381);
- const hiddenPlacements=useMemo(()=>{
-  const rand=mazeRand(hiddenHash), out=[];
-  hiddenTargets.forEach((item,i)=>{
-   out.push({item,x:8+rand()*84,y:10+rand()*76,r:-18+rand()*36,s:.72+rand()*.34});
-  });
-  return out;
- },[hiddenThemeId,hiddenDifficulty,hiddenSeed]);
+ const hiddenPlacements=useMemo(()=>createHiddenPlacements(hiddenTargets,hiddenHash),[hiddenThemeId,hiddenDifficulty,hiddenSeed]);
+ const hiddenSceneArt=useMemo(()=>hiddenSceneDataUri(hiddenThemeId),[hiddenThemeId]);
  const hiddenBoardKey=`${hiddenThemeId}:${hiddenDifficulty}:${hiddenSeed}`;
  const hiddenAlreadySolved=hiddenSolved.includes(hiddenBoardKey);
  const robotNumberThemeId="robot";
@@ -1972,17 +1968,23 @@ export default function Page(){
   try{
    const W=1240,H=1754,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");if(!x)return;
    x.fillStyle="#fff";x.fillRect(0,0,W,H);x.textAlign="center";
-   x.fillStyle="#6a7d96";x.font="700 24px system-ui";x.fillText("MALINO · Basteln & Spielen",W/2,58);
-   x.fillStyle="#173d78";x.font="800 38px system-ui";x.fillText(`🔍 Versteckte Dinge – ${activeHiddenTheme.title}`,W/2,108);
-   x.fillStyle="#5c6e87";x.font="500 21px system-ui";x.fillText(`${activeHiddenDifficulty.label} · Finde ${activeHiddenDifficulty.count} Gegenstände.`,W/2,148);
+   const pdfText=value=>translateGerman(value,language);
+   x.fillStyle="#6a7d96";x.font="700 24px system-ui";x.fillText(pdfText("MALINO · Basteln & Spielen"),W/2,58);
+   x.fillStyle="#173d78";x.font="800 38px system-ui";x.fillText(`${pdfText("🔍 Versteckte Dinge")} – ${pdfText(activeHiddenTheme.title)}`,W/2,108);
+   x.fillStyle="#5c6e87";x.font="500 21px system-ui";x.fillText(`${pdfText(activeHiddenDifficulty.label)} · ${language==="pl"?`Znajdź ${activeHiddenDifficulty.count} przedmiotów.`:`Finde ${activeHiddenDifficulty.count} Gegenstände.`}`,W/2,148);
    const px=130,py=210,pw=980,ph=1050;
-   x.fillStyle="#f6fbf2";x.fillRect(px,py,pw,ph);x.strokeStyle="#173d78";x.lineWidth=4;x.strokeRect(px,py,pw,ph);
-   const bg=activeHiddenTheme.bg.split(" ");
-   bg.forEach((t,i)=>{const col=i%4,row=(i/4)|0;x.font="90px system-ui";x.fillText(t,px+125+col*245,py+170+row*280)});
-   hiddenPlacements.forEach(p=>{x.save();x.translate(px+p.x/100*pw,py+p.y/100*ph);x.rotate(p.r*Math.PI/180);x.font=`${58*p.s}px system-ui`;x.fillText(p.item,0,0);x.restore()});
-   x.fillStyle="#173d78";x.font="800 23px system-ui";x.fillText("Finde diese Gegenstände:",W/2,1325);
+   x.fillStyle="#f6fbf2";x.fillRect(px,py,pw,ph);
+   // Reuse the already loaded illustration synchronously. Mobile browsers
+   // require a direct user gesture for the share sheet to open.
+   try{
+    const image=document.querySelector(".hiddenSceneIllustration");
+    if(image?.complete&&image.naturalWidth>0)x.drawImage(image,px,py,pw,ph);
+   }catch{} // Solid background remains a safe print fallback.
+   x.strokeStyle="#9cc8b8";x.lineWidth=4;x.strokeRect(px,py,pw,ph);
+   hiddenPlacements.forEach(p=>{x.save();x.translate(px+p.x/100*pw,py+p.y/100*ph);x.rotate(p.r*Math.PI/180);x.font=`${61*p.s}px system-ui`;x.textAlign="center";x.textBaseline="middle";x.fillText(p.item,0,0);x.restore()});
+   x.fillStyle="#173d78";x.font="800 23px system-ui";x.fillText(pdfText("Finde diese Gegenstände:"),W/2,1325);
    hiddenTargets.forEach((t,i)=>{x.font="46px system-ui";x.fillText(t,250+i*(740/Math.max(1,hiddenTargets.length-1)),1395)});
-   x.fillStyle="#8a96a5";x.font="500 16px system-ui";x.fillText("Malino – kreative Spielzeit ohne Bildschirm",W/2,H-35);
+   x.fillStyle="#8a96a5";x.font="500 16px system-ui";x.fillText(language==="pl"?"Malino – kreatywna zabawa bez ekranu":"Malino – kreative Spielzeit ohne Bildschirm",W/2,H-35);
    const data=c.toDataURL("image/jpeg",.95).split(",")[1],bin=atob(data),jpg=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)jpg[i]=bin.charCodeAt(i);
    const enc=new TextEncoder(),chunks=[];let off=0;const ofs=[0],add=d=>{const b=typeof d==="string"?enc.encode(d):d;chunks.push(b);off+=b.length},obj=(n,b)=>{ofs[n]=off;add(`${n} 0 obj\n${b}\nendobj\n`)};
    add("%PDF-1.4\n%\xE2\xE3\xCF\xD3\n");obj(1,"<< /Type /Catalog /Pages 2 0 R >>");obj(2,"<< /Type /Pages /Kids [3 0 R] /Count 1 >>");obj(3,"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>");
@@ -1990,7 +1992,7 @@ export default function Page(){
    const ct="q\n595.28 0 0 841.89 0 0 cm\n/Im0 Do\nQ\n";ofs[5]=off;add(`5 0 obj\n<< /Length ${ct.length} >>\nstream\n${ct}endstream\nendobj\n`);const xr=off;add("xref\n0 6\n0000000000 65535 f \n");for(let i=1;i<=5;i++)add(String(ofs[i]).padStart(10,"0")+" 00000 n \n");add(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF`);
    const total=chunks.reduce((a,b)=>a+b.length,0),pdf=new Uint8Array(total);let pos=0;chunks.forEach(b=>{pdf.set(b,pos);pos+=b.length});
    const blob=new Blob([pdf],{type:"application/pdf"}),file=new File([blob],`malino-versteckte-dinge-${hiddenThemeId}-${hiddenDifficulty}.pdf`,{type:"application/pdf"});
-   if(navigator.share&&navigator.canShare?.({files:[file]}))navigator.share({files:[file],title:`Malino – ${activeHiddenTheme.title}`,text:"Malino – Versteckte Dinge"}).catch(()=>{});
+   if(navigator.share&&navigator.canShare?.({files:[file]}))navigator.share({files:[file],title:`Malino – ${activeHiddenTheme.title}`,text:language==="pl"?"Malino – Ukryte przedmioty":"Malino – Versteckte Dinge"}).catch(()=>{});
    else{const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=file.name;a.target="_blank";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),120000)}
   }catch{}
  };
@@ -2941,7 +2943,7 @@ export default function Page(){
 
   {screen==="crafts"&&<section className="craftPage">
    <div className="craftHero">
-    <div className="craftMascot"><img src="/malino-raetsel-mascot.png" alt="Malino"/></div>
+    <div className="craftMascot"><img src="/malino-hero-mascot.png" alt="Malino"/></div>
     <div>
      <span className="eyebrow">Kreativ ohne Bildschirm</span>
      <h1>Basteln & Spielen ✂️</h1>
@@ -3160,7 +3162,7 @@ export default function Page(){
      <aside className="hiddenSide">
       <div className="craftStepHead"><span>🔍</span><div><b>Versteckte Dinge</b><small>Finde die Gegenstände</small></div></div>
       <p>Tippe die versteckten Gegenstände direkt auf der Szene an. Gefundene Dinge bekommen ein ✓.</p>
-      <img src="/assets/malino-raetsel-mascot.png" alt="Malino" className="hiddenMascot"/>
+      <img src="/malino-hero-mascot.png" alt="Malino" className="hiddenMascot"/>
      </aside>
      <div className="hiddenMain">
       <div className="hiddenControls">
@@ -3169,13 +3171,13 @@ export default function Page(){
        <button className="mazeVariantBtn" onClick={newHiddenVariant}>🎲 Neue Variante</button>
       </div>
       <div className={`hiddenScene interactive ${hiddenMiss?"miss":""}`} onClick={tapHiddenMiss}>
-       <div className="hiddenBg">{activeHiddenTheme.bg.split(" ").map((t,i)=><span key={i}>{t}</span>)}</div>
+       <img className="hiddenSceneIllustration" src={hiddenSceneArt} draggable="false" alt="" aria-hidden="true"/>
        {hiddenPlacements.map((p,i)=>{
         const found=hiddenFound.includes(i);
         return <button
          key={`${p.item}-${i}`}
          className={`hiddenObjectButton ${found?"found":""}`}
-         aria-label={`${p.item} ${found?"gefunden":"suchen"}`}
+         aria-label={`${p.item} ${language==="pl"?(found?"znaleziono":"szukaj"):(found?"gefunden":"suchen")}`}
          onClick={e=>{e.stopPropagation();tapHiddenTarget(p.item,i)}}
          style={{left:`${p.x}%`,top:`${p.y}%`,transform:`translate(-50%,-50%) rotate(${p.r}deg) scale(${p.s})`}}
         ><span>{p.item}</span>{found&&<em>✓</em>}</button>
