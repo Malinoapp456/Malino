@@ -5,6 +5,7 @@ import {createPinRecord,verifyPinRecord,recordFailedPin,remainingPinLockMs} from
 import {saveArtwork,loadArtwork,deleteProfileArtwork} from "../lib/artwork-storage.mjs";
 import {legacyActivityKeys,migrateLegacyActivities,profileActivities} from "../lib/profile-activities.mjs";
 import {dabStyle} from "../lib/paint-input.mjs";
+import {LANGUAGE_KEY,normalizedLanguage,installUiTranslation} from "../lib/i18n.mjs";
 
 const items=[
 {id:"feuerwehrauto",name:"Feuerwehrauto im Einsatz",cat:"Fahrzeuge",emoji:"🚒",bg:"#ffe3d6",image:"/fahrzeuge/feuerwehrauto.webp",mode:"draw"},
@@ -540,6 +541,30 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
 }
 
 export default function Page(){
+ const [language,setLanguage]=useState("de");
+ const [languageLoaded,setLanguageLoaded]=useState(false);
+ const [languageMenuOpen,setLanguageMenuOpen]=useState(false);
+ useEffect(()=>{
+  try{setLanguage(normalizedLanguage(localStorage.getItem(LANGUAGE_KEY)))}catch{}
+  setLanguageLoaded(true);
+ },[]);
+ useEffect(()=>{
+  if(!languageLoaded)return;
+  try{localStorage.setItem(LANGUAGE_KEY,language)}catch{}
+ },[language,languageLoaded]);
+ useEffect(()=>{
+  if(typeof document==="undefined")return;
+  document.documentElement.lang=language;
+  return installUiTranslation(document.querySelector("main"),language);
+ },[language]);
+ useEffect(()=>{
+  if(!languageMenuOpen)return;
+  const outside=event=>{if(!event.target?.closest?.("[data-language-switcher]"))setLanguageMenuOpen(false)};
+  const escape=event=>{if(event.key==="Escape")setLanguageMenuOpen(false)};
+  document.addEventListener("pointerdown",outside);
+  document.addEventListener("keydown",escape);
+  return()=>{document.removeEventListener("pointerdown",outside);document.removeEventListener("keydown",escape)};
+ },[languageMenuOpen]);
  useEffect(()=>{
   if(!("serviceWorker" in navigator))return;
   let disposed=false;
@@ -2749,7 +2774,17 @@ export default function Page(){
   }finally{finishingRef.current=false}
  };
  return <main>
-  <header key={`header-${activeProfileId}-${headerStarCount}`}><button>🇩🇪 Deutsch⌄</button><Logo/><div><span key={`stars-${activeProfileId}-${headerStarCount}`}>⭐ {headerStarCount}</span><button key={`profile-${activeProfileId}`} onClick={openParentArea}><span className="headerProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><span className="headerProfileName">{activeProfile.name}</span></button></div></header>
+  <header key={`header-${activeProfileId}-${headerStarCount}`}>
+   <div className="languageSwitcher" data-language-switcher="true" data-i18n-ignore="true">
+    <button className="languageSwitcherButton" type="button" aria-label={language==="pl"?"Zmień język":"Sprache wählen"} aria-haspopup="true" aria-expanded={languageMenuOpen} onClick={()=>setLanguageMenuOpen(v=>!v)}>
+     {language==="pl"?"🇵🇱 Polski":"🇩🇪 Deutsch"} <span aria-hidden="true">⌄</span>
+    </button>
+    {languageMenuOpen&&<div className="languageSwitcherMenu" role="menu" aria-label={language==="pl"?"Język aplikacji":"App-Sprache"}>
+     <button type="button" role="menuitemradio" aria-checked={language==="de"} onClick={()=>{setLanguage("de");setLanguageMenuOpen(false)}}>🇩🇪 Deutsch {language==="de"?"✓":""}</button>
+     <button type="button" role="menuitemradio" aria-checked={language==="pl"} onClick={()=>{setLanguage("pl");setLanguageMenuOpen(false)}}>🇵🇱 Polski {language==="pl"?"✓":""}</button>
+    </div>}
+   </div>
+   <Logo/><div><span key={`stars-${activeProfileId}-${headerStarCount}`}>⭐ {headerStarCount}</span><button key={`profile-${activeProfileId}`} onClick={openParentArea}><span className="headerProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><span className="headerProfileName">{activeProfile.name}</span></button></div></header>
 
   {screen==="start"&&<section className="home premiumHome">
    <div className="premiumHero">
