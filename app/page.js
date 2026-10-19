@@ -5,6 +5,7 @@ import {createPinRecord,verifyPinRecord,recordFailedPin,remainingPinLockMs} from
 import {saveArtwork,loadArtwork,deleteProfileArtwork} from "../lib/artwork-storage.mjs";
 import {legacyActivityKeys,migrateLegacyActivities,profileActivities} from "../lib/profile-activities.mjs";
 import {dabStyle} from "../lib/paint-input.mjs";
+import {LANGUAGE_KEY,normalizedLanguage,installUiTranslation} from "../lib/i18n.mjs";
 
 const items=[
 {id:"feuerwehrauto",name:"Feuerwehrauto im Einsatz",cat:"Fahrzeuge",emoji:"🚒",bg:"#ffe3d6",image:"/fahrzeuge/feuerwehrauto.webp",mode:"draw"},
@@ -540,6 +541,30 @@ function MalinoNumberFloodBoard({selectedNumber,palette,painted,onFill,onReady,r
 }
 
 export default function Page(){
+ const [language,setLanguage]=useState("de");
+ const [languageLoaded,setLanguageLoaded]=useState(false);
+ const [languageMenuOpen,setLanguageMenuOpen]=useState(false);
+ useEffect(()=>{
+  try{setLanguage(normalizedLanguage(localStorage.getItem(LANGUAGE_KEY)))}catch{}
+  setLanguageLoaded(true);
+ },[]);
+ useEffect(()=>{
+  if(!languageLoaded)return;
+  try{localStorage.setItem(LANGUAGE_KEY,language)}catch{}
+ },[language,languageLoaded]);
+ useEffect(()=>{
+  if(typeof document==="undefined")return;
+  document.documentElement.lang=language;
+  return installUiTranslation(document.querySelector("main"),language);
+ },[language]);
+ useEffect(()=>{
+  if(!languageMenuOpen)return;
+  const outside=event=>{if(!event.target?.closest?.("[data-language-switcher]"))setLanguageMenuOpen(false)};
+  const escape=event=>{if(event.key==="Escape")setLanguageMenuOpen(false)};
+  document.addEventListener("pointerdown",outside);
+  document.addEventListener("keydown",escape);
+  return()=>{document.removeEventListener("pointerdown",outside);document.removeEventListener("keydown",escape)};
+ },[languageMenuOpen]);
  useEffect(()=>{
   if(!("serviceWorker" in navigator))return;
   let disposed=false;
@@ -2749,7 +2774,17 @@ export default function Page(){
   }finally{finishingRef.current=false}
  };
  return <main>
-  <header key={`header-${activeProfileId}-${headerStarCount}`}><button>🇩🇪 Deutsch⌄</button><Logo/><div><span key={`stars-${activeProfileId}-${headerStarCount}`}>⭐ {headerStarCount}</span><button key={`profile-${activeProfileId}`} onClick={openParentArea}><span className="headerProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><span className="headerProfileName">{activeProfile.name}</span></button></div></header>
+  <header key={`header-${activeProfileId}-${headerStarCount}`}>
+   <div className="languageSwitcher" data-language-switcher="true" data-i18n-ignore="true">
+    <button className="languageSwitcherButton" type="button" aria-label={language==="pl"?"Zmień język":"Sprache wählen"} aria-haspopup="true" aria-expanded={languageMenuOpen} onClick={()=>setLanguageMenuOpen(v=>!v)}>
+     {language==="pl"?"🇵🇱 Polski":"🇩🇪 Deutsch"} ⌄
+    </button>
+    {languageMenuOpen&&<div className="languageSwitcherMenu" role="menu" aria-label={language==="pl"?"Język aplikacji":"App-Sprache"}>
+     <button type="button" role="menuitemradio" aria-checked={language==="de"} onClick={()=>{setLanguage("de");setLanguageMenuOpen(false)}}>🇩🇪 Deutsch {language==="de"?"✓":""}</button>
+     <button type="button" role="menuitemradio" aria-checked={language==="pl"} onClick={()=>{setLanguage("pl");setLanguageMenuOpen(false)}}>🇵🇱 Polski {language==="pl"?"✓":""}</button>
+    </div>}
+   </div>
+   <Logo/><div><span key={`stars-${activeProfileId}-${headerStarCount}`}>⭐ {headerStarCount}</span><button key={`profile-${activeProfileId}`} onClick={openParentArea}><span className="headerProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><span className="headerProfileName" data-i18n-ignore="true">{activeProfile.name}</span></button></div></header>
 
   {screen==="start"&&<section className="home premiumHome">
    <div className="premiumHero">
@@ -2858,7 +2893,7 @@ export default function Page(){
      <span>✂️</span><div><b>Basteln & Spielen</b><small>Puzzle & Labyrinthe zum Drucken</small></div><em>›</em>
     </button>
     <button className="featureCard featureProfile" onClick={openParentArea}>
-     <span>{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><div><b>{activeProfile.name}</b><small>Kinderprofil & Fortschritt</small></div><em>›</em>
+     <span>{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><div><b data-i18n-ignore="true">{activeProfile.name}</b><small>Kinderprofil & Fortschritt</small></div><em>›</em>
     </button>
    </div>
   </section>}
@@ -3523,7 +3558,7 @@ export default function Page(){
   {screen==="room"&&<section className="malinoRoomPage">
    <div className="roomHero">
     <button className="roomBack" onClick={()=>setScreen("reward")}>‹ Zurück</button>
-    <div className="roomHeroCopy"><span className="eyebrow">Meine Sammlung</span><h1>Malinos Kreativ-Zimmer 🦁✨</h1><p>Hier zeigt Malino alle Schätze, die <b>{activeProfile.name}</b> schon gesammelt hat.</p></div>
+    <div className="roomHeroCopy"><span className="eyebrow">Meine Sammlung</span><h1>Malinos Kreativ-Zimmer 🦁✨</h1><p>Hier zeigt Malino alle Schätze, die <b data-i18n-ignore="true">{activeProfile.name}</b> schon gesammelt hat.</p></div>
     <div className="roomCounter"><b>{unlockedTreasureCount}</b><small>Schätze</small></div>
    </div>
 
@@ -3722,7 +3757,7 @@ export default function Page(){
      <div className="unlockBurst" style={{fontSize:58}}>↺</div>
      <span className="eyebrow">Fortschritt</span>
      <h2>Profil zurücksetzen?</h2>
-     <p>Bei <b>{activeProfile.name}</b> werden Sterne, fertige Bilder, Galerie und Belohnungen auf null gesetzt. Andere Profile bleiben unverändert.</p>
+     <p>Bei <b data-i18n-ignore="true">{activeProfile.name}</b> werden Sterne, fertige Bilder, Galerie und Belohnungen auf null gesetzt. Andere Profile bleiben unverändert.</p>
      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
       <button onClick={closeProfileDialog} style={{border:0,borderRadius:16,padding:"13px",fontWeight:900,background:"#edf3fb",color:"#55709a"}}>Abbrechen</button>
       <button onClick={confirmProfileDialog} style={{border:0,borderRadius:16,padding:"13px",fontWeight:900,background:"#f59e0b",color:"#fff"}}>Zurücksetzen</button>
@@ -3733,7 +3768,7 @@ export default function Page(){
      <div className="unlockBurst" style={{fontSize:58}}>🗑️</div>
      <span className="eyebrow">Kinderprofil</span>
      <h2>Profil löschen?</h2>
-     <p><b>{activeProfile.name}</b> wird mit seinem gesamten Fortschritt gelöscht. Andere Profile bleiben erhalten.</p>
+     <p><b data-i18n-ignore="true">{activeProfile.name}</b> wird mit seinem gesamten Fortschritt gelöscht. Andere Profile bleiben erhalten.</p>
      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
       <button onClick={closeProfileDialog} style={{border:0,borderRadius:16,padding:"13px",fontWeight:900,background:"#edf3fb",color:"#55709a"}}>Abbrechen</button>
       <button onClick={confirmProfileDialog} style={{border:0,borderRadius:16,padding:"13px",fontWeight:900,background:"#ef4444",color:"#fff"}}>Profil löschen</button>
@@ -3795,7 +3830,7 @@ export default function Page(){
     <h2>👧 Kinderprofile</h2>
     <p style={{color:"#65738c",fontWeight:700}}>Aktiv: <b style={{color:"#123a7a"}}><span className="inlineProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span>{activeProfile.name}</b></p>
     {profiles.map(p=><button key={p.id} onClick={()=>switchProfile(p.id)} style={p.id===activeProfileId?{background:"#e8f1ff",color:"#1769ff",fontWeight:900}:{}}>
-     <span className="profileChoiceAvatar">{avatarEmoji(profileData?.[p.id]?.avatar)}</span>{p.name}
+     <span className="profileChoiceAvatar">{avatarEmoji(profileData?.[p.id]?.avatar)}</span><span data-i18n-ignore="true">{p.name}</span>
      <span>{p.id===activeProfileId?"Aktiv":"›"}</span>
     </button>)}
     <button onClick={addProfile}>➕ Neues Kinderprofil<span>›</span></button>
@@ -3810,7 +3845,7 @@ export default function Page(){
    </div>
    <div className="panel">
     <h2>Profil-Statistik</h2>
-    <p>Profil <b><span className="inlineProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span>{activeProfile.name}</b></p>
+    <p>Profil <b><span className="inlineProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><span data-i18n-ignore="true">{activeProfile.name}</span></b></p>
     <p>Gemalte Bilder <b>{profileStatsDone.length}</b></p>
     <p>Erhaltene Sterne <b>{profileStatsStars} ⭐</b></p>
     <p>Galerie <b>{profileStatsGallery.length}</b></p>
@@ -3892,7 +3927,7 @@ export default function Page(){
       <p>Eine kinderfreundliche Mal-App mit Tages-Challenges, Belohnungen, Profilen und kreativen Malbildern.</p>
       <div className="aboutMalinoGrid">
        <div><b>Version</b><small>Web-App 1.0</small></div>
-       <div><b>Aktives Profil</b><small>{activeProfile.name}</small></div>
+       <div><b>Aktives Profil</b><small data-i18n-ignore="true">{activeProfile.name}</small></div>
        <div><b>Speicherung</b><small>lokal auf dem Gerät</small></div>
        <div><b>Sprache</b><small>Deutsch</small></div>
       </div>
