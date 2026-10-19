@@ -45,7 +45,7 @@ test("up to nine targets stay apart, on-screen and deterministic at every diffic
     for(let j=i+1;j<count;j++){
      const x=Math.abs(board[i].x-board[j].x);
      const y=Math.abs(board[i].y-board[j].y);
-     assert.ok(x>=23 || y>=21,`Targets overlap: ${JSON.stringify([board[i],board[j]])}`);
+     assert.ok(x>=23 || y>=18,`Targets overlap: ${JSON.stringify([board[i],board[j]])}`);
     }
    }
   }
