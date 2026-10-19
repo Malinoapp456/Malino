@@ -1982,6 +1982,7 @@ export default function Page(){
   setDifferenceThemeId(item.themeId);
   setDifferenceDifficulty(item.difficulty);
   setDifferenceSeed(item.seed);
+  setDifferenceFound([]);
   playSound("click");
   setTimeout(()=>document.querySelector(".differenceFlow")?.scrollIntoView({behavior:"smooth",block:"start"}),40);
  };
@@ -2000,6 +2001,7 @@ export default function Page(){
  };
 
  const newDifferenceVariant=()=>{
+  setDifferenceFound([]);
   setDifferenceSeed(Math.floor(Date.now()%1000000000));
   playSound("click");
  };
@@ -3092,7 +3094,7 @@ export default function Page(){
      </div>
 
      <div className="differencePanel">
-      <div className="craftStepHead"><span>2</span><div><b>Schwierigkeit</b><small>Wie viele Unterschiede?</small></div></div>
+      <div className="craftStepHead"><span>2</span><div><b>Schwierigkeit</b><small>{language==="pl"?"Ile różnic?":"Wie viele Unterschiede?"}</small></div></div>
       <div className="differenceDifficultyButtons">
        {Object.entries(differenceDifficultyMeta).map(([id,m])=><button key={id} className={differenceDifficulty===id?"active":""} onClick={()=>setDifferenceDifficulty(id)}>
         <b>{m.label}</b><small>{m.age} Jahre</small><em>{m.count}</em>
@@ -3102,7 +3104,7 @@ export default function Page(){
      </div>
 
      <div className="differencePanel differencePreviewPanel">
-      <div className="craftStepHead"><span>3</span><div><b>Vorschau & Drucken</b><small>Finde {activeDifferenceDifficulty.count} Unterschiede</small></div></div>
+      <div className="craftStepHead"><span>3</span><div><b>Vorschau & Drucken</b><small>{language==="pl"?`Znajdź ${activeDifferenceDifficulty.count} różnic`:`Finde ${activeDifferenceDifficulty.count} Unterschiede`}</small></div></div>
       <div className="differenceGuide">
        <span>{language==="pl"?"Porównaj dwa obrazki. Dotknij zmienionych przedmiotów na obrazku B.":"Vergleiche die beiden Bilder. Tippe auf die veränderten Dinge in Bild B."}</span>
        <strong aria-live="polite">{differenceFound.length}/{differenceChanges.length} {language==="pl"?"znalezionych":"gefunden"}</strong>
