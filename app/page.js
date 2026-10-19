@@ -2777,7 +2777,7 @@ export default function Page(){
   <header key={`header-${activeProfileId}-${headerStarCount}`}>
    <div className="languageSwitcher" data-language-switcher="true" data-i18n-ignore="true">
     <button className="languageSwitcherButton" type="button" aria-label={language==="pl"?"Zmień język":"Sprache wählen"} aria-haspopup="true" aria-expanded={languageMenuOpen} onClick={()=>setLanguageMenuOpen(v=>!v)}>
-     {language==="pl"?"🇵🇱 Polski":"🇩🇪 Deutsch"} <span aria-hidden="true">⌄</span>
+     {language==="pl"?"🇵🇱 Polski":"🇩🇪 Deutsch"} ⌄
     </button>
     {languageMenuOpen&&<div className="languageSwitcherMenu" role="menu" aria-label={language==="pl"?"Język aplikacji":"App-Sprache"}>
      <button type="button" role="menuitemradio" aria-checked={language==="de"} onClick={()=>{setLanguage("de");setLanguageMenuOpen(false)}}>🇩🇪 Deutsch {language==="de"?"✓":""}</button>
