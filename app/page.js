@@ -1985,7 +1985,7 @@ export default function Page(){
    hiddenPlacements.forEach(p=>{x.save();x.translate(px+p.x/100*pw,py+p.y/100*ph);x.rotate(p.r*Math.PI/180);x.font=`${61*p.s}px system-ui`;x.textAlign="center";x.textBaseline="middle";x.fillText(p.item,0,0);x.restore()});
    x.fillStyle="#173d78";x.font="800 23px system-ui";x.fillText(pdfText("Finde diese Gegenstände:"),W/2,1325);
    hiddenTargets.forEach((t,i)=>{x.font="46px system-ui";x.fillText(t,250+i*(740/Math.max(1,hiddenTargets.length-1)),1395)});
-   x.fillStyle="#8a96a5";x.font="500 16px system-ui";x.fillText("Malino – kreative Spielzeit ohne Bildschirm",W/2,H-35);
+   x.fillStyle="#8a96a5";x.font="500 16px system-ui";x.fillText(language==="pl"?"Malino – kreatywna zabawa bez ekranu":"Malino – kreative Spielzeit ohne Bildschirm",W/2,H-35);
    const data=c.toDataURL("image/jpeg",.95).split(",")[1],bin=atob(data),jpg=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)jpg[i]=bin.charCodeAt(i);
    const enc=new TextEncoder(),chunks=[];let off=0;const ofs=[0],add=d=>{const b=typeof d==="string"?enc.encode(d):d;chunks.push(b);off+=b.length},obj=(n,b)=>{ofs[n]=off;add(`${n} 0 obj\n${b}\nendobj\n`)};
    add("%PDF-1.4\n%\xE2\xE3\xCF\xD3\n");obj(1,"<< /Type /Catalog /Pages 2 0 R >>");obj(2,"<< /Type /Pages /Kids [3 0 R] /Count 1 >>");obj(3,"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>");
@@ -1993,7 +1993,7 @@ export default function Page(){
    const ct="q\n595.28 0 0 841.89 0 0 cm\n/Im0 Do\nQ\n";ofs[5]=off;add(`5 0 obj\n<< /Length ${ct.length} >>\nstream\n${ct}endstream\nendobj\n`);const xr=off;add("xref\n0 6\n0000000000 65535 f \n");for(let i=1;i<=5;i++)add(String(ofs[i]).padStart(10,"0")+" 00000 n \n");add(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF`);
    const total=chunks.reduce((a,b)=>a+b.length,0),pdf=new Uint8Array(total);let pos=0;chunks.forEach(b=>{pdf.set(b,pos);pos+=b.length});
    const blob=new Blob([pdf],{type:"application/pdf"}),file=new File([blob],`malino-versteckte-dinge-${hiddenThemeId}-${hiddenDifficulty}.pdf`,{type:"application/pdf"});
-   if(navigator.share&&navigator.canShare?.({files:[file]}))navigator.share({files:[file],title:`Malino – ${activeHiddenTheme.title}`,text:"Malino – Versteckte Dinge"}).catch(()=>{});
+   if(navigator.share&&navigator.canShare?.({files:[file]}))navigator.share({files:[file],title:`Malino – ${activeHiddenTheme.title}`,text:language==="pl"?"Malino – Ukryte przedmioty":"Malino – Versteckte Dinge"}).catch(()=>{});
    else{const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=file.name;a.target="_blank";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),120000)}
   }catch{}
  };
@@ -3178,7 +3178,7 @@ export default function Page(){
         return <button
          key={`${p.item}-${i}`}
          className={`hiddenObjectButton ${found?"found":""}`}
-         aria-label={`${p.item} ${found?"gefunden":"suchen"}`}
+         aria-label={`${p.item} ${language==="pl"?(found?"znaleziono":"szukaj"):(found?"gefunden":"suchen")}`}
          onClick={e=>{e.stopPropagation();tapHiddenTarget(p.item,i)}}
          style={{left:`${p.x}%`,top:`${p.y}%`,transform:`translate(-50%,-50%) rotate(${p.r}deg) scale(${p.s})`}}
         ><span>{p.item}</span>{found&&<em>✓</em>}</button>
