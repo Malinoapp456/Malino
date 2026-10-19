@@ -5,7 +5,7 @@ import {createPinRecord,verifyPinRecord,recordFailedPin,remainingPinLockMs} from
 import {saveArtwork,loadArtwork,deleteProfileArtwork} from "../lib/artwork-storage.mjs";
 import {legacyActivityKeys,migrateLegacyActivities,profileActivities} from "../lib/profile-activities.mjs";
 import {dabStyle} from "../lib/paint-input.mjs";
-import {LANGUAGE_KEY,normalizedLanguage,installUiTranslation} from "../lib/i18n.mjs";
+import {LANGUAGE_KEY,normalizedLanguage,installUiTranslation,translateGerman} from "../lib/i18n.mjs";
 import {worldStatus,worldProgressMessage,worldAccessibilityLabel} from "../lib/world-map.mjs";
 
 const items=[
@@ -1143,6 +1143,7 @@ export default function Page(){
  const worldUnlocked=world=>solvedPuzzleCount>=world.unlock;
  const currentPuzzleWorld=activePuzzleWorld?puzzleWorlds.find(w=>w.id===activePuzzleWorld):null;
  const currentWorldPuzzles=currentPuzzleWorld?currentPuzzleWorld.ids.map(id=>puzzleCards.find(p=>p.id===id)).filter(Boolean):[];
+ const puzzleText=value=>translateGerman(value,language);
  const craftTemplates=[
   {id:"rakete",title:"Rakete",emoji:"🚀",srcBw:"/puzzle-rakete.png",srcColor:"/puzzle-rakete-color.png",w:1086,h:1448},
   {id:"triceratops",title:"Triceratops",emoji:"🦕",srcBw:"/puzzle-triceratops.png",srcColor:"/puzzle-triceratops-color.png",w:1086,h:1448},
@@ -3343,7 +3344,7 @@ export default function Page(){
         }}>
         <span className="worldLandscape"><WorldIllustration id={world.id}/></span>
         <span className="worldBadge">{world.number}</span>
-        <b>{world.title}</b>
+        <b>{puzzleText(world.title)}</b>
         <small>{world.emoji} {solved}/{world.ids.length}</small>
         <em>{worldStatus({solved,total:world.ids.length,unlocked,required:world.unlock},language)}</em>
        </button>
@@ -3371,7 +3372,7 @@ export default function Page(){
      <div className="worldDetailIcon">{currentPuzzleWorld.icon}</div>
      <div>
       <span className="eyebrow">{language==="pl"?`Świat ${currentPuzzleWorld.number} z 5`:`Welt ${currentPuzzleWorld.number} von 5`}</span>
-      <h1>{currentPuzzleWorld.title}</h1>
+      <h1>{puzzleText(currentPuzzleWorld.title)}</h1>
       <p>Löse alle 4 Aufgaben und sammle Sterne.</p>
      </div>
      <div className="worldDetailProgress"><b>{worldSolvedCount(currentPuzzleWorld)}/4</b><small>{language==="pl"?"rozwiązane":"gelöst"}</small></div>
@@ -3386,7 +3387,7 @@ export default function Page(){
       }}>
        <span className="worldLevelNo">{index+1}</span>
        <span className="worldLevelEmoji">{p.icon}</span>
-       <b>{p.title}</b>
+       <b>{puzzleText(p.title)}</b>
        <small>{language==="pl"?`Zadanie ${globalIndex+1}`:`Aufgabe ${globalIndex+1}`}</small>
        <em>{solved?(language==="pl"?"✓ Rozwiązane":"✓ Gelöst"):"+3 ⭐"}</em>
       </button>
@@ -3409,28 +3410,28 @@ export default function Page(){
     const next=idx<list.length-1?list[idx+1]:null;
     return <div className="puzzleFocusWrap">
      <div className="puzzleFocusTop">
-      <button onClick={()=>{setActivePuzzleId(null);setPuzzleFeedback(null);setPuzzleWrong(null)}}>← {currentPuzzleWorld?.title||"Alle Rätsel"}</button>
+      <button onClick={()=>{setActivePuzzleId(null);setPuzzleFeedback(null);setPuzzleWrong(null)}}>← {puzzleText(currentPuzzleWorld?.title||"Alle Rätsel")}</button>
       <span>{language==="pl"?"Zadanie":"Aufgabe"} {idx+1} / {list.length}</span>
-      <em>{solved?"✓ Gelöst":`${p.age} Jahre`}</em>
+      <em>{solved?puzzleText("✓ Gelöst"):puzzleText(`${p.age} Jahre`)}</em>
      </div>
 
      <article className={`puzzleFocusCard ${solved?"solved":""} ${wrong?"wrong":""}`}>
       <div className="puzzleFocusTitle">
        <div className="puzzleIcon big">{p.icon}</div>
-       <div><span className="eyebrow">{currentPuzzleWorld?.title||"Rätsel"}</span><h2>{p.title}</h2></div>
+       <div><span className="eyebrow">{puzzleText(currentPuzzleWorld?.title||"Rätsel")}</span><h2>{puzzleText(p.title)}</h2></div>
       </div>
       <div className="puzzleTask puzzleTaskLarge">
-       <p>{p.task}</p>{p.pattern&&<strong>{p.pattern}</strong>}
+       <p>{puzzleText(p.task)}</p>{p.pattern&&<strong>{p.pattern}</strong>}
       </div>
       <div className="puzzleOptions puzzleOptionsLarge">
-       {p.options.map(option=><button key={option} className={feedback&&option===p.answer?"correct":""} onClick={()=>answerPuzzle(p,option)}>{option}</button>)}
+       {p.options.map(option=><button key={option} className={feedback&&option===p.answer?"correct":""} onClick={()=>answerPuzzle(p,option)}>{puzzleText(option)}</button>)}
       </div>
       <div className="puzzleFooter puzzleFooterLarge">
        {feedback
-        ?<div className="puzzleSuccess"><span>🎉</span><p><b>Richtig!</b><small>{puzzleFeedback.firstTime?"+3 Sterne für dich!":"Dieses Rätsel kennst du schon."}</small></p></div>
+        ?<div className="puzzleSuccess"><span>🎉</span><p><b>Richtig!</b><small>{puzzleText(puzzleFeedback.firstTime?"+3 Sterne für dich!":"Dieses Rätsel kennst du schon.")}</small></p></div>
         :wrong
-         ?<div className="puzzleTry"><span>💡</span><p><b>Fast!</b><small>{p.hint}</small></p></div>
-         :<div className="puzzleHint"><span>{solved?"✓":"⭐"}</span><p><b>{solved?"Schon gelöst":"Belohnung"}</b><small>{solved?"Du kannst es jederzeit wiederholen.":"3 Sterne beim ersten richtigen Lösen"}</small></p></div>}
+         ?<div className="puzzleTry"><span>💡</span><p><b>Fast!</b><small>{puzzleText(p.hint)}</small></p></div>
+         :<div className="puzzleHint"><span>{solved?"✓":"⭐"}</span><p><b>{puzzleText(solved?"Schon gelöst":"Belohnung")}</b><small>{puzzleText(solved?"Du kannst es jederzeit wiederholen.":"3 Sterne beim ersten richtigen Lösen")}</small></p></div>}
       </div>
      </article>
 
