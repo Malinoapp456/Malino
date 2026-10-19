@@ -8,6 +8,7 @@ import {dabStyle} from "../lib/paint-input.mjs";
 import {LANGUAGE_KEY,normalizedLanguage,installUiTranslation,translateGerman} from "../lib/i18n.mjs";
 import {worldStatus,worldProgressMessage,worldAccessibilityLabel} from "../lib/world-map.mjs";
 import {createHiddenPlacements,hiddenSceneDataUri} from "../lib/hidden-board.mjs";
+import {createDifferenceChanges,applyDifferenceChanges,differenceSceneUri} from "../lib/difference-board.mjs";
 
 const items=[
 {id:"feuerwehrauto",name:"Feuerwehrauto im Einsatz",cat:"Fahrzeuge",emoji:"🚒",bg:"#ffe3d6",image:"/fahrzeuge/feuerwehrauto.webp",mode:"draw"},
@@ -643,6 +644,7 @@ export default function Page(){
  const [differenceThemeId,setDifferenceThemeId]=useState("farm");
  const [differenceDifficulty,setDifferenceDifficulty]=useState("leicht");
  const [differenceSeed,setDifferenceSeed]=useState(2401);
+ const [differenceFound,setDifferenceFound]=useState([]);
  const [hiddenThemeId,setHiddenThemeId]=useState("forest");
  const [hiddenDifficulty,setHiddenDifficulty]=useState("leicht");
  const [hiddenSeed,setHiddenSeed]=useState(2501);
@@ -834,6 +836,10 @@ export default function Page(){
   setHiddenMiss(null);
   setHiddenComplete(false);
  },[hiddenThemeId,hiddenDifficulty,hiddenSeed]);
+
+ useEffect(()=>{
+  setDifferenceFound([]);
+ },[differenceThemeId,differenceDifficulty,differenceSeed]);
 
  useEffect(()=>{
   if(typeof document==="undefined")return;
@@ -1199,42 +1205,16 @@ export default function Page(){
  const activeDifferenceDifficulty=differenceDifficultyMeta[differenceDifficulty]||differenceDifficultyMeta.leicht;
  const differenceTokens=activeDifferenceTheme.scene.split(" ");
  const differenceHash=[...`${differenceThemeId}-${differenceDifficulty}-${differenceSeed}`].reduce((a,ch)=>((a*33)^ch.charCodeAt(0))>>>0,5381);
- const differenceChanges=useMemo(()=>{
-  const rand=mazeRand(differenceHash);
-  const pool=[
-   {type:"swap",from:"☀️",to:"🌙"},
-   {type:"swap",from:"⭐",to:"✨"},
-   {type:"swap",from:"🌼",to:"🌷"},
-   {type:"swap",from:"🌳",to:"🌲"},
-   {type:"swap",from:"🏠",to:"🏡"},
-   {type:"swap",from:"🐄",to:"🐑"},
-   {type:"swap",from:"🪐",to:"🌎"},
-   {type:"swap",from:"🚀",to:"🛸"},
-   {type:"swap",from:"🦊",to:"🐰"},
-   {type:"swap",from:"🍄",to:"🌰"},
-   {type:"swap",from:"🏰",to:"🏯"},
-   {type:"swap",from:"👑",to:"💎"},
-   {type:"swap",from:"🐳",to:"🐬"},
-   {type:"swap",from:"🐠",to:"🐟"},
-   {type:"swap",from:"🦕",to:"🦖"},
-   {type:"swap",from:"🥚",to:"🪨"}
-  ];
-  const changes=[];
-  const used=new Set();
-  const target=Math.min(activeDifferenceDifficulty.count,differenceTokens.length);
-  let guard=0;
-  while(changes.length<target&&guard<200){
-   guard++;
-   const idx=Math.floor(rand()*differenceTokens.length);
-   if(used.has(idx))continue;
-   used.add(idx);
-   const original=differenceTokens[idx];
-   const candidate=pool.find(x=>x.from===original);
-   changes.push({idx,from:original,to:candidate?.to||["⭐","🌈","🎈","🍎","☁️"][Math.floor(rand()*5)]});
-  }
-  return changes;
- },[differenceThemeId,differenceDifficulty,differenceSeed]);
- const changedDifferenceTokens=useMemo(()=>differenceTokens.map((t,i)=>differenceChanges.find(c=>c.idx===i)?.to||t),[differenceThemeId,differenceDifficulty,differenceSeed]);
+ const differenceChanges=useMemo(()=>
+  createDifferenceChanges(differenceThemeId,differenceTokens,activeDifferenceDifficulty.count,differenceHash),
+  [differenceThemeId,differenceDifficulty,differenceSeed]);
+ const changedDifferenceTokens=useMemo(()=>applyDifferenceChanges(differenceTokens,differenceChanges),[differenceThemeId,differenceDifficulty,differenceSeed]);
+ const differenceSceneArt=useMemo(()=>differenceSceneUri(differenceThemeId),[differenceThemeId]);
+ const differenceChangeIndices=new Set(differenceChanges.map(change=>change.idx));
+ const markDifference=index=>{
+  if(!differenceChangeIndices.has(index)||differenceFound.includes(index))return;
+  setDifferenceFound(current=>current.includes(index)?current:[...current,index]);
+ };
  const hiddenThemes=[
   {id:"forest",title:"Waldabenteuer",icon:"🌲",bg:"🌳 🌲 🪵 🍄 🌿 🌼 🏕️ 🏡 🌲 🌳 🍂 🌿",items:["🦋","🏮","🪺","🦉","🐌","🦔","🍎","🔑","⭐"]},
   {id:"farm",title:"Bauernhof",icon:"🚜",bg:"🌾 🏡 🌳 🚜 🐄 🐔 🌻 🌾 🐷 🌳 🪵 ☀️",items:["🥕","🔔","🪣","🐭","🍎","🧤","⭐","🦋","🔑"]},
@@ -3118,15 +3098,39 @@ export default function Page(){
 
      <div className="differencePanel differencePreviewPanel">
       <div className="craftStepHead"><span>3</span><div><b>Vorschau & Drucken</b><small>Finde {activeDifferenceDifficulty.count} Unterschiede</small></div></div>
-      <div className="differenceCompare">
-       <div className="differenceScene"><b>Bild A</b><div>{differenceTokens.map((t,i)=><span key={i}>{t}</span>)}</div></div>
-       <div className="differenceScene"><b>Bild B</b><div>{changedDifferenceTokens.map((t,i)=><span key={i}>{t}</span>)}</div></div>
+      <div className="differenceGuide">
+       <span>{language==="pl"?"Porównaj dwa obrazki. Dotknij zmienionych przedmiotów na obrazku B.":"Vergleiche die beiden Bilder. Tippe auf die veränderten Dinge in Bild B."}</span>
+       <strong aria-live="polite">{differenceFound.length}/{differenceChanges.length} {language==="pl"?"znalezionych":"gefunden"}</strong>
       </div>
+      <div className="differenceCompare">
+       <div className="differenceScene">
+        <b>{language==="pl"?"Obrazek A":"Bild A"}</b>
+        <div className="differenceSceneArt">
+         <img className="differenceArtImage" src={differenceSceneArt} alt="" aria-hidden="true" draggable="false"/>
+         <div className="differenceTokens">{differenceTokens.map((t,i)=><span key={i} className="differenceToken" aria-hidden="true">{t}</span>)}</div>
+        </div>
+       </div>
+       <div className="differenceScene">
+        <b>{language==="pl"?"Obrazek B":"Bild B"}</b>
+        <div className="differenceSceneArt">
+         <img className="differenceArtImage" src={differenceSceneArt} alt="" aria-hidden="true" draggable="false"/>
+         <div className="differenceTokens">{changedDifferenceTokens.map((t,i)=>
+          <button type="button" key={i}
+           className={`differenceToken differenceTokenButton ${differenceFound.includes(i)?"differenceFound":""}`}
+           onClick={()=>markDifference(i)}
+           aria-label={`${language==="pl"?"Przedmiot":"Gegenstand"} ${i+1}, ${differenceFound.includes(i)?(language==="pl"?"znaleziono":"gefunden"):(language==="pl"?"sprawdź różnicę":"Unterschied prüfen")}`}
+           aria-pressed={differenceFound.includes(i)}
+          >{t}{differenceFound.includes(i)&&<em>✓</em>}</button>
+         )}</div>
+        </div>
+       </div>
+      </div>
+      {differenceFound.length===differenceChanges.length&&<p className="differenceDone" role="status">🎉 {language==="pl"?"Brawo! Wszystkie różnice znalezione!":"Super! Alle Unterschiede gefunden!"}</p>}
       <div className="mazeActions">
        <button className="craftSaveBtn" onClick={saveDifference}>💾 Speichern</button>
        <button className="craftPrintBtn" onClick={shareDifferencePdf}>↗️ Teilen / Drucken</button>
       </div>
-      <small className="craftA4">A4 · {activeDifferenceDifficulty.label} · {activeDifferenceDifficulty.count} Unterschiede</small>
+      <small className="craftA4">A4 · {activeDifferenceDifficulty.label} · {activeDifferenceDifficulty.count} {language==="pl"?"różnic":"Unterschiede"}</small>
      </div>
     </div>
 
