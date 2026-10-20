@@ -38,7 +38,18 @@ test("preserve original painting workflows, autosave and four-color palette",()=
 
 test("mascot panel remains responsive and guide is localized for Polish and German",()=>{
  assert.ok(numbers.includes('language==="pl"?"Malino podpowiada: każdy numer ma swój kolor!"'));
- assert.ok(numbers.includes('alt={language==="pl"?"Malino z kolorowym pędzlem"'));
+ assert.ok(numbers.includes('alt={language==="pl"?"Żółty lewek Malino z tęczową grzywą'));
  assert.ok(styles.includes("@media(max-width:650px){\n  .numberSideRefined"));
  assert.ok(styles.includes("@media(max-width:375px){\n  .numberSideRefined"));
+});
+
+test("translated number instructions, board labels and PDF print copy are used",()=>{
+ assert.ok(page.includes('from "../lib/number-coloring-copy.mjs"'));
+ assert.ok(numbers.includes('numberColoringBoardTitle(board.id,language)'));
+ assert.ok(numbers.includes('numberColoringNote(numberThemeId,language)'));
+ assert.ok(!numbers.includes('Tippe direkt in die nummerierten Flächen'));
+ assert.ok(page.includes('x.fillText(printCopy.instruction,W/2,135)'));
+ assert.ok(page.includes('x.fillText(printCopy.colors,W/2,paletteY)'));
+ assert.ok(page.includes('title:printCopy.shareTitle'));
+ assert.ok(styles.includes(".numberMascotGuideTitle"));
 });
