@@ -7356,3 +7356,160 @@ header:has(.languageSwitcher){z-index:31}
  .differenceScene .differenceToken{font-size:clamp(25px,7vw,40px);border-radius:17px}
  .differenceScene .differenceTokenButton em{right:-5px;top:-5px}
 }
+
+
+/* Number coloring: Malino keeps his established rainbow mane and blue overalls.
+   A mirrored, slightly angled presentation creates a playful variant in the
+   activity without replacing the canonical mascot illustration. */
+.numberSideRefined{
+  align-self:start;
+  overflow:hidden;
+  background:linear-gradient(165deg,#fff9ec 0%,#eff9ff 65%,#f3fff1 100%);
+  border-color:#d9e9e1;
+}
+.numberSideRefined .craftStepHead{align-items:center}
+.numberMascotStage{
+  position:relative;
+  isolation:isolate;
+  display:grid;
+  place-items:end center;
+  height:195px;
+  margin:12px -5px 3px;
+  overflow:hidden;
+  border:1px solid #dfebde;
+  border-radius:22px;
+  background:
+    radial-gradient(ellipse at 50% 100%,#a0d69e 0%,#c9ebc0 35%,transparent 35.5%),
+    radial-gradient(circle at 78% 21%,#ffefb3 0 8%,transparent 8.5%),
+    linear-gradient(170deg,#def4ff,#e6f9e1);
+}
+.numberMascotStage::after{
+  content:"";
+  z-index:0;
+  position:absolute;left:15%;right:15%;bottom:6px;height:12px;
+  border-radius:50%;background:#437e5c2b;filter:blur(4px);
+}
+.numberMascotImage{
+  position:relative;z-index:1;
+  display:block;width:auto;height:192px;max-width:100%;
+  object-fit:contain;object-position:center bottom;
+  transform:scaleX(-1) rotate(-5deg) translateY(7px);
+  transform-origin:center bottom;
+  filter:drop-shadow(0 5px 5px #2b667936);
+  pointer-events:none;
+}
+.numberMascotSparkle{position:absolute;z-index:2;color:#dba54b;font-weight:900;pointer-events:none}
+.numberMascotSparkleOne{right:10%;top:16%;font-size:27px}
+.numberMascotSparkleTwo{left:12%;top:26%;font-size:15px;color:#71b7e8}
+.numberMascotPaint{
+  position:absolute;z-index:2;
+  right:10px;bottom:10px;
+  display:flex;gap:5px;pointer-events:none;
+  transform:rotate(-9deg);
+}
+.numberMascotPaint i{
+  display:block;width:10px;height:10px;
+  border-radius:50%;border:1px solid #ffffffb8;
+  background:#f6b73c;box-shadow:0 1px 3px #2461622e;
+}
+.numberMascotPaint i:nth-child(2){background:#2fa84f}
+.numberMascotPaint i:nth-child(3){background:#ec4e7a}
+.numberMascotPaint i:nth-child(4){background:#3d8bea}
+.numberMascotGuide{
+  padding:11px 12px;
+  border:1px solid #f1e2bc;
+  border-radius:15px;
+  background:#fff9e9;color:#6c582c;
+}
+.numberMascotGuide p{
+  margin:0 0 6px;
+  font-size:12px;line-height:1.55;
+  font-weight:750;color:#615837;
+}
+.numberMascotGuide small{
+  display:block;font-size:11px;
+  line-height:1.4;font-weight:850;color:#856331;
+}
+.numberLegendRefined{
+  display:flex;align-items:center;justify-content:center;
+  gap:13px;margin:14px 0 17px;
+  padding:12px 10px;
+  border:1px solid #e7ebe5;
+  border-radius:19px;background:#f9fcf8;
+}
+.numberLegendRefined button{
+  position:relative;
+  width:52px;height:52px;
+  flex:0 0 52px;
+  border:3px solid #ffffff;
+  box-shadow:0 3px 7px #28585d22;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.numberLegendRefined button.active{
+  border-color:#173d78;
+  box-shadow:0 0 0 3px #99c8fb,0 5px 12px #28585d34;
+  transform:translateY(-2px);
+}
+.numberLegendRefined button:focus-visible{outline:3px solid #176fc7;outline-offset:5px}
+.numberLegendRefined button b{
+  width:27px;height:27px;font-size:14px;
+}
+.numberFlow .numberLibrary .numberThemes button{
+  min-height:92px;
+  border-radius:15px;
+  box-shadow:0 3px 8px #305d6012;
+}
+.numberFlow .numberLibrary .numberThemes button:focus-visible{
+  outline:3px solid #156dbd;outline-offset:2px;
+}
+.numberFlow .numberImageNote{
+  font-size:11px;line-height:1.55;
+  border:1px solid #d5e8f7;
+}
+@media(max-width:900px){
+  .numberMascotStage{height:176px}
+  .numberMascotImage{height:172px}
+}
+@media(max-width:650px){
+  .numberSideRefined{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 96px;
+    grid-template-areas:"painting-head painting-mascot" "painting-guide painting-mascot";
+    align-items:center;gap:6px 11px;
+    padding:12px;
+  }
+  .numberSideRefined .craftStepHead{grid-area:painting-head}
+  .numberSideRefined .numberMascotStage{
+    grid-area:painting-mascot;
+    width:96px;height:118px;margin:0;
+    border-radius:16px;
+  }
+  .numberSideRefined .numberMascotImage{
+    height:120px;max-width:100%;
+    transform:scaleX(-1) rotate(-6deg) translateY(5px);
+  }
+  .numberMascotSparkleOne{font-size:16px}
+  .numberMascotSparkleTwo{font-size:11px}
+  .numberMascotPaint{right:5px;bottom:6px;gap:2px}
+  .numberMascotPaint i{width:7px;height:7px}
+  .numberSideRefined .numberMascotGuide{
+    grid-area:painting-guide;
+    padding:7px 9px;border-radius:12px;
+  }
+  .numberMascotGuide p{font-size:10px;margin:0 0 3px}
+  .numberMascotGuide small{font-size:9px}
+  .numberLegendRefined{gap:10px;padding:10px 4px}
+  .numberLegendRefined button{width:49px;height:49px;flex-basis:49px}
+  .numberFlow .numberLibrary .numberThemes button{min-height:80px}
+}
+@media(max-width:375px){
+  .numberSideRefined{grid-template-columns:minmax(0,1fr) 82px}
+  .numberSideRefined .numberMascotStage{width:82px;height:108px}
+  .numberSideRefined .numberMascotImage{height:108px}
+  .numberLegendRefined{gap:7px}
+  .numberLegendRefined button{width:46px;height:46px;flex-basis:46px}
+}
+@media(prefers-reduced-motion:reduce){
+  .numberLegendRefined button{transition:none}
+}
