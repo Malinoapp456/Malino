@@ -3232,7 +3232,7 @@ export default function Page(){
       <div className="numberMascotStage">
        <span className="numberMascotSparkle numberMascotSparkleOne" aria-hidden="true">✦</span>
        <span className="numberMascotSparkle numberMascotSparkleTwo" aria-hidden="true">✳</span>
-       <img src="/malino-hero-mascot.png" alt="Malino mit seinem bunten Pinsel" className="numberMascotImage"/>
+       <img src="/malino-hero-mascot.png" alt={language==="pl"?"Malino z kolorowym pędzlem":"Malino mit seinem bunten Pinsel"} className="numberMascotImage"/>
        <span className="numberMascotPaint" aria-hidden="true"><i/><i/><i/><i/></span>
       </div>
       <div className="numberMascotGuide">
