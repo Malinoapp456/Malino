@@ -6,6 +6,7 @@ import {saveArtwork,loadArtwork,deleteProfileArtwork} from "../lib/artwork-stora
 import {legacyActivityKeys,migrateLegacyActivities,profileActivities} from "../lib/profile-activities.mjs";
 import {dabStyle} from "../lib/paint-input.mjs";
 import {LANGUAGE_KEY,normalizedLanguage,installUiTranslation,translateGerman} from "../lib/i18n.mjs";
+import {numberColoringNote,numberColoringPrintCopy,numberColoringBoardTitle} from "../lib/number-coloring-copy.mjs";
 import {worldStatus,worldProgressMessage,worldAccessibilityLabel} from "../lib/world-map.mjs";
 import {createHiddenPlacements,hiddenSceneDataUri} from "../lib/hidden-board.mjs";
 import {createDifferenceChanges,applyDifferenceChanges,differenceSceneUri} from "../lib/difference-board.mjs";
@@ -1887,24 +1888,25 @@ export default function Page(){
  };
  const shareNumberPdf=async()=>{
   if(typeof window==="undefined")return;
+  const printCopy=numberColoringPrintCopy(language);
   try{
    const W=1240,H=1754,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");if(!x)return;
-   x.fillStyle="#fff";x.fillRect(0,0,W,H);x.textAlign="center";x.fillStyle="#173d78";x.font="800 38px system-ui";x.fillText(`🎨 Malen nach Zahlen – ${activeNumberBoard.title}`,W/2,90);
-   x.fillStyle="#66778c";x.font="500 20px system-ui";x.fillText("Male jedes Feld in der Farbe seiner Nummer aus.",W/2,135);
+   x.fillStyle="#fff";x.fillRect(0,0,W,H);x.textAlign="center";x.fillStyle="#173d78";x.font="800 38px system-ui";x.fillText(`🎨 ${printCopy.heading} – ${numberColoringBoardTitle(activeNumberBoard.id,language)}`,W/2,90);
+   x.fillStyle="#66778c";x.font="500 20px system-ui";x.fillText(printCopy.instruction,W/2,135);
    const boardImage=await new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=activeNumberBoard.imagePath});
    const maxW=1040,maxH=1300,scale=Math.min(maxW/boardImage.naturalWidth,maxH/boardImage.naturalHeight),bw=boardImage.naturalWidth*scale,bh=boardImage.naturalHeight*scale,bx=(W-bw)/2,by=170;
    x.drawImage(boardImage,bx,by,bw,bh);
    const paletteY=by+bh+35;
-   x.fillStyle="#173d78";x.font="800 22px system-ui";x.textAlign="center";x.fillText("Farben:",W/2,paletteY);
+   x.fillStyle="#173d78";x.font="800 22px system-ui";x.textAlign="center";x.fillText(printCopy.colors,W/2,paletteY);
    const n=4;
    for(let i=0;i<n;i++){const xx=W/2-(n-1)*55+i*110;x.fillStyle=numberPalette[i];x.beginPath();x.arc(xx,paletteY+55,30,0,Math.PI*2);x.fill();x.fillStyle="#173d78";x.font="800 18px system-ui";x.fillText(String(i+1),xx,paletteY+62)}
-   x.fillStyle="#8a96a5";x.font="500 16px system-ui";x.fillText("Malino – kreative Spielzeit ohne Bildschirm",W/2,H-35);
+   x.fillStyle="#8a96a5";x.font="500 16px system-ui";x.fillText(printCopy.footer,W/2,H-35);
    const data=c.toDataURL("image/jpeg",.95).split(",")[1],bin=atob(data),jpg=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)jpg[i]=bin.charCodeAt(i);
    const enc=new TextEncoder(),chunks=[];let off=0;const ofs=[0],add=d=>{const b=typeof d==="string"?enc.encode(d):d;chunks.push(b);off+=b.length},obj=(n,b)=>{ofs[n]=off;add(`${n} 0 obj\n${b}\nendobj\n`)};
    add("%PDF-1.4\n");obj(1,"<< /Type /Catalog /Pages 2 0 R >>");obj(2,"<< /Type /Pages /Kids [3 0 R] /Count 1 >>");obj(3,"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>");
    ofs[4]=off;add(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${W} /Height ${H} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`);add(jpg);add("\nendstream\nendobj\n");const ct="q\n595.28 0 0 841.89 0 0 cm\n/Im0 Do\nQ\n";ofs[5]=off;add(`5 0 obj\n<< /Length ${ct.length} >>\nstream\n${ct}endstream\nendobj\n`);const xr=off;add("xref\n0 6\n0000000000 65535 f \n");for(let i=1;i<=5;i++)add(String(ofs[i]).padStart(10,"0")+" 00000 n \n");add(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF`);const total=chunks.reduce((q,b)=>q+b.length,0),pdf=new Uint8Array(total);let p=0;chunks.forEach(b=>{pdf.set(b,p);p+=b.length});
-   const blob=new Blob([pdf],{type:"application/pdf"}),file=new File([blob],`malino-malen-nach-zahlen-${activeNumberBoard.id}.pdf`,{type:"application/pdf"});
-   if(navigator.share&&navigator.canShare?.({files:[file]}))navigator.share({files:[file],title:"Malino – Malen nach Zahlen"}).catch(()=>{});else{const u=URL.createObjectURL(blob),aa=document.createElement("a");aa.href=u;aa.download=file.name;aa.click();setTimeout(()=>URL.revokeObjectURL(u),120000)}
+   const blob=new Blob([pdf],{type:"application/pdf"}),file=new File([blob],`malino-${language==="pl"?"kolorowanie-wedlug-numerow":"malen-nach-zahlen"}-${activeNumberBoard.id}.pdf`,{type:"application/pdf"});
+   if(navigator.share&&navigator.canShare?.({files:[file]}))navigator.share({files:[file],title:printCopy.shareTitle}).catch(()=>{});else{const u=URL.createObjectURL(blob),aa=document.createElement("a");aa.href=u;aa.download=file.name;aa.click();setTimeout(()=>URL.revokeObjectURL(u),120000)}
   }catch{}
  };
 
@@ -3227,18 +3229,27 @@ export default function Page(){
      @media(max-width:650px){.imageNumberBoardWrap{max-width:100%}.imageNumberBoard{border-radius:18px}}
     `}</style>
     <div className="numberFlow">
-     <aside className="numberSide">
-      <div className="craftStepHead"><span>🎨</span><div><b>Malen nach Zahlen</b><small>Interaktiv & zum Drucken</small></div></div>
-      <img src="/assets/malino-raetsel-mascot.png" alt="Malino" className="hiddenMascot"/>
-      <p>Wähle eine Nummer und tippe auf alle Felder mit derselben Zahl.</p>
+     <aside className="numberSide numberSideRefined">
+      <div className="craftStepHead"><span>🎨</span><div><b>{language==="pl"?"Kolorowanie według numerów":"Malen nach Zahlen"}</b><small>{language==="pl"?"Interaktywnie i do druku":"Interaktiv & zum Drucken"}</small></div></div>
+      <div className="numberMascotStage">
+       <span className="numberMascotSparkle numberMascotSparkleOne" aria-hidden="true">✦</span>
+       <span className="numberMascotSparkle numberMascotSparkleTwo" aria-hidden="true">✳</span>
+       <img src="/malino-hero-mascot.png" alt={language==="pl"?"Żółty lewek Malino z tęczową grzywą, w niebieskich ogrodniczkach, z pędzlem":"Der gelbe Löwe Malino mit Regenbogenmähne, blauer Latzhose und Pinsel"} className="numberMascotImage"/>
+       <span className="numberMascotPaint" aria-hidden="true"><i/><i/><i/><i/></span>
+      </div>
+      <div className="numberMascotGuide">
+       <strong className="numberMascotGuideTitle">{language==="pl"?"Malino podpowiada":"Malinos Maltipp"}</strong>
+       <p>{language==="pl"?"Wybierz numer i dotknij wszystkich pól z tą samą liczbą.":"Wähle eine Nummer und tippe auf alle Felder mit derselben Zahl."}</p>
+       <small>{language==="pl"?"Malino podpowiada: każdy numer ma swój kolor!":"Malinos Tipp: Jede Zahl hat ihre eigene Farbe!"}</small>
+      </div>
      </aside>
      <main className="numberMain">
       <div className="numberLibrary">
        <div className="numberLibraryHead"><small>Bild wählen</small><b>Unsere Zahlenbilder</b></div>
-       <div className="numberThemes">{numberBoards.map(board=><button key={board.id} className={numberThemeId===board.id?"active":""} onClick={()=>selectNumberBoard(board.id)}><span>{board.icon}</span><b>{board.title}</b><em>1–4</em></button>)}</div>
+       <div className="numberThemes">{numberBoards.map(board=><button key={board.id} className={numberThemeId===board.id?"active":""} onClick={()=>selectNumberBoard(board.id)}><span className={board.id==="malino"?"numberThemeMascotIcon":""}>{board.id==="malino"?<img src="/malino-hero-mascot.png" alt="" aria-hidden="true" loading="lazy" className="numberThemeMascotImage"/>:board.icon}</span><b>{numberColoringBoardTitle(board.id,language)}</b><em>1–4</em></button>)}</div>
       </div>
-      <div className="numberImageNote">{numberThemeId==="rocket"?"🚀 Tippe direkt in die nummerierten Flächen der Rakete.":numberThemeId==="dino"?"🦕 Tippe direkt in die nummerierten Flächen des Dinosauriers.":numberThemeId==="unicorn"?"🦄 Tippe direkt in die nummerierten Flächen des Einhorns.":numberThemeId===robotNumberThemeId?"🤖 Tippe direkt in die nummerierten Flächen des Roboters.":"✨ Weißes T-Shirt bleibt frei. Beide Träger sind Feld 2. Die Mähne nutzt alle 4 Farben."}</div>
-      <div className="numberLegend">{Array.from({length:4},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
+      <div className="numberImageNote" role="note" lang={language}>{numberColoringNote(numberThemeId,language)}</div>
+      <div className="numberLegend numberLegendRefined" role="group" aria-label={language==="pl"?"Wybierz numer koloru":"Farbnummer wählen"}>{Array.from({length:4},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} aria-label={language==="pl"?`Wybierz kolor numer ${i+1}`:`Farbe Nummer ${i+1} wählen`} aria-pressed={selectedNumber===i+1} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
       {useFloodNumberBoard
        ?<div className="numberFloodWrap">
          <MalinoNumberFloodBoard key={activeNumberBoard.id} selectedNumber={selectedNumber} palette={numberPalette} painted={numberPainted}
@@ -3326,7 +3337,7 @@ export default function Page(){
      </main>
     </div>
     <div className="craftSavedHead"><div><span className="eyebrow">Meine Sammlung</span><h2>Gespeicherte Zahlenbilder</h2></div><span>{savedNumberArt.length}</span></div>
-    {savedNumberArt.length===0?<div className="craftEmpty"><span>🎨</span><div><b>Noch kein Zahlenbild gespeichert</b><small>Male oben dein erstes Bild.</small></div></div>:<div className="differenceSavedGrid">{savedNumberArt.map(item=>{const board=numberBoards.find(x=>x.id===item.themeId)||numberBoards[0];return <article key={item.id} className="differenceSavedCard" role="button" onClick={()=>openSavedNumberArt(item)}><span>{board.icon}</span><div><b>{board.title}</b><small>4 Farben · Zahlen 1–4</small><em>Öffnen ›</em></div><button onClick={e=>{e.stopPropagation();setSavedNumberArt(savedNumberArt.filter(x=>x.id!==item.id))}}>×</button></article>})}</div>}
+    {savedNumberArt.length===0?<div className="craftEmpty"><span>🎨</span><div><b>Noch kein Zahlenbild gespeichert</b><small>Male oben dein erstes Bild.</small></div></div>:<div className="differenceSavedGrid">{savedNumberArt.map(item=>{const board=numberBoards.find(x=>x.id===item.themeId)||numberBoards[0];return <article key={item.id} className="differenceSavedCard" role="button" onClick={()=>openSavedNumberArt(item)}><span className={board.id==="malino"?"numberSavedMascotIcon":""}>{board.id==="malino"?<img src="/malino-hero-mascot.png" alt="" aria-hidden="true" loading="lazy" className="numberSavedMascotImage"/>:board.icon}</span><div><b>{numberColoringBoardTitle(board.id,language)}</b><small>4 Farben · Zahlen 1–4</small><em>Öffnen ›</em></div><button onClick={e=>{e.stopPropagation();setSavedNumberArt(savedNumberArt.filter(x=>x.id!==item.id))}}>×</button></article>})}</div>}
    </>}
 </section>}
 
