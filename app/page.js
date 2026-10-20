@@ -3227,10 +3227,18 @@ export default function Page(){
      @media(max-width:650px){.imageNumberBoardWrap{max-width:100%}.imageNumberBoard{border-radius:18px}}
     `}</style>
     <div className="numberFlow">
-     <aside className="numberSide">
+     <aside className="numberSide numberSideRefined">
       <div className="craftStepHead"><span>🎨</span><div><b>Malen nach Zahlen</b><small>Interaktiv & zum Drucken</small></div></div>
-      <img src="/assets/malino-raetsel-mascot.png" alt="Malino" className="hiddenMascot"/>
-      <p>Wähle eine Nummer und tippe auf alle Felder mit derselben Zahl.</p>
+      <div className="numberMascotStage">
+       <span className="numberMascotSparkle numberMascotSparkleOne" aria-hidden="true">✦</span>
+       <span className="numberMascotSparkle numberMascotSparkleTwo" aria-hidden="true">✳</span>
+       <img src="/malino-hero-mascot.png" alt="Malino mit seinem bunten Pinsel" className="numberMascotImage"/>
+       <span className="numberMascotPaint" aria-hidden="true"><i/><i/><i/><i/></span>
+      </div>
+      <div className="numberMascotGuide">
+       <p>Wähle eine Nummer und tippe auf alle Felder mit derselben Zahl.</p>
+       <small>{language==="pl"?"Malino podpowiada: każdy numer ma swój kolor!":"Malinos Tipp: Jede Zahl hat ihre eigene Farbe!"}</small>
+      </div>
      </aside>
      <main className="numberMain">
       <div className="numberLibrary">
@@ -3238,7 +3246,7 @@ export default function Page(){
        <div className="numberThemes">{numberBoards.map(board=><button key={board.id} className={numberThemeId===board.id?"active":""} onClick={()=>selectNumberBoard(board.id)}><span>{board.icon}</span><b>{board.title}</b><em>1–4</em></button>)}</div>
       </div>
       <div className="numberImageNote">{numberThemeId==="rocket"?"🚀 Tippe direkt in die nummerierten Flächen der Rakete.":numberThemeId==="dino"?"🦕 Tippe direkt in die nummerierten Flächen des Dinosauriers.":numberThemeId==="unicorn"?"🦄 Tippe direkt in die nummerierten Flächen des Einhorns.":numberThemeId===robotNumberThemeId?"🤖 Tippe direkt in die nummerierten Flächen des Roboters.":"✨ Weißes T-Shirt bleibt frei. Beide Träger sind Feld 2. Die Mähne nutzt alle 4 Farben."}</div>
-      <div className="numberLegend">{Array.from({length:4},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
+      <div className="numberLegend numberLegendRefined" role="group" aria-label={language==="pl"?"Wybierz numer koloru":"Farbnummer wählen"}>{Array.from({length:4},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} aria-label={language==="pl"?`Wybierz kolor numer ${i+1}`:`Farbe Nummer ${i+1} wählen`} aria-pressed={selectedNumber===i+1} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
       {useFloodNumberBoard
        ?<div className="numberFloodWrap">
          <MalinoNumberFloodBoard key={activeNumberBoard.id} selectedNumber={selectedNumber} palette={numberPalette} painted={numberPainted}
