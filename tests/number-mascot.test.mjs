@@ -53,3 +53,20 @@ test("translated number instructions, board labels and PDF print copy are used",
  assert.ok(page.includes('title:printCopy.shareTitle'));
  assert.ok(styles.includes(".numberMascotGuideTitle"));
 });
+
+test("Malino selection and saved cards show his canonical image, other themes keep emoji",()=>{
+ const selection=numbers.match(/<div className="numberThemes">[^\n]+/);
+ assert.ok(selection,"number coloring selection list exists");
+ assert.match(selection[0],/board\.id==="malino"\?<img src="\/malino-hero-mascot\.png"/);
+ assert.ok(selection[0].includes(':board.icon}'),"other icons remain unchanged");
+ assert.ok(selection[0].includes('className="numberThemeMascotImage"'));
+ const saved=numbers.match(/savedNumberArt\.map\(item=>[^\n]+/);
+ assert.ok(saved,"saved number paintings are shown");
+ assert.match(saved[0],/board\.id==="malino"\?<img src="\/malino-hero-mascot\.png"/);
+ assert.ok(saved[0].includes(':board.icon}'),"other saved theme icons remain unchanged");
+ assert.ok(saved[0].includes('className="numberSavedMascotImage"'));
+ assert.ok(styles.includes('.numberLibrary .numberThemes .numberThemeMascotIcon'));
+ assert.ok(styles.includes('.differenceSavedCard .numberSavedMascotImage'));
+ assert.ok(numbers.includes('onClick={()=>selectNumberBoard(board.id)}'));
+ assert.ok(numbers.includes('onClick={()=>openSavedNumberArt(item)}'));
+});
