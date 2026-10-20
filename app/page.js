@@ -3246,7 +3246,7 @@ export default function Page(){
      <main className="numberMain">
       <div className="numberLibrary">
        <div className="numberLibraryHead"><small>Bild wählen</small><b>Unsere Zahlenbilder</b></div>
-       <div className="numberThemes">{numberBoards.map(board=><button key={board.id} className={numberThemeId===board.id?"active":""} onClick={()=>selectNumberBoard(board.id)}><span>{board.icon}</span><b>{numberColoringBoardTitle(board.id,language)}</b><em>1–4</em></button>)}</div>
+       <div className="numberThemes">{numberBoards.map(board=><button key={board.id} className={numberThemeId===board.id?"active":""} onClick={()=>selectNumberBoard(board.id)}><span className={board.id==="malino"?"numberThemeMascotIcon":""}>{board.id==="malino"?<img src="/malino-hero-mascot.png" alt="" aria-hidden="true" loading="lazy" className="numberThemeMascotImage"/>:board.icon}</span><b>{numberColoringBoardTitle(board.id,language)}</b><em>1–4</em></button>)}</div>
       </div>
       <div className="numberImageNote" role="note" lang={language}>{numberColoringNote(numberThemeId,language)}</div>
       <div className="numberLegend numberLegendRefined" role="group" aria-label={language==="pl"?"Wybierz numer koloru":"Farbnummer wählen"}>{Array.from({length:4},(_,i)=><button key={i} className={selectedNumber===i+1?"active":""} aria-label={language==="pl"?`Wybierz kolor numer ${i+1}`:`Farbe Nummer ${i+1} wählen`} aria-pressed={selectedNumber===i+1} onClick={()=>setSelectedNumber(i+1)} style={{background:numberPalette[i]}}><b>{i+1}</b></button>)}</div>
@@ -3337,7 +3337,7 @@ export default function Page(){
      </main>
     </div>
     <div className="craftSavedHead"><div><span className="eyebrow">Meine Sammlung</span><h2>Gespeicherte Zahlenbilder</h2></div><span>{savedNumberArt.length}</span></div>
-    {savedNumberArt.length===0?<div className="craftEmpty"><span>🎨</span><div><b>Noch kein Zahlenbild gespeichert</b><small>Male oben dein erstes Bild.</small></div></div>:<div className="differenceSavedGrid">{savedNumberArt.map(item=>{const board=numberBoards.find(x=>x.id===item.themeId)||numberBoards[0];return <article key={item.id} className="differenceSavedCard" role="button" onClick={()=>openSavedNumberArt(item)}><span>{board.icon}</span><div><b>{numberColoringBoardTitle(board.id,language)}</b><small>4 Farben · Zahlen 1–4</small><em>Öffnen ›</em></div><button onClick={e=>{e.stopPropagation();setSavedNumberArt(savedNumberArt.filter(x=>x.id!==item.id))}}>×</button></article>})}</div>}
+    {savedNumberArt.length===0?<div className="craftEmpty"><span>🎨</span><div><b>Noch kein Zahlenbild gespeichert</b><small>Male oben dein erstes Bild.</small></div></div>:<div className="differenceSavedGrid">{savedNumberArt.map(item=>{const board=numberBoards.find(x=>x.id===item.themeId)||numberBoards[0];return <article key={item.id} className="differenceSavedCard" role="button" onClick={()=>openSavedNumberArt(item)}><span className={board.id==="malino"?"numberSavedMascotIcon":""}>{board.id==="malino"?<img src="/malino-hero-mascot.png" alt="" aria-hidden="true" loading="lazy" className="numberSavedMascotImage"/>:board.icon}</span><div><b>{numberColoringBoardTitle(board.id,language)}</b><small>4 Farben · Zahlen 1–4</small><em>Öffnen ›</em></div><button onClick={e=>{e.stopPropagation();setSavedNumberArt(savedNumberArt.filter(x=>x.id!==item.id))}}>×</button></article>})}</div>}
    </>}
 </section>}
 
