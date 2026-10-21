@@ -7590,3 +7590,537 @@ header:has(.languageSwitcher){z-index:31}
   margin-bottom:4px;
  }
 }
+
+/* Malino Storybook Home v1 — inviting play choices ahead of progress statistics.
+   Presentation-only rules; other screens and painting state stay unchanged. */
+.malinoStoryHome{padding-top:14px}
+.malinoStoryHome .malinoStoryHero{
+ position:relative;
+ min-height:300px;
+ grid-template-columns:minmax(0,1.18fr) minmax(230px,.82fr);
+ gap:22px;
+ background-image:
+  linear-gradient(110deg,rgba(255,255,255,.36),rgba(255,255,255,.02)),
+  url("/malino-hero-background.png") !important;
+ background-position:center center !important;
+ border-radius:32px;
+ border:2px solid #ffffffd9 !important;
+ box-shadow:0 16px 36px #355a8b19 !important;
+}
+.malinoStoryHero .premiumHeroCopy{
+ z-index:3;
+ padding-right:0;
+}
+.malinoStoryHero .premiumEyebrow{
+ color:#63459f;
+ background:#fffdf6e8;
+ border:1px solid #ffffff;
+ box-shadow:0 4px 12px #6c68a219;
+}
+.malinoStoryHero h1{
+ max-width:550px;
+ font-size:clamp(30px,3.6vw,46px);
+ line-height:1.12;
+ letter-spacing:-.032em;
+ text-wrap:balance;
+ text-shadow:0 2px 2px #ffffff85;
+}
+.malinoStoryHero p{
+ max-width:500px;
+ font-size:15px;
+ font-weight:750;
+ color:#365776;
+ line-height:1.55;
+}
+.malinoStoryActions{gap:10px;align-items:stretch}
+.malinoStoryActions button{
+ min-height:53px;
+ border-radius:17px;
+ font-size:14px;
+ line-height:1.2;
+ transition:transform .18s ease,box-shadow .18s ease;
+}
+.malinoStoryActions .malinoStoryPrimary{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:9px;
+ background:linear-gradient(135deg,#8141d4,#6436c4);
+ box-shadow:0 8px 19px #6941b83b;
+}
+.malinoStoryActions .malinoStoryPrimary span{font-size:20px}
+.malinoStoryActions .secondaryHeroBtn{
+ border:2px solid #e4dcf4;
+ background:#fffdf6eb;
+}
+.malinoStoryMascot{
+ position:relative;
+ min-height:245px;
+}
+.malinoStoryMascot .malinoHeroMascotImg{
+ width:min(100%,330px) !important;
+ max-height:280px !important;
+ object-fit:contain !important;
+}
+.malinoStoryMascotHello{
+ position:absolute;
+ z-index:4;
+ left:-6%;
+ top:1%;
+ padding:9px 13px;
+ background:#fffefa;
+ border:2px solid #fff;
+ border-radius:20px 20px 6px 20px;
+ box-shadow:0 8px 20px #243f7633;
+ color:#583f8f;
+ font-size:13px !important;
+ font-weight:950;
+ transform:rotate(-7deg);
+ white-space:nowrap;
+}
+.malinoStorySectionHeader{
+ margin-top:26px;
+ margin-bottom:15px;
+}
+.malinoStorySectionHeader h2{
+ font-size:clamp(22px,2.8vw,30px);
+ line-height:1.2;
+}
+.malinoStorySectionHeader p{
+ margin:6px 0 0;
+ color:#667994;
+ font-size:13px;
+ font-weight:650;
+}
+.malinoPlayChoices{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:14px;
+}
+.malinoPlayCard{
+ display:flex;
+ flex-direction:column;
+ position:relative;
+ isolation:isolate;
+ min-width:0;
+ min-height:250px;
+ padding:12px;
+ overflow:hidden;
+ border:2px solid #fff;
+ border-radius:26px;
+ cursor:pointer;
+ text-align:left;
+ font:inherit;
+ color:#244374;
+ box-shadow:0 10px 23px #294d821a;
+ transition:transform .18s ease,box-shadow .18s ease;
+}
+.malinoPlayCardColor{background:linear-gradient(145deg,#fff0f7,#ffe7cb)}
+.malinoPlayCardPuzzle{background:linear-gradient(145deg,#e8f7fd,#d8efff)}
+.malinoPlayCardCrafts{background:linear-gradient(145deg,#f2eaff,#f8e7fd)}
+.malinoPlayCardRewards{background:linear-gradient(145deg,#fff6d4,#ffedbd)}
+.malinoPlayCardArt{
+ display:block;
+ position:relative;
+ width:100%;
+ height:154px;
+ overflow:hidden;
+ border-radius:20px;
+ background:#ffffff91;
+ box-shadow:inset 0 0 0 1px #ffffffd2;
+}
+.malinoPlayCardArt>img{
+ display:block;
+ width:100%;
+ height:100%;
+ object-fit:contain;
+ padding:5px;
+ filter:drop-shadow(0 6px 6px #233c661e);
+}
+.malinoPlayCardRewards .malinoPlayCardArt>img{
+ padding:0;
+ transform:scale(.94);
+}
+.malinoPlayCardSymbol{
+ position:absolute;
+ right:6px;
+ bottom:5px;
+ display:grid;
+ place-items:center;
+ width:38px;
+ height:38px;
+ border:2px solid #fff;
+ border-radius:14px;
+ background:#ffffffec;
+ font-size:21px;
+ box-shadow:0 4px 10px #34487f26;
+}
+.malinoPlayCardText{display:grid;gap:5px;min-width:0;margin:12px 20px 0 3px}
+.malinoPlayCardText strong{
+ font-size:clamp(15px,1.5vw,19px);
+ font-weight:950;
+ line-height:1.22;
+}
+.malinoPlayCardText small{font-size:12px;font-weight:700;line-height:1.35;color:#647991}
+.malinoPlayCardArrow{
+ position:absolute;
+ right:12px;
+ bottom:12px;
+ width:26px;
+ height:26px;
+ display:grid;
+ place-items:center;
+ border-radius:50%;
+ background:#ffffffb8;
+ font-size:24px;
+ color:#5d4eac;
+}
+.malinoPlayCard:focus-visible,
+.malinoStoryActions button:focus-visible{
+ outline:3px solid #185dbd;
+ outline-offset:4px;
+}
+@media(hover:hover) and (pointer:fine){
+ .malinoPlayCard:hover{
+  transform:translateY(-4px);
+  box-shadow:0 17px 28px #294d822b;
+ }
+ .malinoStoryActions button:hover{transform:translateY(-2px)}
+}
+.malinoPlayCard:active{transform:scale(.985)}
+.malinoStoryHome .premiumQuickStats{
+ margin-top:8px !important;
+ margin-bottom:18px;
+}
+.malinoStoryHome .premiumQuickStats .statCard{
+ min-height:115px;
+ padding:11px 10px !important;
+}
+.malinoStoryHome .premiumQuickStats .statCard>span{
+ width:42px;
+ height:42px;
+ font-size:23px !important;
+}
+.malinoStoryHome .premiumQuickStats .statCard>b{font-size:21px !important}
+.malinoStoryHome .premiumQuickStats .statCard>small{font-size:12px}
+.malinoStoryHome .malinoStoryExtras{padding-top:8px;padding-bottom:22px}
+.malinoStoryExtras .featureCard{min-height:92px}
+@media(max-width:900px){
+ .malinoPlayChoices{gap:11px}
+ .malinoPlayCard{min-height:222px;padding:9px;border-radius:21px}
+ .malinoPlayCardArt{height:130px;border-radius:16px}
+ .malinoPlayCardText{margin-top:10px}
+}
+@media(max-width:760px){
+ .malinoStoryHome{padding-top:8px}
+ .malinoStoryHome .malinoStoryHero{
+  display:block;
+  position:relative;
+  padding:18px 16px 16px;
+  min-height:298px;
+  border-radius:26px;
+  background-position:58% center !important;
+ }
+ .malinoStoryHero .premiumHeroCopy{position:relative;z-index:3}
+ .malinoStoryHero .premiumEyebrow{
+  font-size:10px;
+  max-width:calc(100% - 55px);
+  line-height:1.35;
+ }
+ .malinoStoryHero h1{
+  max-width:calc(100% - 113px);
+  margin:10px 0 6px;
+  font-size:clamp(24px,6vw,33px);
+  line-height:1.12;
+  text-wrap:initial;
+ }
+ .malinoStoryHero p{
+  max-width:calc(100% - 112px);
+  font-size:12px;
+  line-height:1.42;
+ }
+ .malinoStoryHero .malinoStoryMascot{
+  position:absolute !important;
+  right:4px !important;
+  top:43px !important;
+  bottom:auto !important;
+  left:auto !important;
+  width:125px !important;
+  min-height:140px !important;
+  margin:0 !important;
+  order:initial !important;
+  opacity:1 !important;
+  pointer-events:none;
+ }
+ .malinoStoryMascot .malinoHeroMascotImg{
+  width:125px !important;
+  max-height:146px !important;
+ }
+ .malinoStoryMascot .heroSpark{font-size:15px !important}
+ .malinoStoryMascotHello{
+  top:-6px;
+  left:0;
+  padding:5px 7px;
+  border-radius:12px 12px 4px 12px;
+  font-size:9px !important;
+ }
+ .malinoStoryActions{
+  position:relative;
+  margin:18px 0 0;
+  gap:9px;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+ }
+ .malinoStoryActions button{
+  min-width:0;
+  min-height:53px;
+  padding:8px 9px;
+  font-size:12px;
+ }
+ .malinoStoryActions .malinoStoryPrimary span{display:none}
+ .malinoStorySectionHeader{margin:21px 0 12px}
+ .malinoStorySectionHeader p{font-size:12px}
+ .malinoPlayChoices{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+ .malinoPlayCard{
+  min-height:205px;
+  padding:9px;
+  border-radius:22px;
+ }
+ .malinoPlayCardArt{height:114px;border-radius:16px}
+ .malinoPlayCardSymbol{
+  width:33px;height:33px;
+  font-size:19px;
+  right:5px;bottom:5px;
+ }
+ .malinoPlayCardText{margin:9px 14px 0 3px;gap:4px}
+ .malinoPlayCardText strong{font-size:15px;line-height:1.2}
+ .malinoPlayCardText small{font-size:11px}
+ .malinoPlayCardArrow{width:23px;height:23px;right:7px;bottom:8px}
+ .malinoStoryHome .premiumQuickStats{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+ }
+ .malinoStoryHome .premiumQuickStats .statCard{
+  min-height:105px;
+  padding:10px 6px !important;
+ }
+ .malinoStoryHome .premiumQuickStats .statCard>small{font-size:11px}
+ .malinoStoryHome .premiumStreakCard{min-height:auto !important}
+ .malinoStoryHome .malinoStoryExtras{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .malinoStoryExtras .featureCard{grid-template-columns:auto 1fr;padding:11px;gap:8px}
+ .malinoStoryExtras .featureCard>span{width:36px;height:36px;font-size:20px}
+ .malinoStoryExtras .featureCard b{font-size:13px}
+ .malinoStoryExtras .featureCard small{font-size:10px;line-height:1.3}
+ .malinoStoryExtras .featureCard em{display:none}
+}
+@media(max-width:375px){
+ .malinoStoryHome .malinoStoryHero{padding:15px 12px;min-height:300px}
+ .malinoStoryHero h1{font-size:25px}
+ .malinoStoryHero .malinoStoryMascot{width:108px !important;right:1px !important}
+ .malinoStoryMascot .malinoHeroMascotImg{width:108px !important;max-height:138px !important}
+ .malinoStoryHero h1,.malinoStoryHero p{max-width:calc(100% - 104px)}
+ .malinoStoryActions button{font-size:11px;padding:8px 6px}
+ .malinoPlayCardArt{height:101px}
+ .malinoPlayCard{min-height:193px}
+ .malinoPlayCardText strong{font-size:14px}
+ .malinoPlayCardText small{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ .malinoPlayCard,.malinoStoryActions button{transition:none}
+ .malinoPlayCard:hover,.malinoStoryActions button:hover{transform:none}
+}
+
+/* Malino Storybook Home v2 — clear hero, no lettering layered on the lion. */
+.malinoStoryHome .malinoStoryHero{
+ display:grid;
+ grid-template-columns:minmax(0,1.12fr) minmax(210px,.88fr);
+ grid-template-areas:
+  "eyebrow mascot"
+  "headline mascot"
+  "intro mascot"
+  "actions mascot";
+ column-gap:24px;
+ row-gap:8px;
+ align-content:center;
+ align-items:center;
+}
+.malinoStoryHero > .malinoStoryEyebrow{
+ grid-area:eyebrow;
+ justify-self:start;
+ max-width:100%;
+}
+.malinoStoryHero > .malinoStoryHeadline{
+ grid-area:headline;
+ max-width:560px;
+ min-width:0;
+ margin:4px 0 0;
+}
+.malinoStoryHero > .malinoStoryIntro{
+ grid-area:intro;
+ min-width:0;
+ padding-right:0;
+}
+.malinoStoryHero .malinoStoryIntro p{
+ max-width:500px;
+ margin:0;
+}
+.malinoStoryHero > .malinoStoryMascot{
+ grid-area:mascot;
+ align-self:center;
+}
+.malinoStoryHero > .malinoStoryActions{
+ grid-area:actions;
+ width:100%;
+ margin-top:12px;
+}
+.malinoStoryHome .malinoPlayCardArt{
+ background:linear-gradient(145deg,#ffffffdc,#fffefd88);
+}
+.malinoStoryHome .malinoPlayCardArt > img{
+ padding:1px;
+ object-fit:contain;
+}
+@media(max-width:760px){
+ .malinoStoryHome .malinoStoryHero{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(118px,.83fr);
+  grid-template-areas:
+   "eyebrow eyebrow"
+   "headline headline"
+   "intro mascot"
+   "actions actions";
+  column-gap:10px;
+  row-gap:12px;
+  align-items:center;
+  min-height:0;
+  height:auto;
+  padding:18px 16px 20px;
+ }
+ .malinoStoryHome .malinoStoryHero > .malinoStoryEyebrow{
+  grid-area:eyebrow;
+  justify-self:start;
+  max-width:100%;
+  font-size:11px;
+  line-height:1.35;
+ }
+ .malinoStoryHome .malinoStoryHero > .malinoStoryHeadline{
+  grid-area:headline;
+  max-width:100%;
+  min-width:0;
+  font-size:clamp(27px,7vw,35px);
+  line-height:1.13;
+  margin:2px 0 0;
+ }
+ .malinoStoryHome .malinoStoryHero > .malinoStoryIntro{
+  grid-area:intro;
+  position:relative;
+  z-index:2;
+  align-self:center;
+  padding:0;
+  min-width:0;
+ }
+ .malinoStoryHome .malinoStoryHero .malinoStoryIntro p{
+  max-width:none;
+  font-size:13px;
+  line-height:1.48;
+  margin:0;
+ }
+ .malinoStoryHome .malinoStoryHero > .malinoStoryMascot{
+  grid-area:mascot;
+  position:relative !important;
+  top:auto !important;
+  right:auto !important;
+  bottom:auto !important;
+  left:auto !important;
+  width:100% !important;
+  height:auto !important;
+  min-height:160px !important;
+  margin:0 !important;
+  justify-self:center;
+  align-self:center;
+  opacity:1 !important;
+  transform:none;
+  pointer-events:none;
+ }
+ .malinoStoryHome .malinoStoryHero .malinoStoryMascot .malinoHeroMascotImg{
+  width:min(100%,160px) !important;
+  max-height:175px !important;
+  height:auto !important;
+  object-fit:contain !important;
+ }
+ .malinoStoryHome .malinoStoryHero > .malinoStoryActions{
+  grid-area:actions;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  width:100%;
+  margin:3px 0 0;
+  z-index:3;
+ }
+ .malinoStoryHome .malinoStoryHero .malinoStoryActions button{
+  min-height:55px;
+  padding:9px 8px;
+  font-size:12px;
+  white-space:normal;
+ }
+ .malinoStoryHome .malinoPlayCardArt > img{padding:0}
+}
+@media(max-width:375px){
+ .malinoStoryHome .malinoStoryHero{
+  grid-template-columns:minmax(0,1fr) 120px;
+  gap:9px;
+  padding:16px 12px 18px;
+  min-height:0;
+ }
+ .malinoStoryHome .malinoStoryHero > .malinoStoryHeadline{
+  font-size:27px;
+  max-width:100%;
+ }
+ .malinoStoryHome .malinoStoryHero .malinoStoryIntro p{
+  max-width:none;
+  font-size:12px;
+  line-height:1.42;
+ }
+ .malinoStoryHome .malinoStoryHero > .malinoStoryMascot{
+  width:100% !important;
+  min-height:145px !important;
+ }
+ .malinoStoryHome .malinoStoryHero .malinoStoryMascot .malinoHeroMascotImg{
+  width:min(100%,145px) !important;
+  max-height:160px !important;
+ }
+}
+
+/* Malino Premium Logo v1 — globally shared transparent brand artwork. */
+.logoPremium{
+ isolation:isolate;
+}
+.logoPremium img{
+ display:block;
+ object-fit:contain;
+ filter:drop-shadow(0 5px 9px rgba(22,62,143,.15));
+}
+@media(prefers-reduced-motion:reduce){
+ .logoPremium{animation:none !important}
+}
+
+/* Malino Premium Logo v2 — crisp full-color letters at phone header sizes. */
+.logoPremium{
+ animation:none !important;
+}
+.logoPremium img{
+ filter:none !important;
+ image-rendering:auto;
+}
+@media(max-width:760px){
+ header>.logoPremium img{
+  width:min(274px,78vw) !important;
+  max-width:274px !important;
+ }
+}
+@media(max-width:375px){
+ header>.logoPremium img{
+  width:min(256px,78vw) !important;
+  max-width:256px !important;
+ }
+}

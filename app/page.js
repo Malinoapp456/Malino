@@ -80,7 +80,7 @@ function useStore(key,initial){
  useEffect(()=>{try{localStorage.setItem(key,JSON.stringify(v))}catch{}},[key,v]);
  return [v,setV];
 }
-function Logo(){return <div className="logo logoV3" aria-label="Malino"><img src="/ui/malino-logo.webp" alt="Malino"/></div>}
+function Logo(){return <div className="logo logoV3 logoPremium" aria-label="Malino"><img src="/ui/malino-logo-premium-approved.webp" alt="Malino"/></div>}
 function HomeMascot(){return <div className="homeMascot" aria-label="Malino, dein kreativer Freund"><img src="/ui/malino-mascot.webp" alt="Fröhlicher Malino mit Pinsel"/><span className="mascotSpark s1">✦</span><span className="mascotSpark s2">✦</span><span className="mascotSpark s3">•</span></div>}
 function Lion(){return <div className="lion">🦁</div>}
 function ToolIcon({type}){
@@ -2818,30 +2818,53 @@ export default function Page(){
    </div>
    <Logo/><div><span key={`stars-${activeProfileId}-${headerStarCount}`}>⭐ {headerStarCount}</span><button key={`profile-${activeProfileId}`} onClick={openParentArea}><span className="headerProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><span className="headerProfileName" data-i18n-ignore="true">{activeProfile.name}</span></button></div></header>
 
-  {screen==="start"&&<section className="home premiumHome">
-   <div className="premiumHero">
-    <div className="premiumHeroCopy">
-     <span className="premiumEyebrow">Willkommen bei Malino</span>
-     <h1>Was möchtest du heute malen?</h1>
-     <p>Entdecke deine Tages-Challenge, sammle Sterne und halte deine Mal-Serie am Leben.</p>
-     <div className="premiumHeroActions">
-      <button className="primary" onClick={()=>open(dailyItem)}>🌟 Tages-Challenge</button>
-      <button className="secondaryHeroBtn" onClick={()=>setScreen("library")}>📚 Bibliothek</button>
-     </div>
+  {screen==="start"&&<section className="home premiumHome malinoStoryHome">
+   <div className="premiumHero malinoStoryHero">
+    <span className="premiumEyebrow malinoStoryEyebrow">✨ {language==="pl"?"Witaj w bajkowym świecie Malino!":"Willkommen in Malinos Zauberwelt!"}</span>
+    <h1 className="malinoStoryHeadline">{language==="pl"?"Cześć! W co się dziś pobawimy?":"Hallo! Was spielen wir heute?"}</h1>
+    <div className="premiumHeroCopy malinoStoryIntro">
+     <p>{language==="pl"?"Jestem Malino. Wybierz swoją przygodę, odkrywaj kolory i zbieraj gwiazdki!":"Ich bin Malino. Such dir ein Abenteuer aus, entdecke Farben und sammle Sterne!"}</p>
     </div>
-    <div className="premiumHeroMascot" aria-hidden="true">
+    <div className="premiumHeroMascot malinoStoryMascot" aria-hidden="true">
      <img className="malinoHeroMascotImg" src="/malino-hero-mascot.png" alt="" />
      <span className="heroSpark heroSpark1">✨</span>
      <span className="heroSpark heroSpark2">⭐</span>
      <span className="heroSpark heroSpark3">🎨</span>
     </div>
+    <div className="premiumHeroActions malinoStoryActions">
+     <button className="primary malinoStoryPrimary" onClick={()=>setScreen("library")}>🎨 {language==="pl"?"Zacznij kolorować":"Jetzt ausmalen"} <span aria-hidden="true">→</span></button>
+     <button className="secondaryHeroBtn" onClick={()=>open(dailyItem)}>🌟 {language==="pl"?"Dzisiejsze wyzwanie":"Heutiges Abenteuer"}</button>
+    </div>
    </div>
 
-   <div className="homeQuickStats premiumQuickStats">
-    <button className="statCard statStars" onClick={()=>setScreen("reward")}><span>⭐</span><b>{stars}</b><small>Sterne</small><i>Mehr sammeln ›</i></button>
-    <button className="statCard statBadges" onClick={()=>setScreen("reward")}><span>🏅</span><b>{unlockedBadgeCount}/{achievementBadges.length}</b><small>Abzeichen</small><i>Ziele ansehen ›</i></button>
-    <button className="statCard statGallery" onClick={()=>setScreen("gallery")}><span>🎨</span><b>{gallery.length}</b><small>Galerie</small><i>Kunstwerke ›</i></button>
-    <button className="statCard statStreak" onClick={()=>open(dailyItem)}><span>🔥</span><b>{dailyStreak}</b><small>Tage Serie</small><i>{dailyClaimed?"Heute sicher ✓":"Heute sichern ›"}</i></button>
+   <div className="homeSectionHeader malinoStorySectionHeader" id="malino-play-choices">
+    <div>
+     <span className="eyebrow">{language==="pl"?"Czas na zabawę":"Zeit zum Spielen"}</span>
+     <h2>{language==="pl"?"Wybierz swoją przygodę":"Wähle dein Abenteuer"}</h2>
+     <p>{language==="pl"?"Dotknij obrazka i ruszaj do zabawy!":"Tippe auf ein Bild und leg los!"}</p>
+    </div>
+   </div>
+   <div className="malinoPlayChoices" role="group" aria-label={language==="pl"?"Wybierz rodzaj zabawy":"Spiel auswählen"}>
+    <button type="button" className="malinoPlayCard malinoPlayCardColor" onClick={()=>setScreen("library")}>
+     <span className="malinoPlayCardArt"><img src="/ui/home-coloring.svg" alt="" loading="lazy"/><span className="malinoPlayCardSymbol" aria-hidden="true">🎨</span></span>
+     <span className="malinoPlayCardText"><strong>{language==="pl"?"Kolorowanki":"Malbilder"}</strong><small>{language==="pl"?"Odkrywaj kolory":"Farben entdecken"}</small></span>
+     <span className="malinoPlayCardArrow" aria-hidden="true">›</span>
+    </button>
+    <button type="button" className="malinoPlayCard malinoPlayCardPuzzle" onClick={()=>{setPuzzleFeedback(null);setPuzzleWrong(null);setScreen("puzzles")}}>
+     <span className="malinoPlayCardArt"><img src="/ui/home-puzzles.svg" alt="" loading="lazy"/><span className="malinoPlayCardSymbol" aria-hidden="true">🧩</span></span>
+     <span className="malinoPlayCardText"><strong>{language==="pl"?"Zagadki":"Rätsel"}</strong><small>{language==="pl"?"Myśl i odkrywaj":"Rätseln & entdecken"}</small></span>
+     <span className="malinoPlayCardArrow" aria-hidden="true">›</span>
+    </button>
+    <button type="button" className="malinoPlayCard malinoPlayCardCrafts" onClick={()=>setScreen("crafts")}>
+     <span className="malinoPlayCardArt"><img src="/ui/home-crafts.svg" alt="" loading="lazy"/><span className="malinoPlayCardSymbol" aria-hidden="true">✂️</span></span>
+     <span className="malinoPlayCardText"><strong>{language==="pl"?"Twórz i baw się":"Basteln & Spielen"}</strong><small>{language==="pl"?"Puzzle i kreatywność":"Puzzeln & gestalten"}</small></span>
+     <span className="malinoPlayCardArrow" aria-hidden="true">›</span>
+    </button>
+    <button type="button" className="malinoPlayCard malinoPlayCardRewards" onClick={()=>setScreen("reward")}>
+     <span className="malinoPlayCardArt"><img src="/ui/home-rewards.svg" alt="" loading="lazy"/><span className="malinoPlayCardSymbol" aria-hidden="true">⭐</span></span>
+     <span className="malinoPlayCardText"><strong>{language==="pl"?"Moje nagrody":"Meine Belohnungen"}</strong><small>{language==="pl"?"Gwiazdki i skarby":"Sterne & Schätze"}</small></span>
+     <span className="malinoPlayCardArrow" aria-hidden="true">›</span>
+    </button>
    </div>
 
    <div className="homeSectionHeader adventureHeader">
@@ -2904,28 +2927,22 @@ export default function Page(){
     </div>
    </div>
 
-   <div className="homeSectionHeader">
-    <div><span className="eyebrow">Entdecken</span><h2>Schnellzugriff</h2></div>
+   <div className="homeSectionHeader malinoStorySectionHeader">
+    <div><span className="eyebrow">{language==="pl"?"Twoje osiągnięcia":"Deine Erfolge"}</span><h2>{language==="pl"?"Małe kroki, wielkie gwiazdki":"Kleine Schritte, große Sterne"}</h2></div>
+   </div>
+   <div className="homeQuickStats premiumQuickStats">
+    <button className="statCard statStars" onClick={()=>setScreen("reward")}><span>⭐</span><b>{stars}</b><small>Sterne</small><i>Mehr sammeln ›</i></button>
+    <button className="statCard statBadges" onClick={()=>setScreen("reward")}><span>🏅</span><b>{unlockedBadgeCount}/{achievementBadges.length}</b><small>Abzeichen</small><i>Ziele ansehen ›</i></button>
+    <button className="statCard statGallery" onClick={()=>setScreen("gallery")}><span>🎨</span><b>{gallery.length}</b><small>Galerie</small><i>Kunstwerke ›</i></button>
+    <button className="statCard statStreak" onClick={()=>open(dailyItem)}><span>🔥</span><b>{dailyStreak}</b><small>Tage Serie</small><i>{dailyClaimed?"Heute sicher ✓":"Heute sichern ›"}</i></button>
    </div>
 
-   <div className="homeFeatureGrid">
-    <button className="featureCard featureLibrary" onClick={()=>setScreen("library")}>
-     <span>📚</span><div><b>Bibliothek</b><small>Alle Malbilder entdecken</small></div><em>›</em>
-    </button>
-    <button className="featureCard featureRewards" onClick={()=>setScreen("reward")}>
-     <span>🎁</span><div><b>Belohnungen</b><small>Sterne, Abzeichen & Schätze</small></div><em>›</em>
-    </button>
+   <div className="homeFeatureGrid malinoStoryExtras">
     <button className="featureCard featureGallery" onClick={()=>setScreen("gallery")}>
-     <span>🎨</span><div><b>Galerie</b><small>Deine fertigen Kunstwerke</small></div><em>›</em>
-    </button>
-    <button className="featureCard featurePuzzles" onClick={()=>{setPuzzleFeedback(null);setPuzzleWrong(null);setScreen("puzzles")}}>
-     <span>🧩</span><div><b>Rätsel & Rebusse</b><small>Denken, entdecken & Sterne sammeln</small></div><em>›</em>
-    </button>
-    <button className="featureCard featureCrafts" onClick={()=>setScreen("crafts")}>
-     <span>✂️</span><div><b>Basteln & Spielen</b><small>Puzzle & Labyrinthe zum Drucken</small></div><em>›</em>
+     <span>🎨</span><div><b>{language==="pl"?"Moja galeria":"Meine Galerie"}</b><small>{language==="pl"?"Zobacz swoje obrazki":"Deine Kunstwerke ansehen"}</small></div><em>›</em>
     </button>
     <button className="featureCard featureProfile" onClick={openParentArea}>
-     <span>{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><div><b data-i18n-ignore="true">{activeProfile.name}</b><small>Kinderprofil & Fortschritt</small></div><em>›</em>
+     <span>{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><div><b data-i18n-ignore="true">{activeProfile.name}</b><small>{language==="pl"?"Profil i postępy":"Profil & Fortschritt"}</small></div><em>›</em>
     </button>
    </div>
   </section>}
