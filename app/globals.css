@@ -7929,3 +7929,164 @@ header:has(.languageSwitcher){z-index:31}
  .malinoPlayCard,.malinoStoryActions button{transition:none}
  .malinoPlayCard:hover,.malinoStoryActions button:hover{transform:none}
 }
+
+/* Malino Storybook Home v2 — clear hero, no lettering layered on the lion. */
+.malinoStoryHome .malinoStoryHero{
+ display:grid;
+ grid-template-columns:minmax(0,1.12fr) minmax(210px,.88fr);
+ grid-template-areas:
+  "eyebrow mascot"
+  "headline mascot"
+  "intro mascot"
+  "actions mascot";
+ column-gap:24px;
+ row-gap:8px;
+ align-content:center;
+ align-items:center;
+}
+.malinoStoryHero > .malinoStoryEyebrow{
+ grid-area:eyebrow;
+ justify-self:start;
+ max-width:100%;
+}
+.malinoStoryHero > .malinoStoryHeadline{
+ grid-area:headline;
+ max-width:560px;
+ min-width:0;
+ margin:4px 0 0;
+}
+.malinoStoryHero > .malinoStoryIntro{
+ grid-area:intro;
+ min-width:0;
+ padding-right:0;
+}
+.malinoStoryHero .malinoStoryIntro p{
+ max-width:500px;
+ margin:0;
+}
+.malinoStoryHero > .malinoStoryMascot{
+ grid-area:mascot;
+ align-self:center;
+}
+.malinoStoryHero > .malinoStoryActions{
+ grid-area:actions;
+ width:100%;
+ margin-top:12px;
+}
+.malinoStoryHome .malinoPlayCardArt{
+ background:linear-gradient(145deg,#ffffffdc,#fffefd88);
+}
+.malinoStoryHome .malinoPlayCardArt > img{
+ padding:1px;
+ object-fit:contain;
+}
+@media(max-width:760px){
+ .malinoStoryHome .malinoStoryHero{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(118px,.83fr);
+  grid-template-areas:
+   "eyebrow eyebrow"
+   "headline headline"
+   "intro mascot"
+   "actions actions";
+  column-gap:10px;
+  row-gap:12px;
+  align-items:center;
+  min-height:0;
+  height:auto;
+  padding:18px 16px 20px;
+ }
+ .malinoStoryHome .malinoStoryHero > .malinoStoryEyebrow{
+  grid-area:eyebrow;
+  justify-self:start;
+  max-width:100%;
+  font-size:11px;
+  line-height:1.35;
+ }
+ .malinoStoryHome .malinoStoryHero > .malinoStoryHeadline{
+  grid-area:headline;
+  max-width:100%;
+  min-width:0;
+  font-size:clamp(27px,7vw,35px);
+  line-height:1.13;
+  margin:2px 0 0;
+ }
+ .malinoStoryHome .malinoStoryHero > .malinoStoryIntro{
+  grid-area:intro;
+  position:relative;
+  z-index:2;
+  align-self:center;
+  padding:0;
+  min-width:0;
+ }
+ .malinoStoryHome .malinoStoryHero .malinoStoryIntro p{
+  max-width:none;
+  font-size:13px;
+  line-height:1.48;
+  margin:0;
+ }
+ .malinoStoryHome .malinoStoryHero > .malinoStoryMascot{
+  grid-area:mascot;
+  position:relative !important;
+  top:auto !important;
+  right:auto !important;
+  bottom:auto !important;
+  left:auto !important;
+  width:100% !important;
+  height:auto !important;
+  min-height:160px !important;
+  margin:0 !important;
+  justify-self:center;
+  align-self:center;
+  opacity:1 !important;
+  transform:none;
+  pointer-events:none;
+ }
+ .malinoStoryHome .malinoStoryHero .malinoStoryMascot .malinoHeroMascotImg{
+  width:min(100%,160px) !important;
+  max-height:175px !important;
+  height:auto !important;
+  object-fit:contain !important;
+ }
+ .malinoStoryHome .malinoStoryHero > .malinoStoryActions{
+  grid-area:actions;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  width:100%;
+  margin:3px 0 0;
+  z-index:3;
+ }
+ .malinoStoryHome .malinoStoryHero .malinoStoryActions button{
+  min-height:55px;
+  padding:9px 8px;
+  font-size:12px;
+  white-space:normal;
+ }
+ .malinoStoryHome .malinoPlayCardArt > img{padding:0}
+}
+@media(max-width:375px){
+ .malinoStoryHome .malinoStoryHero{
+  grid-template-columns:minmax(0,1fr) 120px;
+  gap:9px;
+  padding:16px 12px 18px;
+  min-height:0;
+ }
+ .malinoStoryHome .malinoStoryHero > .malinoStoryHeadline{
+  font-size:27px;
+  max-width:100%;
+ }
+ .malinoStoryHome .malinoStoryHero .malinoStoryIntro p{
+  max-width:none;
+  font-size:12px;
+  line-height:1.42;
+ }
+ .malinoStoryHome .malinoStoryHero > .malinoStoryMascot{
+  width:100% !important;
+  min-height:145px !important;
+ }
+ .malinoStoryHome .malinoStoryHero .malinoStoryMascot .malinoHeroMascotImg{
+  width:min(100%,145px) !important;
+  max-height:160px !important;
+ }
+}
