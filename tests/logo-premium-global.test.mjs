@@ -26,7 +26,7 @@ test("premium logo is a standalone, safe, high-resolution transparent vector",()
  assert.ok(svg.includes('id="pawPink"')&&svg.includes('id="pawPurple"'));
  assert.ok(svg.includes('fill-rule="evenodd"'),"bold filled letterforms must be retained");
  assert.ok(!svg.includes('stroke-width="74"'),"avoid thick white-outline glyphs");
- assert.ok(!svg.includes('filter="url(#blur)"'));
+ assert.ok(!svg.includes('id="blur"'), "no blurring filter in logo");
  for(const color of ["blue","yellow","green","pink","orange","purple"]){
   assert.ok(svg.includes('id="'+color+'"'));
   assert.ok(svg.includes('stroke="url(#'+color+')"'));
