@@ -80,7 +80,7 @@ function useStore(key,initial){
  useEffect(()=>{try{localStorage.setItem(key,JSON.stringify(v))}catch{}},[key,v]);
  return [v,setV];
 }
-function Logo(){return <div className="logo logoV3 logoPremium" aria-label="Malino"><img src="/ui/malino-logo-premium-v2.svg" alt="Malino"/></div>}
+function Logo(){return <div className="logo logoV3 logoPremium" aria-label="Malino"><img src="/ui/malino-logo-premium-approved.webp" alt="Malino"/></div>}
 function HomeMascot(){return <div className="homeMascot" aria-label="Malino, dein kreativer Freund"><img src="/ui/malino-mascot.webp" alt="Fröhlicher Malino mit Pinsel"/><span className="mascotSpark s1">✦</span><span className="mascotSpark s2">✦</span><span className="mascotSpark s3">•</span></div>}
 function Lion(){return <div className="lion">🦁</div>}
 function ToolIcon({type}){
