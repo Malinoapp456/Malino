@@ -8090,3 +8090,16 @@ header:has(.languageSwitcher){z-index:31}
   max-height:160px !important;
  }
 }
+
+/* Malino Premium Logo v1 — globally shared transparent brand artwork. */
+.logoPremium{
+ isolation:isolate;
+}
+.logoPremium img{
+ display:block;
+ object-fit:contain;
+ filter:drop-shadow(0 5px 9px rgba(22,62,143,.15));
+}
+@media(prefers-reduced-motion:reduce){
+ .logoPremium{animation:none !important}
+}
