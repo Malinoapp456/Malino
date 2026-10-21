@@ -8103,3 +8103,24 @@ header:has(.languageSwitcher){z-index:31}
 @media(prefers-reduced-motion:reduce){
  .logoPremium{animation:none !important}
 }
+
+/* Malino Premium Logo v2 — crisp full-color letters at phone header sizes. */
+.logoPremium{
+ animation:none !important;
+}
+.logoPremium img{
+ filter:none !important;
+ image-rendering:auto;
+}
+@media(max-width:760px){
+ header>.logoPremium img{
+  width:min(274px,78vw) !important;
+  max-width:274px !important;
+ }
+}
+@media(max-width:375px){
+ header>.logoPremium img{
+  width:min(256px,78vw) !important;
+  max-width:256px !important;
+ }
+}
