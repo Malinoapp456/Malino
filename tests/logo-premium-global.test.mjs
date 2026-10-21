@@ -18,7 +18,7 @@ test("premium logo is a standalone, safe, high-resolution transparent vector",()
  assert.ok(svg.startsWith('<svg xmlns="http://www.w3.org/2000/svg"'));
  assert.ok(svg.trimEnd().endsWith('</svg>'));
  assert.ok(svg.includes('viewBox="0 0 1200 340"'));
- assert.ok(svg.includes('role="img" aria-label="Malino"'));
+ assert.ok(svg.includes('role="img" aria-label="Malino Premium"'));
  assert.ok(!svg.includes('<script'));
  assert.ok(!svg.includes('<image'));
  assert.ok(!svg.includes('<rect'));
@@ -26,7 +26,7 @@ test("premium logo is a standalone, safe, high-resolution transparent vector",()
  assert.ok(svg.includes('id="pawPink"')&&svg.includes('id="pawPurple"'));
  assert.ok(svg.includes('fill-rule="evenodd"'),"bold filled letterforms must be retained");
  assert.ok(!svg.includes('stroke-width="74"'),"avoid thick white-outline glyphs");
- assert.ok(!svg.includes('filter="url(#blur')"'));
+ assert.ok(!svg.includes('filter="url(#blur)"'));
  for(const color of ["blue","yellow","green","pink","orange","purple"]){
   assert.ok(svg.includes('id="'+color+'"'));
   assert.ok(svg.includes('stroke="url(#'+color+')"'));
