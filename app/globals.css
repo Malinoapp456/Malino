@@ -9447,3 +9447,431 @@ header:has(.languageSwitcher){z-index:31}
   transition:none;
  }
 }
+
+/* ========================================================
+   Malino Storybook Profiles v1 — presentation only.
+   Profile storage, PIN security, sound and progress unchanged.
+   ======================================================== */
+.storyParentsPage{
+ align-items:start;
+ gap:18px;
+ padding-bottom:155px;
+ min-width:0;
+}
+.storyParentsPage>.parentPinGate{
+ grid-column:1/-1;
+}
+.storyParentsPage>.storyProfilePanel,
+.storyParentsPage>.storyProfileStatsPanel{
+ min-width:0;
+ overflow:hidden;
+ padding:23px;
+ border:2px solid #fff;
+ border-radius:27px;
+ box-shadow:0 13px 27px #314d811d;
+}
+.storyParentsPage>.storyProfilePanel{
+ background:
+  radial-gradient(circle at 92% 4%,#ffe4a99c 0 25px,transparent 26px),
+  linear-gradient(145deg,#f8f0ff,#eaf8ff 70%,#fff6e5);
+}
+.storyParentsPage>.storyProfileStatsPanel{
+ background:
+  radial-gradient(circle at 92% 9%,#ffffffb5 0 18px,transparent 19px),
+  linear-gradient(140deg,#fff8e9,#f7efff 63%,#edf7ff);
+}
+.storyParentsPage .storyProfilePanel>h1{
+ margin:0 0 16px;
+ color:#254783;
+ font-weight:950;
+ letter-spacing:-.03em;
+}
+.storyParentsPage .storyProfilePanel .parentSecurityCard{
+ background:#ffffffcd;
+ border:2px solid #fff;
+ border-radius:18px;
+ box-shadow:0 6px 17px #576d8e12;
+}
+.storyParentsPage .storyProfilePanel .parentTestCard{
+ background:#fff9e9d9;
+ border:2px solid #fff;
+ border-radius:18px;
+ box-shadow:0 6px 17px #b17d2b10;
+}
+.storyParentsPage .storyProfilesHead{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ margin:23px 0 15px;
+ padding:14px;
+ border:2px solid #fff;
+ border-radius:22px;
+ background:linear-gradient(135deg,#ffe9f4,#ede8ff 55%,#eafaff);
+ box-shadow:0 9px 18px #6864b61a;
+}
+.storyParentsPage .storyProfilesHeadArt{
+ display:grid;
+ place-items:center;
+ flex:0 0 65px;
+ width:65px;
+ height:65px;
+ border:3px solid #fff;
+ border-radius:19px;
+ background:linear-gradient(145deg,#fff2c8,#ffe0f1);
+ box-shadow:0 5px 13px #9f689526;
+ font-size:38px;
+ line-height:1;
+}
+.storyParentsPage .storyProfilesHead>div{
+ display:grid;
+ gap:5px;
+ min-width:0;
+}
+.storyParentsPage .storyProfilesHead .eyebrow{
+ justify-self:start;
+ color:#7856b1;
+ font-size:10px;
+}
+.storyParentsPage .storyProfilesHead h2{
+ margin:0;
+ color:#254681;
+ font-size:23px;
+ line-height:1.18;
+}
+.storyParentsPage .storyProfilesActive{
+ display:block;
+ margin:0;
+ color:#687894;
+ font-size:12px;
+ line-height:1.4;
+ font-weight:800;
+}
+.storyParentsPage .storyProfilesActive>b{
+ display:inline-flex;
+ align-items:center;
+ gap:5px;
+ margin-left:4px;
+ color:#6746ac;
+ max-width:100%;
+ overflow-wrap:anywhere;
+}
+.storyParentsPage .storyProfilesActive .inlineProfileAvatar{
+ display:inline-block;
+ margin:0;
+}
+.storyParentsPage .storyProfileGrid{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:12px;
+ margin:0 0 17px;
+}
+.storyParentsPage .storyProfileChoice{
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:7px;
+ min-width:0;
+ min-height:156px;
+ padding:15px 8px 12px;
+ border:3px solid #fff;
+ border-radius:23px;
+ background:linear-gradient(145deg,#fffdf7,#eaf4ff);
+ color:#26437d;
+ box-shadow:0 9px 17px #4c64951a;
+ font:inherit;
+ text-align:center;
+ cursor:pointer;
+ transition:transform .15s ease,box-shadow .15s ease;
+}
+.storyParentsPage .storyProfileChoice:nth-child(4n+2){
+ background:linear-gradient(145deg,#fff3fc,#f0e7ff);
+}
+.storyParentsPage .storyProfileChoice:nth-child(4n+3){
+ background:linear-gradient(145deg,#e7fff7,#ecf5ff);
+}
+.storyParentsPage .storyProfileChoice:nth-child(4n){
+ background:linear-gradient(145deg,#fff2dc,#f5efff);
+}
+.storyParentsPage .storyProfileChoice.isActive{
+ border-color:#b9a0fa;
+ box-shadow:0 0 0 3px #bca5ff4e,0 11px 21px #7568aa2d;
+ background:linear-gradient(135deg,#fceaff,#efe9ff 62%,#e6f6ff);
+}
+.storyParentsPage .storyProfileChoice .profileChoiceAvatar{
+ display:grid;
+ place-items:center;
+ float:none;
+ width:66px;
+ height:66px;
+ margin:0;
+ border:3px solid #fff;
+ border-radius:22px;
+ background:linear-gradient(150deg,#fff2c3,#f4dbff);
+ box-shadow:0 6px 12px #9276a320;
+ font-size:39px;
+ line-height:1;
+}
+.storyParentsPage .storyProfileChoice.isActive .profileChoiceAvatar{
+ background:linear-gradient(140deg,#ffe9b3,#ffdcec);
+}
+.storyParentsPage .storyProfileChoiceName{
+ min-width:0;
+ max-width:100%;
+ color:#25447d;
+ font-size:15px;
+ font-weight:950;
+ overflow-wrap:anywhere;
+ line-height:1.2;
+}
+.storyParentsPage .storyProfileChoiceState{
+ align-self:center;
+ float:none;
+ font-size:12px;
+ color:#7561aa;
+ font-weight:950;
+}
+.storyParentsPage .storyProfileChoice.isActive .storyProfileChoiceState{
+ padding:4px 9px;
+ border:1px solid #fff;
+ border-radius:999px;
+ background:#e6dfff;
+ color:#6147af;
+}
+.storyParentsPage .storyProfilePanel>button.storyProfileAction{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:12px;
+ min-height:49px;
+ margin:6px 0;
+ padding:12px 15px;
+ border:2px solid #fff;
+ border-radius:16px;
+ background:#ffffffd9;
+ color:#315386;
+ text-align:left;
+ font-weight:900;
+ box-shadow:0 4px 11px #52679612;
+}
+.storyParentsPage .storyProfilePanel>button.storyProfileAction span{
+ float:none;
+ margin-left:auto;
+ color:#9972c0;
+}
+.storyParentsPage .storyProfilePanel>button.storyProfileActionAdd{
+ background:linear-gradient(135deg,#f5e6ff,#e2f3ff);
+ color:#6447ad;
+}
+.storyParentsPage .storyProfilePanel>button.storyProfileActionCaution{
+ background:#fff9f6db;
+ color:#8b6a5b;
+}
+.storyParentsPage .storyProfileStatsPanel>h2{
+ display:flex;
+ align-items:center;
+ gap:9px;
+ margin:0 0 16px;
+ color:#29477c;
+}
+.storyParentsPage .storyProfileStatsArt{
+ display:grid;
+ place-items:center;
+ width:40px;
+ height:40px;
+ flex:0 0 40px;
+ border:2px solid #fff;
+ border-radius:14px;
+ background:#ffebc0;
+ box-shadow:0 4px 10px #cd936e23;
+}
+.storyParentsPage .storyProfileStatsPanel>p{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:9px;
+ margin:0;
+ padding:12px 5px;
+ border-bottom:1px dashed #adb7d156;
+ color:#64758b;
+ font-size:13px;
+ font-weight:750;
+}
+.storyParentsPage .storyProfileStatsPanel>p b{
+ text-align:right;
+ color:#244b86;
+ font-size:14px;
+ overflow-wrap:anywhere;
+}
+.storyParentsPage .storyProfileStatsPanel .bars{
+ margin-top:20px;
+ height:146px;
+ border-bottom:3px solid #cbdcf3;
+}
+.storyParentsPage .storyProfileStatsPanel .bars i{
+ width:26px;
+ max-width:11%;
+ background:linear-gradient(180deg,#d6bcff,#90aff5 55%,#84ddcb);
+ border-radius:11px 11px 0 0;
+}
+.storyParentsPage .storyProfileChoice:focus-visible,
+.storyParentsPage .storyProfileAction:focus-visible,
+.storyProfileDialogCard button:focus-visible{
+ outline:3px solid #2368d1;
+ outline-offset:3px;
+}
+.storyProfileDialogCard{
+ border:3px solid #fff;
+ border-radius:30px !important;
+ background:
+  radial-gradient(circle at 89% 5%,#ffe5a4b0 0 21px,transparent 22px),
+  linear-gradient(135deg,#fcf7ff,#f4f8ff 66%,#fff8ed);
+ box-shadow:0 22px 60px #3e568432 !important;
+}
+.storyProfileDialogCard>h2{
+ color:#254783;
+}
+.storyProfileDialogCard>input{
+ box-sizing:border-box;
+ max-width:100%;
+}
+.storyProfileDialogCard .storyProfileAvatarPicker{
+ margin-top:10px;
+ padding:13px;
+ border:2px solid #fff;
+ border-radius:22px;
+ background:linear-gradient(135deg,#f4eaff,#edf8ff);
+}
+.storyProfileDialogCard .storyProfileAvatarPicker>b{
+ color:#58468c;
+}
+.storyProfileDialogCard .storyProfileAvatarGrid{
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:9px;
+}
+.storyProfileDialogCard .storyProfileAvatarGrid button{
+ min-width:0;
+ min-height:82px;
+ padding:9px 5px;
+ border:3px solid #fff;
+ border-radius:19px;
+ background:#fffdfc;
+ box-shadow:0 6px 13px #7b6b9b16;
+}
+.storyProfileDialogCard .storyProfileAvatarGrid button:nth-child(4n+2){
+ background:#fff2f9;
+}
+.storyProfileDialogCard .storyProfileAvatarGrid button:nth-child(4n+3){
+ background:#effbf4;
+}
+.storyProfileDialogCard .storyProfileAvatarGrid button:nth-child(4n){
+ background:#f0f3ff;
+}
+.storyProfileDialogCard .storyProfileAvatarGrid button.selected{
+ border-color:#a884ee;
+ background:#efe5ff;
+ box-shadow:0 0 0 3px #ba9ef046,0 8px 17px #8066bc2b;
+}
+.storyProfileDialogCard .storyProfileAvatarGrid button>span{
+ font-size:32px;
+}
+.storyProfileDialogCard .storyProfileAvatarGrid button>small{
+ font-size:10px;
+ font-weight:900;
+ color:#556e91;
+ text-align:center;
+ line-height:1.2;
+}
+@media(hover:hover) and (pointer:fine){
+ .storyParentsPage .storyProfileChoice:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 21px #5b66962b;
+ }
+}
+@media(max-width:1100px){
+ .storyParentsPage{
+  grid-template-columns:minmax(0,1fr);
+  gap:14px;
+ }
+ .storyParentsPage .storyProfileGrid{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+ }
+}
+@media(max-width:650px){
+ .storyParentsPage{
+  padding-bottom:150px;
+ }
+ .storyParentsPage>.storyProfilePanel,
+ .storyParentsPage>.storyProfileStatsPanel{
+  padding:15px;
+  border-radius:22px;
+ }
+ .storyParentsPage .storyProfilesHead{
+  margin:17px 0 13px;
+  padding:10px;
+  gap:9px;
+  border-radius:17px;
+ }
+ .storyParentsPage .storyProfilesHeadArt{
+  width:48px;
+  height:48px;
+  flex-basis:48px;
+  border-radius:14px;
+  font-size:29px;
+ }
+ .storyParentsPage .storyProfilesHead h2{font-size:18px}
+ .storyParentsPage .storyProfilesHead .eyebrow{font-size:9px}
+ .storyParentsPage .storyProfilesActive{font-size:11px}
+ .storyParentsPage .storyProfileGrid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+ }
+ .storyParentsPage .storyProfileChoice{
+  min-height:138px;
+  gap:6px;
+  padding:10px 6px;
+  border-radius:19px;
+ }
+ .storyParentsPage .storyProfileChoice .profileChoiceAvatar{
+  width:56px;
+  height:56px;
+  font-size:33px;
+  border-radius:17px;
+ }
+ .storyParentsPage .storyProfileChoiceName{font-size:13px}
+ .storyParentsPage .storyProfileChoiceState{font-size:10px}
+ .storyProfileDialogCard{
+  padding:22px 15px !important;
+  border-radius:24px !important;
+ }
+ .storyProfileDialogCard .storyProfileAvatarPicker{
+  padding:10px;
+  border-radius:17px;
+ }
+ .storyProfileDialogCard .storyProfileAvatarGrid{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:6px;
+ }
+ .storyProfileDialogCard .storyProfileAvatarGrid button{
+  min-height:69px;
+  padding:6px 2px;
+  border-radius:13px;
+  border-width:2px;
+ }
+ .storyProfileDialogCard .storyProfileAvatarGrid button>span{font-size:26px}
+ .storyProfileDialogCard .storyProfileAvatarGrid button>small{font-size:8px}
+}
+@media(max-width:360px){
+ .storyParentsPage .storyProfilesHead h2{font-size:16px}
+ .storyParentsPage .storyProfileChoice .profileChoiceAvatar{
+  width:51px;height:51px;font-size:28px;
+ }
+ .storyProfileDialogCard .storyProfileAvatarGrid button>span{font-size:24px}
+ .storyProfileDialogCard .storyProfileAvatarGrid button>small{font-size:7px}
+}
+@media(prefers-reduced-motion:reduce){
+ .storyParentsPage .storyProfileChoice{
+  transition:none;
+ }
+ .storyParentsPage .storyProfileChoice:hover{transform:none}
+}
