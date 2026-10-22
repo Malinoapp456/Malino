@@ -8709,3 +8709,395 @@ header:has(.languageSwitcher){z-index:31}
   transition:none;
  }
 }
+
+/* ========================================================
+   Malino Storybook Gallery v1 — visual-only refresh.
+   Never alters saved artwork, per-profile storage or editor.
+   ======================================================== */
+.storybookGalleryPage{
+ isolation:isolate;
+ min-width:0;
+}
+.storybookGalleryPage .storyGalleryHero{
+ position:relative;
+ isolation:isolate;
+ overflow:hidden;
+ border:2px solid #fff;
+ background:
+  radial-gradient(circle at 90% 11%,#fff7b999 0 22px,transparent 23px),
+  radial-gradient(circle at 9% 91%,#ffd8e5a6 0 16px,transparent 17px),
+  linear-gradient(125deg,#e0f5ff 0%,#f1eafe 58%,#fff3dd 100%);
+ box-shadow:0 13px 29px #314b831f;
+}
+.storybookGalleryPage .storyGalleryHero::before{
+ position:absolute;
+ top:12px;
+ right:28%;
+ content:"✦";
+ color:#f9c15b;
+ font-size:26px;
+ text-shadow:0 2px 0 white,0 4px 10px #eab65755;
+ pointer-events:none;
+}
+.storybookGalleryPage .storyGalleryCount{
+ border:2px solid #fff;
+ background:linear-gradient(135deg,#fffaf1,#fbe4f6);
+ box-shadow:0 8px 21px #d5a95924;
+}
+.storybookGalleryPage .storyGalleryCount>span{
+ filter:drop-shadow(0 3px 5px #a77bd755);
+}
+.storybookGalleryPage .storyGalleryHero .galleryNew{
+ border:2px solid #fff;
+ border-radius:15px;
+ background:linear-gradient(130deg,#8970e6,#b877e9);
+ color:white;
+ box-shadow:0 5px 0 #6e56c3;
+}
+.storybookGalleryPage .storyGalleryHero .galleryOpenLatest{
+ border:2px solid #fff;
+ border-radius:15px;
+ background:#fff9ff;
+ color:#7253bd;
+ box-shadow:0 4px 12px #57478519;
+}
+.storybookGalleryPage .storyGallerySectionHead h2{
+ color:#213e7c;
+ letter-spacing:-.02em;
+}
+.storybookGalleryPage .storyGallerySectionHead .eyebrow{
+ color:#8160bd;
+}
+.storybookGalleryPage .storyGallerySectionHead>span{
+ border:2px solid #fff;
+ border-radius:999px;
+ background:linear-gradient(135deg,#f3e9ff,#e3f3ff);
+ color:#6950aa;
+ font-weight:900;
+ box-shadow:0 4px 13px #5d64a01c;
+}
+.storybookGalleryPage .storyGalleryGrid{
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:17px;
+ align-items:stretch;
+}
+.storybookGalleryPage .storyGalleryCard{
+ position:relative;
+ isolation:isolate;
+ min-width:0;
+ overflow:hidden;
+ padding:11px !important;
+ border:3px solid #fff !important;
+ border-radius:26px !important;
+ background:linear-gradient(145deg,#fffaf2,#f7efff) !important;
+ box-shadow:0 12px 23px #4257851c !important;
+ transition:box-shadow .18s ease,transform .18s ease;
+}
+.storybookGalleryPage .storyGalleryCard:nth-child(3n+2){
+ background:linear-gradient(145deg,#eef8ff,#fff5fb) !important;
+}
+.storybookGalleryPage .storyGalleryCard:nth-child(3n){
+ background:linear-gradient(145deg,#fff5e5,#ebf7fa) !important;
+}
+.storybookGalleryPage .storyGalleryCard.latest{
+ border-color:#ffecad !important;
+ box-shadow:0 0 0 3px #ffe69e55,0 13px 27px #b086502d !important;
+}
+.storybookGalleryPage .storyGalleryCard.latest::before{
+ content:"";
+ position:absolute;
+ inset:0;
+ z-index:-1;
+ border-radius:inherit;
+ pointer-events:none;
+ background:radial-gradient(circle at 92% 7%,#fff2baaa,transparent 27%);
+}
+.storybookGalleryPage .storyGalleryOpen{
+ position:relative;
+ display:block;
+ overflow:hidden;
+ width:100%;
+ padding:0;
+ border:3px solid #fff;
+ border-radius:20px;
+ background:#fff;
+ box-shadow:0 5px 12px #4d61941e;
+}
+.storybookGalleryPage .storyGalleryOpen .thumb{
+ width:100%;
+ height:auto;
+ min-height:0;
+ aspect-ratio:4/4.4;
+ border:0;
+ border-radius:16px;
+ background:#fff;
+ box-shadow:none;
+ overflow:hidden;
+}
+.storybookGalleryPage .storyGalleryOpen .thumb img{
+ display:block;
+ width:100%;
+ height:100%;
+ min-height:0;
+ object-fit:contain;
+ object-position:center;
+ transition:none;
+}
+.storybookGalleryPage .storyGalleryCard:hover .storyGalleryOpen .thumb img{
+ transform:none;
+}
+.storybookGalleryPage .storyGalleryOpen .latestBadge{
+ top:10px;
+ left:10px;
+ padding:7px 10px;
+ border:2px solid #fff;
+ background:#fff8d9;
+ color:#7853a7;
+ box-shadow:0 5px 10px #7a608128;
+}
+.storybookGalleryPage .storyGalleryCardText{
+ min-height:73px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:8px;
+ padding:12px 5px 8px !important;
+}
+.storybookGalleryPage .storyGalleryCardText>div{
+ min-width:0;
+ display:grid;
+ gap:4px;
+}
+.storybookGalleryPage .storyGalleryCardText b{
+ color:#29437c;
+ font-size:15px;
+ font-weight:950;
+ white-space:normal;
+ overflow-wrap:anywhere;
+ line-height:1.22;
+}
+.storybookGalleryPage .storyGalleryCardText small{
+ color:#728199;
+ font-size:11px;
+}
+.storybookGalleryPage .storyGalleryCardText>span{
+ display:block;
+ flex:0 1 auto;
+ min-width:0;
+ max-width:46%;
+ overflow-wrap:anywhere;
+ padding:6px 9px;
+ border:1px solid #fff;
+ background:#efe7ff;
+ color:#7655b0;
+ font-size:10px;
+ font-weight:900;
+}
+.storybookGalleryPage .galleryCardActions{
+ display:grid;
+ grid-template-columns:minmax(0,1fr) auto;
+ align-items:center;
+ gap:9px;
+ padding:0 4px 4px;
+}
+.storybookGalleryPage .galleryCardActions .galleryAgain{
+ min-height:43px;
+ margin:0;
+ border:2px solid #fff;
+ border-radius:15px;
+ background:linear-gradient(135deg,#e9e4ff,#e7f2ff);
+ color:#6744b8;
+ font-weight:950;
+ box-shadow:0 4px 9px #5d6aa019;
+}
+.storybookGalleryPage .galleryCardActions .galleryFavorite{
+ width:44px;
+ min-height:43px;
+ border:2px solid #fff;
+ border-radius:15px;
+ background:#fff0f6;
+ box-shadow:0 4px 10px #a16b8b18;
+}
+.storybookGalleryPage .storyGalleryEmpty{
+ position:relative;
+ overflow:hidden;
+ min-height:400px;
+ padding:34px 22px;
+ border:3px solid #fff;
+ border-radius:29px;
+ background:
+  radial-gradient(circle at 87% 17%,#ffdd89a6 0 26px,transparent 27px),
+  radial-gradient(circle at 15% 76%,#d5c3ffa6 0 35px,transparent 36px),
+  linear-gradient(140deg,#e5f6ff,#fff3fa 58%,#fff7e6);
+ box-shadow:0 12px 28px #42568d1b;
+}
+.storybookGalleryPage .storyGalleryEmpty::before{
+ content:"✦";
+ position:absolute;
+ top:29px;
+ left:20%;
+ font-size:36px;
+ color:#f6ba52;
+ text-shadow:0 4px 0 white;
+ pointer-events:none;
+}
+.storybookGalleryPage .storyGalleryEmpty::after{
+ content:"✧";
+ position:absolute;
+ right:18%;
+ bottom:22%;
+ font-size:32px;
+ color:#9e82e5;
+ pointer-events:none;
+}
+.storybookGalleryPage .storyGalleryEmptyMascot{
+ position:relative;
+ z-index:1;
+ filter:drop-shadow(0 11px 11px #58639b28);
+}
+.storybookGalleryPage .storyGalleryEmptyIcon{
+ position:relative;
+ display:grid;
+ place-items:center;
+ width:66px;
+ height:66px;
+ margin:3px 0 10px;
+ border:3px solid #fff;
+ border-radius:23px;
+ background:linear-gradient(145deg,#fff1c6,#f2dfff);
+ box-shadow:0 6px 15px #7764a62b;
+ font-size:39px;
+}
+.storybookGalleryPage .storyGalleryEmptyIcon i{
+ position:absolute;
+ top:-8px;
+ right:-11px;
+ color:#efb84c;
+ font-size:27px;
+ font-style:normal;
+ text-shadow:0 2px 0 #fff;
+}
+.storybookGalleryPage .storyGalleryEmpty h2{
+ margin:5px 0 8px;
+ color:#28477f;
+}
+.storybookGalleryPage .storyGalleryEmpty p{
+ max-width:385px;
+ color:#657891;
+ font-weight:700;
+ line-height:1.45;
+}
+.storybookGalleryPage .storyGalleryEmpty button{
+ position:relative;
+ z-index:1;
+ min-height:47px;
+ padding:12px 18px;
+ border:2px solid #fff;
+ border-radius:16px;
+ background:linear-gradient(135deg,#9471e9,#bd81e6);
+ color:#fff;
+ box-shadow:0 5px 0 #7256ba;
+}
+.storybookGalleryPage button:focus-visible{
+ outline:3px solid #2467c6;
+ outline-offset:3px;
+}
+@media(hover:hover) and (pointer:fine){
+ .storybookGalleryPage .storyGalleryCard:hover{
+  transform:translateY(-3px);
+  box-shadow:0 15px 29px #42578529 !important;
+ }
+}
+@media(max-width:900px){
+ .storybookGalleryPage .storyGalleryGrid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+ }
+ .storybookGalleryPage .storyGalleryCard{
+  padding:9px !important;
+  border-radius:22px !important;
+ }
+}
+@media(max-width:650px){
+ .storybookGalleryPage .storyGalleryGrid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+ }
+ .storybookGalleryPage .storyGalleryCard{
+  padding:7px !important;
+  border-width:2px !important;
+  border-radius:19px !important;
+ }
+ .storybookGalleryPage .storyGalleryOpen{
+  border-width:2px;
+  border-radius:15px;
+ }
+ .storybookGalleryPage .storyGalleryOpen .thumb{
+  min-height:0;
+  aspect-ratio:4/4.4;
+  border-radius:13px;
+ }
+ .storybookGalleryPage .storyGalleryOpen .thumb img{
+  min-height:0;
+  object-fit:contain;
+ }
+ .storybookGalleryPage .storyGalleryCardText{
+  min-height:66px;
+  padding:8px 3px 5px !important;
+  align-items:start;
+  flex-direction:column;
+  gap:5px;
+ }
+ .storybookGalleryPage .storyGalleryCardText b{
+  font-size:13px;
+ }
+ .storybookGalleryPage .storyGalleryCardText small{
+  font-size:10px;
+ }
+ .storybookGalleryPage .storyGalleryCardText>span{
+  max-width:100%;
+  padding:4px 7px;
+  font-size:9px;
+ }
+ .storybookGalleryPage .galleryCardActions{
+  padding:0 1px 2px;
+  gap:5px;
+ }
+ .storybookGalleryPage .galleryCardActions .galleryAgain{
+  min-height:38px;
+  padding:6px 4px;
+  font-size:10px;
+  line-height:1.18;
+  border-radius:11px;
+ }
+ .storybookGalleryPage .galleryCardActions .galleryFavorite{
+  min-height:38px;
+  width:36px;
+  border-radius:11px;
+ }
+ .storybookGalleryPage .storyGalleryEmpty{
+  min-height:350px;
+  padding:24px 15px;
+ }
+ .storybookGalleryPage .storyGalleryEmpty::before{
+  top:19px;
+  left:11%;
+  font-size:28px;
+ }
+ .storybookGalleryPage .storyGalleryEmptyMascot{
+  height:112px;
+ }
+ .storybookGalleryPage .storyGalleryEmptyIcon{
+  width:59px;height:59px;font-size:33px;
+ }
+}
+@media(max-width:375px){
+ .storybookGalleryPage .storyGalleryGrid{gap:7px}
+ .storybookGalleryPage .storyGalleryCardText b{font-size:12px}
+ .storybookGalleryPage .galleryCardActions .galleryAgain{font-size:9px}
+ .storybookGalleryPage .galleryCardActions .galleryFavorite{width:34px}
+}
+@media(prefers-reduced-motion:reduce){
+ .storybookGalleryPage .storyGalleryCard{transition:none}
+ .storybookGalleryPage .storyGalleryCard:hover{transform:none}
+}
