@@ -3485,8 +3485,8 @@ export default function Page(){
    })()}
   </section>}
 
-  {screen==="library"&&<section className="libraryPage">
-   <div className="libraryWelcome">
+  {screen==="library"&&<section className="libraryPage libraryStoryPage">
+   <div className="libraryWelcome libraryStoryWelcome">
     <div className="libraryMascot libraryMascotV2"><img src="/ui/malino-mascot.webp" alt="Malino"/></div>
     <div><span className="eyebrow">Malinos Malwelt</span><h1>Was möchtest du heute malen?</h1><p>Entdecke Tiere, Dinosaurier und viele weitere Abenteuer.</p></div>
     <div className="libraryStats"><b>{items.length}</b><span>Malbilder</span><b>{done.length}</b><span>fertig</span></div>
@@ -3497,10 +3497,10 @@ export default function Page(){
     <select value={cat} onChange={e=>setCat(e.target.value)}>{cats.map(c=><option key={c}>{categoryMeta[c]?.label||c}</option>)}</select>
    </div>
 
-   <div className="libraryCategoryHead"><div><span className="eyebrow">Kategorien</span><h2>Wähle deine Malwelt</h2></div><button onClick={()=>setCat("Alle")} className={cat==="Alle"?"isSelected":""}>Alle zeigen</button></div>
-   <div className="libraryCategories">
-    {visibleCategories.map(c=>{const meta=categoryMeta[c];const count=categoryCount(c);return <button key={c} className={`libraryCategory ${meta.tone} ${cat===c?"isSelected":""}`} onClick={()=>setCat(c)}>
-      <span className="categoryIcon">{meta.emoji}</span>
+   <div className="libraryCategoryHead libraryStoryCategoryHead"><div><span className="eyebrow">Kategorien</span><h2>Wähle deine Malwelt</h2></div><button onClick={()=>setCat("Alle")} className={cat==="Alle"?"isSelected":""}>Alle zeigen</button></div>
+   <div className="libraryCategories libraryStoryCategories">
+    {visibleCategories.map(c=>{const meta=categoryMeta[c];const count=categoryCount(c);return <button key={c} type="button" className={`libraryCategory storyCategory ${meta.tone} ${cat===c?"isSelected":""}`} aria-pressed={cat===c} onClick={()=>setCat(c)}>
+      <span className="categoryIcon storyCategoryArt"><img src={`/ui/library-${meta.tone}.svg`} alt="" loading="lazy"/></span>
       <span className="categoryInfo"><b>{meta.label}</b><small>{count} {count===1?"Bild":"Bilder"}</small></span>
       <span className="categoryArrow">›</span>
     </button>})}
@@ -3508,7 +3508,7 @@ export default function Page(){
 
    {cat==="Alle"&&!query&&<>
     <div className="librarySectionHead"><div><span className="eyebrow">Neu bei Malino</span><h2>Neu hinzugefügt</h2></div><span>{newItems.length} Bilder</span></div>
-    <div className="libraryRail">{newItems.map(x=><article key={"new-"+x.id} className="libraryCard compact">
+    <div className="libraryRail storyLibraryRail">{newItems.map(x=><article key={"new-"+x.id} className="libraryCard compact storyLibraryCard">
       <button className="heart" onClick={()=>setFav(fav.includes(x.id)?fav.filter(y=>y!==x.id):[...fav,x.id])}>{fav.includes(x.id)?"❤️":"🤍"}</button>
       <button className="libraryOpen" onClick={()=>open(x)}><Thumb it={x} done={done.includes(x.id)}/></button>
       <b>{x.name}</b><small>{x.cat}</small>
@@ -3516,7 +3516,7 @@ export default function Page(){
 
     {favoriteItems.length>0&&<>
      <div className="librarySectionHead"><div><span className="eyebrow">Deine Auswahl</span><h2>Favoriten ❤️</h2></div><span>{favoriteItems.length}</span></div>
-     <div className="libraryRail favoritesRail">{favoriteItems.map(x=><article key={"fav-"+x.id} className="libraryCard compact">
+     <div className="libraryRail favoritesRail storyLibraryRail">{favoriteItems.map(x=><article key={"fav-"+x.id} className="libraryCard compact storyLibraryCard">
        <button className="heart" onClick={()=>setFav(fav.filter(y=>y!==x.id))}>❤️</button>
        <button className="libraryOpen" onClick={()=>open(x)}><Thumb it={x} done={done.includes(x.id)}/></button>
        <b>{x.name}</b><small>{x.cat}</small>
@@ -3527,7 +3527,7 @@ export default function Page(){
    {hasChest200&&<>
     <div className="librarySectionHead secretMalinoHead"><div><span className="eyebrow">Deine Belohnung ✨</span><h2>Malinos Geheimbilder 🦁</h2></div><span>1 exklusives Bild</span></div>
     <div className="secretMalinoShelf">
-     <article className="libraryCard secretMalinoCard">
+     <article className="libraryCard secretMalinoCard storyLibraryCard">
       <span className="secretRibbon">👑 Freigeschaltet</span>
       <button className="libraryOpen" onClick={()=>open(secretMalinoItem)}><Thumb it={secretMalinoItem} done={done.includes(secretMalinoItem.id)}/></button>
       <div className="libraryCardText"><b>{secretMalinoItem.name}</b><small>Nur als Malino-Belohnung</small></div>
@@ -3537,7 +3537,7 @@ export default function Page(){
    </>}
 
    <div className="librarySectionHead mainResults"><div><span className="eyebrow">{cat==="Alle"?"Bibliothek":"Kategorie"}</span><h2>{visibleTitle}</h2></div><span>{filtered.length} {filtered.length===1?"Bild":"Bilder"}</span></div>
-   {filtered.length?<div className="libraryGrid">{filtered.map(x=><article key={x.id} className="libraryCard">
+   {filtered.length?<div className="libraryGrid storyLibraryGrid">{filtered.map(x=><article key={x.id} className="libraryCard storyLibraryCard">
       <button className="heart" onClick={()=>setFav(fav.includes(x.id)?fav.filter(y=>y!==x.id):[...fav,x.id])}>{fav.includes(x.id)?"❤️":"🤍"}</button>
       <button className="libraryOpen" onClick={()=>open(x)}><Thumb it={x} done={done.includes(x.id)}/></button>
       <div className="libraryCardText"><b>{x.name}</b><small>{x.cat}</small></div>
