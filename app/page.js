@@ -3587,14 +3587,14 @@ export default function Page(){
    </div>
   </section>}
 
-  {screen==="reward"&&<section className="rewardsHub">
-   <div className="rewardsHero">
+  {screen==="reward"&&<section className="rewardsHub storyRewardsHub">
+   <div className="rewardsHero storyRewardsHero">
     <div className="rewardsMascot"><img src="/ui/malino-mascot.webp" alt="Malino"/></div>
     <div className="rewardsHeroText"><span className="eyebrow">Deine Belohnungen</span><h1>Deine Malino-Schatzkiste 🏆</h1><p>Male weiter, sammle Sterne und erreiche neue Ziele in deiner Abzeichen-Sammlung.</p></div>
-    <div className="starWallet"><span>⭐</span><div><b>{stars}</b><small>Sterne</small></div></div>
+    <div className="starWallet storyStarWallet"><span>⭐</span><div><b>{stars}</b><small>Sterne</small></div></div>
    </div>
 
-   <div className="levelCard">
+   <div className="levelCard storyLevelCard">
     <div className="levelTop"><div><span className="eyebrow">Dein Fortschritt</span><h2>Kreativ-Level {Math.max(1,Math.floor(done.length/5)+1)}</h2></div><b>{done.length} / {Math.max(5,(Math.floor(done.length/5)+1)*5)} Bilder</b></div>
     <div className="levelTrack"><i style={{width:Math.min(100,((done.length%5)/5)*100)+"%"}}/></div>
     <div className="levelFoot"><span>🎨 {done.length} fertig</span><span>Noch {done.length%5===0&&done.length>0?5:5-(done.length%5)} Bilder bis zum nächsten Level ✨</span></div>
@@ -3605,8 +3605,8 @@ export default function Page(){
     <div><b>{unlockedBadgeCount} von {achievementBadges.length} geschafft</b><small>{unlockedBadgeCount===achievementBadges.length?"Alle Abzeichen gesammelt! 🏆":"Jedes Abzeichen zeigt dir ein neues Malino-Ziel."}</small></div>
     <div className="achievementTrack"><i style={{width:`${Math.round((unlockedBadgeCount/achievementBadges.length)*100)}%`}}/></div>
    </div>
-   <div className="badgeGrid badgeGridExpanded">
-    {achievementBadges.map(b=><article key={b.id} className={`badgeCard achievementBadge ${b.ok?"unlocked":"locked"}`}>
+   <div className="badgeGrid badgeGridExpanded storyBadgeGrid">
+    {achievementBadges.map(b=><article key={b.id} className={`badgeCard achievementBadge storyBadgeCard ${b.ok?"unlocked":"locked"}`}>
      <span className="badgeIcon">{b.ok?b.icon:"🔒"}</span>
      <div className="badgeCopy"><b>{b.title}</b><small>{b.ok?"Geschafft!":b.desc}</small></div>
      {b.ok&&<i>✓</i>}
@@ -3617,13 +3617,13 @@ export default function Page(){
     <div><span className="eyebrow">Schatzsammlung</span><h2>Malinos Fundstücke ✨</h2><p className="badgeSectionIntro">Sammle Sticker und Rahmen. Freigeschaltete Rahmen kannst du direkt für deine Galerie auswählen.</p></div>
     <div className="treasureHeadActions"><span>{unlockedTreasureCount}/{treasureItems.length}</span><button onClick={()=>setScreen("room")}>🦁 Mein Malino-Zimmer</button></div>
    </div>
-   <div className="treasureCollectionGrid">
-    <article className={`treasureCollectible unlocked ${activeFrame==="classic"?"equipped":""}`}>
+   <div className="treasureCollectionGrid storyTreasureGrid">
+    <article className={`treasureCollectible storyTreasureItem unlocked ${activeFrame==="classic"?"equipped":""}`}>
      <div className="treasurePreview framePreview frame-classic"><span>🖼️</span></div>
      <div className="treasureCopy"><b>Klassischer Rahmen</b><small>Immer verfügbar</small></div>
      <button onClick={()=>setActiveFrame("classic")}>{activeFrame==="classic"?"✓ Aktiv":"Verwenden"}</button>
     </article>
-    {treasureItems.map(t=><article key={t.id} className={`treasureCollectible ${t.ok?"unlocked":"locked"} ${t.type==="frame"&&activeFrame===t.id?"equipped":""}`}>
+    {treasureItems.map(t=><article key={t.id} className={`treasureCollectible storyTreasureItem ${t.ok?"unlocked":"locked"} ${t.type==="frame"&&activeFrame===t.id?"equipped":""}`}>
      <div className={`treasurePreview ${t.type==="frame"?`framePreview frame-${t.id}`:""}`}><span>{t.ok?t.icon:"🔒"}</span></div>
      <div className="treasureCopy"><b>{t.title}</b><small>{t.ok?(t.type==="frame"?"Galerie-Rahmen freigeschaltet":"Sticker gesammelt"):t.desc}</small></div>
      {t.ok&&t.type==="frame"&&<button onClick={()=>setActiveFrame(t.id)}>{activeFrame===t.id?"✓ Aktiv":"Verwenden"}</button>}
@@ -3632,13 +3632,13 @@ export default function Page(){
    </div>
 
    <div className="rewardsSectionHead surprisesHead"><div><span className="eyebrow">Überraschungen</span><h2>Malinos Schatzkisten 🎁</h2></div></div>
-   <div className="surpriseGrid">
-    <article className={`surpriseCard ${stars>=50?"ready":""} ${hasChest50?"opened":""}`}><span>{hasChest50?"🌈":"🎁"}</span><div><b>Kleine Schatzkiste</b><small>{hasChest50?"3 Bonusfarben freigeschaltet":"50 Sterne"}</small></div>{hasChest50?<em>Geöffnet ✓</em>:stars>=50?<button className="openChestBtn" onClick={openChest50}>Öffnen!</button>:<em>Noch {Math.max(0,50-stars)} ⭐</em>}</article>
-    <article className={`surpriseCard ${stars>=100?"ready":""} ${hasChest100?"opened":""}`}><span>{hasChest100?"✨":"🎨"}</span><div><b>Zauberpinsel</b><small>{hasChest100?"Regenbogen-Pinsel freigeschaltet":"100 Sterne"}</small></div>{hasChest100?<em>Geöffnet ✓</em>:stars>=100?<button className="openChestBtn" onClick={openChest100}>Öffnen!</button>:<em>Noch {Math.max(0,100-stars)} ⭐</em>}</article>
-    <article className={`surpriseCard goldenChest ${stars>=200?"ready":""} ${hasChest200?"opened":""}`}><span>{hasChest200?"🦁":"👑"}</span><div><b>Malino Geheimbild</b><small>{hasChest200?"Geheimes Malbild freigeschaltet":"200 Sterne"}</small></div>{hasChest200?<button className="secretOpenNow" onClick={()=>open(secretMalinoItem)}>Malen! 🖌️</button>:stars>=200?<button className="openChestBtn goldenOpen" onClick={openChest200}>Öffnen!</button>:<em>Noch {Math.max(0,200-stars)} ⭐</em>}</article>
+   <div className="surpriseGrid storySurpriseGrid">
+    <article className={`surpriseCard storySurpriseCard storySurprise50 ${stars>=50?"ready":""} ${hasChest50?"opened":""}`}><span className="storySurpriseArt"><img src="/ui/reward-story-chest.svg" alt="" loading="lazy"/>{hasChest50&&<i aria-hidden="true">✓</i>}</span><div><b>Kleine Schatzkiste</b><small>{hasChest50?"3 Bonusfarben freigeschaltet":"50 Sterne"}</small></div>{hasChest50?<em>Geöffnet ✓</em>:stars>=50?<button className="openChestBtn" onClick={openChest50}>Öffnen!</button>:<em>Noch {Math.max(0,50-stars)} ⭐</em>}</article>
+    <article className={`surpriseCard storySurpriseCard storySurprise100 ${stars>=100?"ready":""} ${hasChest100?"opened":""}`}><span className="storySurpriseArt"><img src="/ui/reward-story-brush.svg" alt="" loading="lazy"/>{hasChest100&&<i aria-hidden="true">✓</i>}</span><div><b>Zauberpinsel</b><small>{hasChest100?"Regenbogen-Pinsel freigeschaltet":"100 Sterne"}</small></div>{hasChest100?<em>Geöffnet ✓</em>:stars>=100?<button className="openChestBtn" onClick={openChest100}>Öffnen!</button>:<em>Noch {Math.max(0,100-stars)} ⭐</em>}</article>
+    <article className={`surpriseCard storySurpriseCard storySurprise200 goldenChest ${stars>=200?"ready":""} ${hasChest200?"opened":""}`}><span className="storySurpriseArt"><img src="/ui/reward-story-crown.svg" alt="" loading="lazy"/>{hasChest200&&<i aria-hidden="true">✓</i>}</span><div><b>Malino Geheimbild</b><small>{hasChest200?"Geheimes Malbild freigeschaltet":"200 Sterne"}</small></div>{hasChest200?<button className="secretOpenNow" onClick={()=>open(secretMalinoItem)}>Malen! 🖌️</button>:stars>=200?<button className="openChestBtn goldenOpen" onClick={openChest200}>Öffnen!</button>:<em>Noch {Math.max(0,200-stars)} ⭐</em>}</article>
    </div>
 
-   <div className="rewardsCta"><div><span>✨</span><p><b>Weiter so!</b><small>Jedes fertige Bild bringt dir 5 neue Sterne.</small></p></div><button onClick={()=>setScreen("library")}>Weiter malen</button></div>
+   <div className="rewardsCta storyRewardsCta"><div><span>✨</span><p><b>Weiter so!</b><small>Jedes fertige Bild bringt dir 5 neue Sterne.</small></p></div><button onClick={()=>setScreen("library")}>Weiter malen</button></div>
   </section>}
 
   {screen==="room"&&<section className="malinoRoomPage">
