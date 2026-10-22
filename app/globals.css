@@ -8611,6 +8611,7 @@ header:has(.languageSwitcher){z-index:31}
   outline-offset:3px;
 }
 @media(max-width:900px){
+ .storyRewardsHub .storySurpriseGrid{grid-template-columns:minmax(0,1fr)}
  .storyRewardsHub .storyBadgeGrid{
   grid-template-columns:repeat(3,minmax(0,1fr));
  }
