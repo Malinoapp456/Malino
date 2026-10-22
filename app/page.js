@@ -3677,8 +3677,8 @@ export default function Page(){
    <div className="roomFooterCta"><div><span>🎨</span><p><b>Noch mehr Schätze finden?</b><small>Male Bilder, sammle Sterne und halte deine Tages-Serie.</small></p></div><button onClick={()=>setScreen("library")}>Weiter malen</button></div>
   </section>}
 
-  {screen==="gallery"&&<section className="galleryPage premiumGalleryPage">
-   <div className="galleryHero premiumGalleryHero">
+  {screen==="gallery"&&<section className="galleryPage premiumGalleryPage storybookGalleryPage">
+   <div className="galleryHero premiumGalleryHero storyGalleryHero">
     <div className="galleryMascot"><img src="/ui/malino-mascot.webp" alt="Malino"/></div>
     <div className="galleryHeroText">
      <span className="eyebrow">Deine Galerie</span>
@@ -3689,21 +3689,21 @@ export default function Page(){
       {gallery.length>0&&<button className="galleryOpenLatest" onClick={()=>open(gallery[0],true)}>🖌️ Letztes Bild öffnen</button>}
      </div>
     </div>
-    <div className="galleryCount premiumGalleryCount"><span>🎨</span><div><b>{gallery.length}</b><small>{gallery.length===1?"Kunstwerk":"Kunstwerke"}</small></div></div>
+    <div className="galleryCount premiumGalleryCount storyGalleryCount"><span>🎨</span><div><b>{gallery.length}</b><small>{gallery.length===1?"Kunstwerk":"Kunstwerke"}</small></div></div>
    </div>
 
    {gallery.length?
     <>
-     <div className="gallerySectionHead premiumGallerySectionHead">
+     <div className="gallerySectionHead premiumGallerySectionHead storyGallerySectionHead">
       <div><span className="eyebrow">Meine Sammlung</span><h2>Deine fertigen Bilder</h2><p>Tippe auf ein Bild, um es erneut zu öffnen.</p></div>
       <span>{gallery.length}</span>
      </div>
-     <div className="galleryGrid premiumGalleryGrid">{gallery.map((x,index)=><article key={x.id} className={`galleryCard premiumGalleryCard galleryFrame-${activeFrame} ${index===0?"latest":""}`}>
-      <button className="galleryOpen premiumGalleryOpen" onClick={()=>open(x,true)}>
+     <div className="galleryGrid premiumGalleryGrid storyGalleryGrid">{gallery.map((x,index)=><article key={x.id} className={`galleryCard premiumGalleryCard storyGalleryCard galleryFrame-${activeFrame} ${index===0?"latest":""}`}>
+      <button className="galleryOpen premiumGalleryOpen storyGalleryOpen" onClick={()=>open(x,true)}>
        <ArtworkThumb it={x} profileId={activeProfileId}/>
        {index===0&&<span className="latestBadge">✨ Zuletzt gemalt</span>}
       </button>
-      <div className="galleryCardText premiumGalleryCardText">
+      <div className="galleryCardText premiumGalleryCardText storyGalleryCardText">
        <div><b>{x.name}</b><small>🗓️ {x.date}</small></div>
        <span>{items.find(it=>it.id===x.id)?.cat||"Malbild"}</span>
       </div>
@@ -3716,9 +3716,9 @@ export default function Page(){
      </article>)}</div>
     </>
     :
-    <div className="galleryEmpty premiumGalleryEmpty">
-     <div className="galleryEmptyMascot"><img src="/ui/malino-mascot.webp" alt="Malino"/></div>
-     <span className="galleryEmptyIcon">🎨</span>
+    <div className="galleryEmpty premiumGalleryEmpty storyGalleryEmpty">
+     <div className="galleryEmptyMascot storyGalleryEmptyMascot"><img src="/ui/malino-mascot.webp" alt="Malino"/></div>
+     <span className="galleryEmptyIcon storyGalleryEmptyIcon" aria-hidden="true">🎨<i>✦</i></span>
      <h2>Noch keine Kunstwerke</h2>
      <p>Male dein erstes Bild fertig und es erscheint automatisch hier in deiner Galerie.</p>
      <button onClick={()=>setScreen("library")}>✨ Erstes Bild auswählen</button>
