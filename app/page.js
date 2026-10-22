@@ -2867,35 +2867,35 @@ export default function Page(){
     </button>
    </div>
 
-   <div className="homeSectionHeader adventureHeader">
+   <div className="homeSectionHeader adventureHeader storyAdventureHeader">
     <div><span className="eyebrow">Heute</span><h2>Dein Tages-Abenteuer</h2><p>Ein neues Bild, Bonus-Sterne und deine tägliche Mal-Serie.</p></div>
     <button onClick={()=>open(dailyItem)}>Challenge öffnen ›</button>
    </div>
 
-   <div className="todayAdventureGrid">
-    <div className={`daily dailyV2 dailyChallengeCard premiumDailyCard ${dailyClaimed?"dailyDone":""}`}>
-     <div className="dailyMagicBadge">✨ Malino Tagesziel</div>
-     <div className="dailyChallengeHead"><b>🌟 Tages-Challenge</b><span>{dailyClaimed?"Geschafft ✓":"+10 ⭐ Bonus"}</span></div>
+   <div className="todayAdventureGrid storyTodayAdventureGrid">
+    <div className={`daily dailyV2 dailyChallengeCard premiumDailyCard storyDailyCard ${dailyClaimed?"dailyDone":""}`}>
+     <div className="dailyMagicBadge storyDailyMagicBadge">✨ Malino Tagesziel</div>
+     <div className="dailyChallengeHead storyDailyChallengeHead"><b className="storyDailyTitle"><img src="/ui/daily-story-star.svg" alt="" loading="lazy"/>Tages-Challenge</b><span>{dailyClaimed?"Geschafft ✓":"+10 ⭐ Bonus"}</span></div>
      <Thumb it={dailyItem} done={done.includes(dailyItem.id)}/>
-     <div className="dailyChallengeInfo">
+     <div className="dailyChallengeInfo storyDailyChallengeInfo">
       <div className="dailyTitleRow"><b>{dailyItem.name}</b>{!dailyClaimed&&<span>Heute</span>}</div>
       <small>{dailyClaimed?"Heute schon geschafft. Morgen wartet ein neues Bild!":"Male das heutige Bild fertig und sichere dir 10 Bonus-Sterne."}</small>
-      <div className="dailyRewardStrip"><span>⭐ +10 Bonus</span><span>{dailyClaimed?"🔥 Serie gesichert":"🔥 Serie sichern"}</span></div>
+      <div className="dailyRewardStrip storyDailyRewardStrip"><span>⭐ +10 Bonus</span><span>{dailyClaimed?"🔥 Serie gesichert":"🔥 Serie sichern"}</span></div>
      </div>
-     <button className="dailyPrimaryButton" onClick={()=>open(dailyItem)}>{dailyClaimed?"Noch einmal malen":"Challenge starten!"}</button>
+     <button className="dailyPrimaryButton storyDailyPrimaryButton" onClick={()=>open(dailyItem)}>{dailyClaimed?"Noch einmal malen":"Challenge starten!"}</button>
     </div>
 
-    <button className="streakCard streakCardButton premiumStreakCard" onClick={()=>open(dailyItem)} aria-label="Tages-Challenge öffnen">
+    <button className="streakCard streakCardButton premiumStreakCard storyStreakCard" onClick={()=>open(dailyItem)} aria-label="Tages-Challenge öffnen">
      <div className="streakMiniLabel">🔥 MAL-SERIE</div>
-     <div className="streakIcon">🔥</div>
+     <div className="streakIcon storyStreakIcon"><img src="/ui/daily-story-flame.svg" alt="" loading="lazy"/></div>
      <div className="streakText">
       <b>{dailyStreak} Tage Serie</b>
       <small>{dailyStreak===0?"Starte heute deine erste Serie!":dailyClaimed?"Heute gesichert ✓ – Challenge erneut öffnen":"Schließe die Tages-Challenge ab, um die Serie zu halten."}</small>
-      <div className="streakDots" aria-hidden="true">
+      <div className="streakDots storyStreakDots" aria-hidden="true">
        {[1,2,3,4,5,6,7].map(n=><i key={n} className={n<=Math.min(dailyStreak,7)?"on":""}>{n<=Math.min(dailyStreak,7)?"🔥":"•"}</i>)}
       </div>
      </div>
-     <div className="streakMilestone">{dailyStreak>=7?"🏆 7+":dailyStreak>=3?"⭐ 3+":"🌱"}</div>
+     <div className="streakMilestone storyStreakMilestone">{dailyStreak>=7?"🏆 7+":dailyStreak>=3?"⭐ 3+":"🌱"}</div>
     </button>
    </div>
 
