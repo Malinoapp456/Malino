@@ -38,7 +38,7 @@ test("four illustrated play choices link to original activities and preserve act
 
 test("daily quest and continue painting stay above statistics",()=>{
  const play=home.indexOf('className="malinoPlayChoices"');
- const daily=home.indexOf('className="todayAdventureGrid"');
+ const daily=home.indexOf('className="todayAdventureGrid storyTodayAdventureGrid"');
  const continueCard=home.indexOf('className={`continueCard premiumContinueCard');
  const stats=home.indexOf('className="homeQuickStats premiumQuickStats"');
  assert.ok(play>=0&&daily>play&&continueCard>daily&&stats>continueCard);

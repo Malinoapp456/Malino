@@ -2867,35 +2867,35 @@ export default function Page(){
     </button>
    </div>
 
-   <div className="homeSectionHeader adventureHeader">
+   <div className="homeSectionHeader adventureHeader storyAdventureHeader">
     <div><span className="eyebrow">Heute</span><h2>Dein Tages-Abenteuer</h2><p>Ein neues Bild, Bonus-Sterne und deine tägliche Mal-Serie.</p></div>
     <button onClick={()=>open(dailyItem)}>Challenge öffnen ›</button>
    </div>
 
-   <div className="todayAdventureGrid">
-    <div className={`daily dailyV2 dailyChallengeCard premiumDailyCard ${dailyClaimed?"dailyDone":""}`}>
-     <div className="dailyMagicBadge">✨ Malino Tagesziel</div>
-     <div className="dailyChallengeHead"><b>🌟 Tages-Challenge</b><span>{dailyClaimed?"Geschafft ✓":"+10 ⭐ Bonus"}</span></div>
+   <div className="todayAdventureGrid storyTodayAdventureGrid">
+    <div className={`daily dailyV2 dailyChallengeCard premiumDailyCard storyDailyCard ${dailyClaimed?"dailyDone":""}`}>
+     <div className="dailyMagicBadge storyDailyMagicBadge">✨ Malino Tagesziel</div>
+     <div className="dailyChallengeHead storyDailyChallengeHead"><b className="storyDailyTitle"><img src="/ui/daily-story-star.svg" alt="" loading="lazy"/>Tages-Challenge</b><span>{dailyClaimed?"Geschafft ✓":"+10 ⭐ Bonus"}</span></div>
      <Thumb it={dailyItem} done={done.includes(dailyItem.id)}/>
-     <div className="dailyChallengeInfo">
+     <div className="dailyChallengeInfo storyDailyChallengeInfo">
       <div className="dailyTitleRow"><b>{dailyItem.name}</b>{!dailyClaimed&&<span>Heute</span>}</div>
       <small>{dailyClaimed?"Heute schon geschafft. Morgen wartet ein neues Bild!":"Male das heutige Bild fertig und sichere dir 10 Bonus-Sterne."}</small>
-      <div className="dailyRewardStrip"><span>⭐ +10 Bonus</span><span>{dailyClaimed?"🔥 Serie gesichert":"🔥 Serie sichern"}</span></div>
+      <div className="dailyRewardStrip storyDailyRewardStrip"><span>⭐ +10 Bonus</span><span>{dailyClaimed?"🔥 Serie gesichert":"🔥 Serie sichern"}</span></div>
      </div>
-     <button className="dailyPrimaryButton" onClick={()=>open(dailyItem)}>{dailyClaimed?"Noch einmal malen":"Challenge starten!"}</button>
+     <button className="dailyPrimaryButton storyDailyPrimaryButton" onClick={()=>open(dailyItem)}>{dailyClaimed?"Noch einmal malen":"Challenge starten!"}</button>
     </div>
 
-    <button className="streakCard streakCardButton premiumStreakCard" onClick={()=>open(dailyItem)} aria-label="Tages-Challenge öffnen">
+    <button className="streakCard streakCardButton premiumStreakCard storyStreakCard" onClick={()=>open(dailyItem)} aria-label="Tages-Challenge öffnen">
      <div className="streakMiniLabel">🔥 MAL-SERIE</div>
-     <div className="streakIcon">🔥</div>
+     <div className="streakIcon storyStreakIcon"><img src="/ui/daily-story-flame.svg" alt="" loading="lazy"/></div>
      <div className="streakText">
       <b>{dailyStreak} Tage Serie</b>
       <small>{dailyStreak===0?"Starte heute deine erste Serie!":dailyClaimed?"Heute gesichert ✓ – Challenge erneut öffnen":"Schließe die Tages-Challenge ab, um die Serie zu halten."}</small>
-      <div className="streakDots" aria-hidden="true">
+      <div className="streakDots storyStreakDots" aria-hidden="true">
        {[1,2,3,4,5,6,7].map(n=><i key={n} className={n<=Math.min(dailyStreak,7)?"on":""}>{n<=Math.min(dailyStreak,7)?"🔥":"•"}</i>)}
       </div>
      </div>
-     <div className="streakMilestone">{dailyStreak>=7?"🏆 7+":dailyStreak>=3?"⭐ 3+":"🌱"}</div>
+     <div className="streakMilestone storyStreakMilestone">{dailyStreak>=7?"🏆 7+":dailyStreak>=3?"⭐ 3+":"🌱"}</div>
     </button>
    </div>
 
@@ -3485,8 +3485,8 @@ export default function Page(){
    })()}
   </section>}
 
-  {screen==="library"&&<section className="libraryPage">
-   <div className="libraryWelcome">
+  {screen==="library"&&<section className="libraryPage libraryStoryPage">
+   <div className="libraryWelcome libraryStoryWelcome">
     <div className="libraryMascot libraryMascotV2"><img src="/ui/malino-mascot.webp" alt="Malino"/></div>
     <div><span className="eyebrow">Malinos Malwelt</span><h1>Was möchtest du heute malen?</h1><p>Entdecke Tiere, Dinosaurier und viele weitere Abenteuer.</p></div>
     <div className="libraryStats"><b>{items.length}</b><span>Malbilder</span><b>{done.length}</b><span>fertig</span></div>
@@ -3497,10 +3497,10 @@ export default function Page(){
     <select value={cat} onChange={e=>setCat(e.target.value)}>{cats.map(c=><option key={c}>{categoryMeta[c]?.label||c}</option>)}</select>
    </div>
 
-   <div className="libraryCategoryHead"><div><span className="eyebrow">Kategorien</span><h2>Wähle deine Malwelt</h2></div><button onClick={()=>setCat("Alle")} className={cat==="Alle"?"isSelected":""}>Alle zeigen</button></div>
-   <div className="libraryCategories">
-    {visibleCategories.map(c=>{const meta=categoryMeta[c];const count=categoryCount(c);return <button key={c} className={`libraryCategory ${meta.tone} ${cat===c?"isSelected":""}`} onClick={()=>setCat(c)}>
-      <span className="categoryIcon">{meta.emoji}</span>
+   <div className="libraryCategoryHead libraryStoryCategoryHead"><div><span className="eyebrow">Kategorien</span><h2>Wähle deine Malwelt</h2></div><button onClick={()=>setCat("Alle")} className={cat==="Alle"?"isSelected":""}>Alle zeigen</button></div>
+   <div className="libraryCategories libraryStoryCategories">
+    {visibleCategories.map(c=>{const meta=categoryMeta[c];const count=categoryCount(c);return <button key={c} type="button" className={`libraryCategory storyCategory ${meta.tone} ${cat===c?"isSelected":""}`} aria-pressed={cat===c} onClick={()=>setCat(c)}>
+      <span className="categoryIcon storyCategoryArt"><img src={`/ui/library-${meta.tone}.svg`} alt="" loading="lazy"/></span>
       <span className="categoryInfo"><b>{meta.label}</b><small>{count} {count===1?"Bild":"Bilder"}</small></span>
       <span className="categoryArrow">›</span>
     </button>})}
@@ -3508,7 +3508,7 @@ export default function Page(){
 
    {cat==="Alle"&&!query&&<>
     <div className="librarySectionHead"><div><span className="eyebrow">Neu bei Malino</span><h2>Neu hinzugefügt</h2></div><span>{newItems.length} Bilder</span></div>
-    <div className="libraryRail">{newItems.map(x=><article key={"new-"+x.id} className="libraryCard compact">
+    <div className="libraryRail storyLibraryRail">{newItems.map(x=><article key={"new-"+x.id} className="libraryCard compact storyLibraryCard">
       <button className="heart" onClick={()=>setFav(fav.includes(x.id)?fav.filter(y=>y!==x.id):[...fav,x.id])}>{fav.includes(x.id)?"❤️":"🤍"}</button>
       <button className="libraryOpen" onClick={()=>open(x)}><Thumb it={x} done={done.includes(x.id)}/></button>
       <b>{x.name}</b><small>{x.cat}</small>
@@ -3516,7 +3516,7 @@ export default function Page(){
 
     {favoriteItems.length>0&&<>
      <div className="librarySectionHead"><div><span className="eyebrow">Deine Auswahl</span><h2>Favoriten ❤️</h2></div><span>{favoriteItems.length}</span></div>
-     <div className="libraryRail favoritesRail">{favoriteItems.map(x=><article key={"fav-"+x.id} className="libraryCard compact">
+     <div className="libraryRail favoritesRail storyLibraryRail">{favoriteItems.map(x=><article key={"fav-"+x.id} className="libraryCard compact storyLibraryCard">
        <button className="heart" onClick={()=>setFav(fav.filter(y=>y!==x.id))}>❤️</button>
        <button className="libraryOpen" onClick={()=>open(x)}><Thumb it={x} done={done.includes(x.id)}/></button>
        <b>{x.name}</b><small>{x.cat}</small>
@@ -3527,7 +3527,7 @@ export default function Page(){
    {hasChest200&&<>
     <div className="librarySectionHead secretMalinoHead"><div><span className="eyebrow">Deine Belohnung ✨</span><h2>Malinos Geheimbilder 🦁</h2></div><span>1 exklusives Bild</span></div>
     <div className="secretMalinoShelf">
-     <article className="libraryCard secretMalinoCard">
+     <article className="libraryCard secretMalinoCard storyLibraryCard">
       <span className="secretRibbon">👑 Freigeschaltet</span>
       <button className="libraryOpen" onClick={()=>open(secretMalinoItem)}><Thumb it={secretMalinoItem} done={done.includes(secretMalinoItem.id)}/></button>
       <div className="libraryCardText"><b>{secretMalinoItem.name}</b><small>Nur als Malino-Belohnung</small></div>
@@ -3537,7 +3537,7 @@ export default function Page(){
    </>}
 
    <div className="librarySectionHead mainResults"><div><span className="eyebrow">{cat==="Alle"?"Bibliothek":"Kategorie"}</span><h2>{visibleTitle}</h2></div><span>{filtered.length} {filtered.length===1?"Bild":"Bilder"}</span></div>
-   {filtered.length?<div className="libraryGrid">{filtered.map(x=><article key={x.id} className="libraryCard">
+   {filtered.length?<div className="libraryGrid storyLibraryGrid">{filtered.map(x=><article key={x.id} className="libraryCard storyLibraryCard">
       <button className="heart" onClick={()=>setFav(fav.includes(x.id)?fav.filter(y=>y!==x.id):[...fav,x.id])}>{fav.includes(x.id)?"❤️":"🤍"}</button>
       <button className="libraryOpen" onClick={()=>open(x)}><Thumb it={x} done={done.includes(x.id)}/></button>
       <div className="libraryCardText"><b>{x.name}</b><small>{x.cat}</small></div>
@@ -3587,14 +3587,14 @@ export default function Page(){
    </div>
   </section>}
 
-  {screen==="reward"&&<section className="rewardsHub">
-   <div className="rewardsHero">
+  {screen==="reward"&&<section className="rewardsHub storyRewardsHub">
+   <div className="rewardsHero storyRewardsHero">
     <div className="rewardsMascot"><img src="/ui/malino-mascot.webp" alt="Malino"/></div>
     <div className="rewardsHeroText"><span className="eyebrow">Deine Belohnungen</span><h1>Deine Malino-Schatzkiste 🏆</h1><p>Male weiter, sammle Sterne und erreiche neue Ziele in deiner Abzeichen-Sammlung.</p></div>
-    <div className="starWallet"><span>⭐</span><div><b>{stars}</b><small>Sterne</small></div></div>
+    <div className="starWallet storyStarWallet"><span>⭐</span><div><b>{stars}</b><small>Sterne</small></div></div>
    </div>
 
-   <div className="levelCard">
+   <div className="levelCard storyLevelCard">
     <div className="levelTop"><div><span className="eyebrow">Dein Fortschritt</span><h2>Kreativ-Level {Math.max(1,Math.floor(done.length/5)+1)}</h2></div><b>{done.length} / {Math.max(5,(Math.floor(done.length/5)+1)*5)} Bilder</b></div>
     <div className="levelTrack"><i style={{width:Math.min(100,((done.length%5)/5)*100)+"%"}}/></div>
     <div className="levelFoot"><span>🎨 {done.length} fertig</span><span>Noch {done.length%5===0&&done.length>0?5:5-(done.length%5)} Bilder bis zum nächsten Level ✨</span></div>
@@ -3605,8 +3605,8 @@ export default function Page(){
     <div><b>{unlockedBadgeCount} von {achievementBadges.length} geschafft</b><small>{unlockedBadgeCount===achievementBadges.length?"Alle Abzeichen gesammelt! 🏆":"Jedes Abzeichen zeigt dir ein neues Malino-Ziel."}</small></div>
     <div className="achievementTrack"><i style={{width:`${Math.round((unlockedBadgeCount/achievementBadges.length)*100)}%`}}/></div>
    </div>
-   <div className="badgeGrid badgeGridExpanded">
-    {achievementBadges.map(b=><article key={b.id} className={`badgeCard achievementBadge ${b.ok?"unlocked":"locked"}`}>
+   <div className="badgeGrid badgeGridExpanded storyBadgeGrid">
+    {achievementBadges.map(b=><article key={b.id} className={`badgeCard achievementBadge storyBadgeCard ${b.ok?"unlocked":"locked"}`}>
      <span className="badgeIcon">{b.ok?b.icon:"🔒"}</span>
      <div className="badgeCopy"><b>{b.title}</b><small>{b.ok?"Geschafft!":b.desc}</small></div>
      {b.ok&&<i>✓</i>}
@@ -3617,13 +3617,13 @@ export default function Page(){
     <div><span className="eyebrow">Schatzsammlung</span><h2>Malinos Fundstücke ✨</h2><p className="badgeSectionIntro">Sammle Sticker und Rahmen. Freigeschaltete Rahmen kannst du direkt für deine Galerie auswählen.</p></div>
     <div className="treasureHeadActions"><span>{unlockedTreasureCount}/{treasureItems.length}</span><button onClick={()=>setScreen("room")}>🦁 Mein Malino-Zimmer</button></div>
    </div>
-   <div className="treasureCollectionGrid">
-    <article className={`treasureCollectible unlocked ${activeFrame==="classic"?"equipped":""}`}>
+   <div className="treasureCollectionGrid storyTreasureGrid">
+    <article className={`treasureCollectible storyTreasureItem unlocked ${activeFrame==="classic"?"equipped":""}`}>
      <div className="treasurePreview framePreview frame-classic"><span>🖼️</span></div>
      <div className="treasureCopy"><b>Klassischer Rahmen</b><small>Immer verfügbar</small></div>
      <button onClick={()=>setActiveFrame("classic")}>{activeFrame==="classic"?"✓ Aktiv":"Verwenden"}</button>
     </article>
-    {treasureItems.map(t=><article key={t.id} className={`treasureCollectible ${t.ok?"unlocked":"locked"} ${t.type==="frame"&&activeFrame===t.id?"equipped":""}`}>
+    {treasureItems.map(t=><article key={t.id} className={`treasureCollectible storyTreasureItem ${t.ok?"unlocked":"locked"} ${t.type==="frame"&&activeFrame===t.id?"equipped":""}`}>
      <div className={`treasurePreview ${t.type==="frame"?`framePreview frame-${t.id}`:""}`}><span>{t.ok?t.icon:"🔒"}</span></div>
      <div className="treasureCopy"><b>{t.title}</b><small>{t.ok?(t.type==="frame"?"Galerie-Rahmen freigeschaltet":"Sticker gesammelt"):t.desc}</small></div>
      {t.ok&&t.type==="frame"&&<button onClick={()=>setActiveFrame(t.id)}>{activeFrame===t.id?"✓ Aktiv":"Verwenden"}</button>}
@@ -3632,13 +3632,13 @@ export default function Page(){
    </div>
 
    <div className="rewardsSectionHead surprisesHead"><div><span className="eyebrow">Überraschungen</span><h2>Malinos Schatzkisten 🎁</h2></div></div>
-   <div className="surpriseGrid">
-    <article className={`surpriseCard ${stars>=50?"ready":""} ${hasChest50?"opened":""}`}><span>{hasChest50?"🌈":"🎁"}</span><div><b>Kleine Schatzkiste</b><small>{hasChest50?"3 Bonusfarben freigeschaltet":"50 Sterne"}</small></div>{hasChest50?<em>Geöffnet ✓</em>:stars>=50?<button className="openChestBtn" onClick={openChest50}>Öffnen!</button>:<em>Noch {Math.max(0,50-stars)} ⭐</em>}</article>
-    <article className={`surpriseCard ${stars>=100?"ready":""} ${hasChest100?"opened":""}`}><span>{hasChest100?"✨":"🎨"}</span><div><b>Zauberpinsel</b><small>{hasChest100?"Regenbogen-Pinsel freigeschaltet":"100 Sterne"}</small></div>{hasChest100?<em>Geöffnet ✓</em>:stars>=100?<button className="openChestBtn" onClick={openChest100}>Öffnen!</button>:<em>Noch {Math.max(0,100-stars)} ⭐</em>}</article>
-    <article className={`surpriseCard goldenChest ${stars>=200?"ready":""} ${hasChest200?"opened":""}`}><span>{hasChest200?"🦁":"👑"}</span><div><b>Malino Geheimbild</b><small>{hasChest200?"Geheimes Malbild freigeschaltet":"200 Sterne"}</small></div>{hasChest200?<button className="secretOpenNow" onClick={()=>open(secretMalinoItem)}>Malen! 🖌️</button>:stars>=200?<button className="openChestBtn goldenOpen" onClick={openChest200}>Öffnen!</button>:<em>Noch {Math.max(0,200-stars)} ⭐</em>}</article>
+   <div className="surpriseGrid storySurpriseGrid">
+    <article className={`surpriseCard storySurpriseCard storySurprise50 ${stars>=50?"ready":""} ${hasChest50?"opened":""}`}><span className="storySurpriseArt"><img src="/ui/reward-story-chest.svg" alt="" loading="lazy"/>{hasChest50&&<i aria-hidden="true">✓</i>}</span><div><b>Kleine Schatzkiste</b><small>{hasChest50?"3 Bonusfarben freigeschaltet":"50 Sterne"}</small></div>{hasChest50?<em>Geöffnet ✓</em>:stars>=50?<button className="openChestBtn" onClick={openChest50}>Öffnen!</button>:<em>Noch {Math.max(0,50-stars)} ⭐</em>}</article>
+    <article className={`surpriseCard storySurpriseCard storySurprise100 ${stars>=100?"ready":""} ${hasChest100?"opened":""}`}><span className="storySurpriseArt"><img src="/ui/reward-story-brush.svg" alt="" loading="lazy"/>{hasChest100&&<i aria-hidden="true">✓</i>}</span><div><b>Zauberpinsel</b><small>{hasChest100?"Regenbogen-Pinsel freigeschaltet":"100 Sterne"}</small></div>{hasChest100?<em>Geöffnet ✓</em>:stars>=100?<button className="openChestBtn" onClick={openChest100}>Öffnen!</button>:<em>Noch {Math.max(0,100-stars)} ⭐</em>}</article>
+    <article className={`surpriseCard storySurpriseCard storySurprise200 goldenChest ${stars>=200?"ready":""} ${hasChest200?"opened":""}`}><span className="storySurpriseArt"><img src="/ui/reward-story-crown.svg" alt="" loading="lazy"/>{hasChest200&&<i aria-hidden="true">✓</i>}</span><div><b>Malino Geheimbild</b><small>{hasChest200?"Geheimes Malbild freigeschaltet":"200 Sterne"}</small></div>{hasChest200?<button className="secretOpenNow" onClick={()=>open(secretMalinoItem)}>Malen! 🖌️</button>:stars>=200?<button className="openChestBtn goldenOpen" onClick={openChest200}>Öffnen!</button>:<em>Noch {Math.max(0,200-stars)} ⭐</em>}</article>
    </div>
 
-   <div className="rewardsCta"><div><span>✨</span><p><b>Weiter so!</b><small>Jedes fertige Bild bringt dir 5 neue Sterne.</small></p></div><button onClick={()=>setScreen("library")}>Weiter malen</button></div>
+   <div className="rewardsCta storyRewardsCta"><div><span>✨</span><p><b>Weiter so!</b><small>Jedes fertige Bild bringt dir 5 neue Sterne.</small></p></div><button onClick={()=>setScreen("library")}>Weiter malen</button></div>
   </section>}
 
   {screen==="room"&&<section className="malinoRoomPage">
@@ -3677,8 +3677,8 @@ export default function Page(){
    <div className="roomFooterCta"><div><span>🎨</span><p><b>Noch mehr Schätze finden?</b><small>Male Bilder, sammle Sterne und halte deine Tages-Serie.</small></p></div><button onClick={()=>setScreen("library")}>Weiter malen</button></div>
   </section>}
 
-  {screen==="gallery"&&<section className="galleryPage premiumGalleryPage">
-   <div className="galleryHero premiumGalleryHero">
+  {screen==="gallery"&&<section className="galleryPage premiumGalleryPage storybookGalleryPage">
+   <div className="galleryHero premiumGalleryHero storyGalleryHero">
     <div className="galleryMascot"><img src="/ui/malino-mascot.webp" alt="Malino"/></div>
     <div className="galleryHeroText">
      <span className="eyebrow">Deine Galerie</span>
@@ -3689,21 +3689,21 @@ export default function Page(){
       {gallery.length>0&&<button className="galleryOpenLatest" onClick={()=>open(gallery[0],true)}>🖌️ Letztes Bild öffnen</button>}
      </div>
     </div>
-    <div className="galleryCount premiumGalleryCount"><span>🎨</span><div><b>{gallery.length}</b><small>{gallery.length===1?"Kunstwerk":"Kunstwerke"}</small></div></div>
+    <div className="galleryCount premiumGalleryCount storyGalleryCount"><span>🎨</span><div><b>{gallery.length}</b><small>{gallery.length===1?"Kunstwerk":"Kunstwerke"}</small></div></div>
    </div>
 
    {gallery.length?
     <>
-     <div className="gallerySectionHead premiumGallerySectionHead">
+     <div className="gallerySectionHead premiumGallerySectionHead storyGallerySectionHead">
       <div><span className="eyebrow">Meine Sammlung</span><h2>Deine fertigen Bilder</h2><p>Tippe auf ein Bild, um es erneut zu öffnen.</p></div>
       <span>{gallery.length}</span>
      </div>
-     <div className="galleryGrid premiumGalleryGrid">{gallery.map((x,index)=><article key={x.id} className={`galleryCard premiumGalleryCard galleryFrame-${activeFrame} ${index===0?"latest":""}`}>
-      <button className="galleryOpen premiumGalleryOpen" onClick={()=>open(x,true)}>
+     <div className="galleryGrid premiumGalleryGrid storyGalleryGrid">{gallery.map((x,index)=><article key={x.id} className={`galleryCard premiumGalleryCard storyGalleryCard galleryFrame-${activeFrame} ${index===0?"latest":""}`}>
+      <button className="galleryOpen premiumGalleryOpen storyGalleryOpen" onClick={()=>open(x,true)}>
        <ArtworkThumb it={x} profileId={activeProfileId}/>
        {index===0&&<span className="latestBadge">✨ Zuletzt gemalt</span>}
       </button>
-      <div className="galleryCardText premiumGalleryCardText">
+      <div className="galleryCardText premiumGalleryCardText storyGalleryCardText">
        <div><b>{x.name}</b><small>🗓️ {x.date}</small></div>
        <span>{items.find(it=>it.id===x.id)?.cat||"Malbild"}</span>
       </div>
@@ -3716,9 +3716,9 @@ export default function Page(){
      </article>)}</div>
     </>
     :
-    <div className="galleryEmpty premiumGalleryEmpty">
-     <div className="galleryEmptyMascot"><img src="/ui/malino-mascot.webp" alt="Malino"/></div>
-     <span className="galleryEmptyIcon">🎨</span>
+    <div className="galleryEmpty premiumGalleryEmpty storyGalleryEmpty">
+     <div className="galleryEmptyMascot storyGalleryEmptyMascot"><img src="/ui/malino-mascot.webp" alt="Malino"/></div>
+     <span className="galleryEmptyIcon storyGalleryEmptyIcon" aria-hidden="true">🎨<i>✦</i></span>
      <h2>Noch keine Kunstwerke</h2>
      <p>Male dein erstes Bild fertig und es erscheint automatisch hier in deiner Galerie.</p>
      <button onClick={()=>setScreen("library")}>✨ Erstes Bild auswählen</button>
@@ -3781,7 +3781,7 @@ export default function Page(){
   </div>}
 
   {profileDialog&&<div className="rewardUnlockOverlay" role="dialog" aria-modal="true" aria-label="Kinderprofil">
-   <div className="rewardUnlockCard" style={{maxWidth:520}}>
+   <div className="rewardUnlockCard storyProfileDialogCard" style={{maxWidth:520}}>
     <button className="rewardClose" onClick={closeProfileDialog} aria-label="Schließen">×</button>
 
     {profileDialog==="add"&&<>
@@ -3798,10 +3798,10 @@ export default function Page(){
       placeholder="z. B. Mia"
       style={{width:"100%",padding:"14px 16px",border:"2px solid #dbe7f5",borderRadius:16,fontSize:18,outline:"none",margin:"4px 0 16px",background:"#fff",color:"#123a7a"}}
      />
-     <div className="profileAvatarPicker">
+     <div className="profileAvatarPicker storyProfileAvatarPicker">
       <b>Avatar auswählen</b>
-      <div className="profileAvatarGrid">
-       {PROFILE_AVATARS.map(a=><button key={a.id} type="button" className={profileAvatarInput===a.id?"selected":""} onClick={()=>setProfileAvatarInput(a.id)} aria-label={a.label}>
+      <div className="profileAvatarGrid storyProfileAvatarGrid">
+       {PROFILE_AVATARS.map(a=><button key={a.id} type="button" className={profileAvatarInput===a.id?"selected":""} aria-pressed={profileAvatarInput===a.id} onClick={()=>setProfileAvatarInput(a.id)} aria-label={a.label}>
         <span>{a.emoji}</span><small>{a.label}</small>
        </button>)}
       </div>
@@ -3825,10 +3825,10 @@ export default function Page(){
       maxLength={24}
       style={{width:"100%",padding:"14px 16px",border:"2px solid #dbe7f5",borderRadius:16,fontSize:18,outline:"none",margin:"4px 0 16px",background:"#fff",color:"#123a7a"}}
      />
-          <div className="profileAvatarPicker">
+          <div className="profileAvatarPicker storyProfileAvatarPicker">
       <b>Avatar auswählen</b>
-      <div className="profileAvatarGrid">
-       {PROFILE_AVATARS.map(a=><button key={a.id} type="button" className={profileAvatarInput===a.id?"selected":""} onClick={()=>setProfileAvatarInput(a.id)} aria-label={a.label}>
+      <div className="profileAvatarGrid storyProfileAvatarGrid">
+       {PROFILE_AVATARS.map(a=><button key={a.id} type="button" className={profileAvatarInput===a.id?"selected":""} aria-pressed={profileAvatarInput===a.id} onClick={()=>setProfileAvatarInput(a.id)} aria-label={a.label}>
         <span>{a.emoji}</span><small>{a.label}</small>
        </button>)}
       </div>
@@ -3871,7 +3871,7 @@ export default function Page(){
    </div>
   </div>}
 
-  {screen==="parent"&&<section key={`parent-${activeProfileId}-${profileStatsStars}-${profileStatsDone.length}-${profileStatsGallery.length}-${profileStatsRewards.length}`} className="parents"> 
+  {screen==="parent"&&<section key={`parent-${activeProfileId}-${profileStatsStars}-${profileStatsDone.length}-${profileStatsGallery.length}-${profileStatsRewards.length}`} className="parents storyParentsPage"> 
    {parentPinMode!=="unlocked"?<div className="parentPinGate">
     <div className="parentPinCard">
      <div className="parentPinIcon">🔐</div>
@@ -3903,7 +3903,7 @@ export default function Page(){
     </div>
    </div>:<>
 
-   <div className="panel">
+   <div className="panel storyProfilePanel">
     <h1>Elternbereich</h1>
     <div className="parentSecurityCard">
      <div><b>🔐 Elternschutz</b><small>Der Elternbereich ist mit einer 4-stelligen PIN geschützt.</small></div>
@@ -3913,24 +3913,25 @@ export default function Page(){
      <div><b>🧪 Testmodus</b><small>Zum Prüfen der Belohnungen während der Entwicklung.</small></div>
      <button onClick={addTestStars}>+50 ⭐</button>
     </div>
-    <h2>👧 Kinderprofile</h2>
-    <p style={{color:"#65738c",fontWeight:700}}>Aktiv: <b style={{color:"#123a7a"}}><span className="inlineProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span>{activeProfile.name}</b></p>
-    {profiles.map(p=><button key={p.id} onClick={()=>switchProfile(p.id)} style={p.id===activeProfileId?{background:"#e8f1ff",color:"#1769ff",fontWeight:900}:{}}>
-     <span className="profileChoiceAvatar">{avatarEmoji(profileData?.[p.id]?.avatar)}</span><span data-i18n-ignore="true">{p.name}</span>
-     <span>{p.id===activeProfileId?"Aktiv":"›"}</span>
+    <div className="storyProfilesHead"><span className="storyProfilesHeadArt" aria-hidden="true">🦁</span><div><span className="eyebrow">Malinos Freunde</span><h2>👧 Kinderprofile</h2><p className="storyProfilesActive">Aktiv: <b><span className="inlineProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><span data-i18n-ignore="true">{activeProfile.name}</span></b></p></div></div>
+    <div className="storyProfileGrid">
+    {profiles.map(p=><button key={p.id} type="button" className={`storyProfileChoice ${p.id===activeProfileId?"isActive":""}`} aria-pressed={p.id===activeProfileId} onClick={()=>switchProfile(p.id)}>
+     <span className="profileChoiceAvatar">{avatarEmoji(profileData?.[p.id]?.avatar)}</span><span className="storyProfileChoiceName" data-i18n-ignore="true">{p.name}</span>
+     <span className="storyProfileChoiceState">{p.id===activeProfileId?"✓ Aktiv":"›"}</span>
     </button>)}
-    <button onClick={addProfile}>➕ Neues Kinderprofil<span>›</span></button>
-    <button onClick={renameActiveProfile}>🎨 Profil bearbeiten<span>›</span></button>
-    <button onClick={resetActiveProfile}>↺ Fortschritt zurücksetzen<span>›</span></button>
-    {profiles.length>1&&<button onClick={deleteActiveProfile}>🗑️ Profil löschen<span>›</span></button>}
+    </div>
+    <button className="storyProfileAction storyProfileActionAdd" onClick={addProfile}>➕ Neues Kinderprofil<span>›</span></button>
+    <button className="storyProfileAction" onClick={renameActiveProfile}>🎨 Profil bearbeiten<span>›</span></button>
+    <button className="storyProfileAction storyProfileActionCaution" onClick={resetActiveProfile}>↺ Fortschritt zurücksetzen<span>›</span></button>
+    {profiles.length>1&&<button className="storyProfileAction storyProfileActionCaution" onClick={deleteActiveProfile}>🗑️ Profil löschen<span>›</span></button>}
     <button onClick={()=>openParentTool("screenTime")}>⏱️ Bildschirmzeit<span>›</span></button>
     <button onClick={()=>openParentTool("settings")}>⚙️ App-Einstellungen<span>›</span></button>
     <button onClick={()=>openParentTool("export")}>🖨️ Export & Drucken<span>›</span></button>
     <button onClick={()=>openParentTool("help")}>❓ Hilfe & Feedback<span>›</span></button>
     <button onClick={()=>openParentTool("about")}>ℹ️ Über Malino<span>›</span></button>
    </div>
-   <div className="panel">
-    <h2>Profil-Statistik</h2>
+   <div className="panel storyProfileStatsPanel">
+    <h2><span className="storyProfileStatsArt" aria-hidden="true">✨</span> Profil-Statistik</h2>
     <p>Profil <b><span className="inlineProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><span data-i18n-ignore="true">{activeProfile.name}</span></b></p>
     <p>Gemalte Bilder <b>{profileStatsDone.length}</b></p>
     <p>Erhaltene Sterne <b>{profileStatsStars} ⭐</b></p>

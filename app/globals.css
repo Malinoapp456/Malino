@@ -8124,3 +8124,1754 @@ header:has(.languageSwitcher){z-index:31}
   max-width:256px !important;
  }
 }
+
+/* Malino Storybook Library v1 — presentation only, all image assets and actions preserved. */
+.libraryStoryPage{isolation:isolate}
+.libraryStoryPage .libraryStoryCategoryHead h2,
+.libraryStoryPage .libraryStoryCategoryHead h2{color:#264279}
+.libraryStoryPage .libraryStoryCategories{
+ display:grid;
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:14px;
+ margin-top:14px;
+}
+.libraryStoryPage .storyCategory{
+ display:flex;
+ flex-direction:column;
+ justify-content:flex-start;
+ align-items:stretch;
+ position:relative;
+ min-height:217px;
+ min-width:0;
+ gap:0;
+ padding:10px 11px 15px;
+ overflow:hidden;
+ border:2px solid #fff;
+ border-radius:26px;
+ color:#244374;
+ box-shadow:0 11px 24px rgba(48,69,117,.13);
+ transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.libraryStoryPage .storyCategory.all{background:linear-gradient(147deg,#DFF3FF,#F2E4FF)}
+.libraryStoryPage .storyCategory.animals{background:linear-gradient(147deg,#FFF1D1,#FFE3D9)}
+.libraryStoryPage .storyCategory.dinos{background:linear-gradient(147deg,#DFF9CF,#D5F5EC)}
+.libraryStoryPage .storyCategory.farm{background:linear-gradient(147deg,#FFF2D5,#E1F6D2)}
+.libraryStoryPage .storyCategory.vehicles{background:linear-gradient(147deg,#DBF2FF,#E4E7FF)}
+.libraryStoryPage .storyCategory.space{background:linear-gradient(147deg,#E7E4FF,#D9F3FF)}
+.libraryStoryPage .storyCategory.fairy{background:linear-gradient(147deg,#FFE4F0,#EAE4FF)}
+.libraryStoryPage .storyCategory .storyCategoryArt{
+ display:block;
+ align-self:center;
+ width:100%;
+ height:133px;
+ border:0;
+ border-radius:21px;
+ background:none;
+ box-shadow:none;
+ padding:0;
+ overflow:visible;
+ flex-shrink:0;
+}
+.libraryStoryPage .storyCategoryArt img{
+ display:block;
+ width:100%;
+ height:100%;
+ object-fit:contain;
+ padding:0;
+ filter:drop-shadow(0 3px 5px rgba(28,62,119,.08));
+}
+.libraryStoryPage .storyCategory .categoryInfo{
+ display:grid;
+ align-content:center;
+ gap:3px;
+ min-width:0;
+ margin:7px 23px 0 6px;
+ text-align:left;
+}
+.libraryStoryPage .storyCategory .categoryInfo b{
+ display:block;
+ font-size:17px;
+ font-weight:950;
+ line-height:1.25;
+ color:#1A407A;
+ white-space:normal;
+ overflow-wrap:anywhere;
+}
+.libraryStoryPage .storyCategory .categoryInfo small{
+ display:block;
+ font-size:12px;
+ margin:0;
+ color:#64738B;
+ font-weight:800;
+ line-height:1.3;
+}
+.libraryStoryPage .storyCategory .categoryArrow{
+ position:absolute;
+ bottom:14px;
+ right:13px;
+ display:grid;
+ place-items:center;
+ width:27px;
+ height:27px;
+ border-radius:50%;
+ background:#FFFFFFC9;
+ font-size:24px;
+ color:#6652B1;
+ line-height:1;
+}
+.libraryStoryPage .storyCategory.isSelected{
+ border-color:#488BFC !important;
+ box-shadow:0 0 0 3px #528EFF2B,0 12px 27px #326ECA36;
+}
+.libraryStoryPage .storyCategory.isSelected .categoryArrow{
+ background:#317AF3;
+ color:#fff;
+}
+.libraryStoryPage .storyCategory:focus-visible,
+.libraryStoryPage .storyLibraryCard button:focus-visible{
+ outline:3px solid #165CC6;
+ outline-offset:3px;
+}
+@media(hover:hover) and (pointer:fine){
+ .libraryStoryPage .storyCategory:hover{
+  transform:translateY(-4px);
+  box-shadow:0 17px 29px rgba(43,73,126,.19);
+ }
+}
+.libraryStoryPage .storyLibraryCard{
+ border:2px solid #fff;
+ border-radius:25px;
+ background:
+  radial-gradient(circle at 94% 2%,#F6EBFFAA 0,transparent 35%),
+  linear-gradient(160deg,#FFFFFF,#FBFCFF);
+ box-shadow:0 12px 24px rgba(37,69,126,.10);
+ padding:10px;
+}
+.libraryStoryPage .storyLibraryCard .libraryOpen{
+ border-radius:19px;
+ background:#F6F9FF;
+}
+.libraryStoryPage .storyLibraryCard .thumb{
+ border:3px solid #fff;
+ border-radius:19px;
+ background:#fff;
+ box-shadow:0 4px 12px #34578F12;
+}
+.libraryStoryPage .storyLibraryCard .thumb>img{
+ object-fit:contain;
+ background:#fff;
+}
+.libraryStoryPage .storyLibraryCard .libraryCardText{
+ padding:11px 5px 5px;
+}
+.libraryStoryPage .storyLibraryCard .libraryCardText b,
+.libraryStoryPage .storyLibraryCard>b{
+ color:#193F7B;
+ font-weight:900;
+}
+.libraryStoryPage .storyLibraryCard .miniPaint{
+ min-height:42px;
+ border:1px solid #E4DCF8;
+ border-radius:15px;
+ color:#633FB4;
+ font-size:13px;
+ background:linear-gradient(135deg,#F1EAFF,#E9F1FF);
+}
+.libraryStoryPage .storyLibraryCard .heart{
+ border:2px solid #fff;
+ background:#FFFDFDF0;
+}
+.libraryStoryPage .storyLibraryRail{
+ padding-top:6px;
+ padding-bottom:15px;
+}
+@media(max-width:900px){
+ .libraryStoryPage .libraryStoryCategories{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:11px;
+ }
+ .libraryStoryPage .storyCategory{
+  min-height:204px;
+  padding:9px 9px 13px;
+  border-radius:23px;
+ }
+ .libraryStoryPage .storyCategory .storyCategoryArt{height:121px}
+ .libraryStoryPage .storyCategory .categoryInfo{margin-top:5px}
+ .libraryStoryPage .storyCategory .categoryInfo b{font-size:15px}
+ .libraryStoryPage .storyCategory .categoryInfo small{font-size:11px}
+}
+@media(max-width:650px){
+ .libraryStoryPage .libraryStoryCategories{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:11px;
+ }
+ .libraryStoryPage .storyCategory{
+  min-height:183px;
+  padding:7px 7px 12px;
+  border-radius:20px;
+ }
+ .libraryStoryPage .storyCategory .storyCategoryArt{
+  height:105px;
+  border-radius:17px;
+ }
+ .libraryStoryPage .storyCategory .categoryInfo{
+  margin:5px 20px 0 6px;
+  gap:2px;
+ }
+ .libraryStoryPage .storyCategory .categoryInfo b{font-size:14px;line-height:1.2}
+ .libraryStoryPage .storyCategory .categoryInfo small{font-size:11px}
+ .libraryStoryPage .storyCategory .categoryArrow{
+  display:grid;
+  bottom:10px;right:9px;width:22px;height:22px;font-size:20px;
+ }
+ .libraryStoryPage .storyLibraryCard{padding:7px;border-radius:19px}
+ .libraryStoryPage .storyLibraryCard .thumb{border-width:2px;border-radius:15px}
+ .libraryStoryPage .storyLibraryCard .libraryOpen{border-radius:16px}
+ .libraryStoryPage .storyLibraryCard .libraryCardText{padding:8px 3px 4px}
+ .libraryStoryPage .storyLibraryCard .miniPaint{min-height:39px}
+}
+@media(max-width:375px){
+ .libraryStoryPage .storyCategory{min-height:174px}
+ .libraryStoryPage .storyCategory .storyCategoryArt{height:97px}
+ .libraryStoryPage .storyCategory .categoryInfo b{font-size:13px}
+ .libraryStoryPage .storyCategory .categoryInfo small{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ .libraryStoryPage .storyCategory{transition:none}
+ .libraryStoryPage .storyCategory:hover{transform:none}
+}
+
+/* =========================================================
+   Malino Storybook Rewards v1 — decorative theme only.
+   Keeps the same achievement thresholds, unlocks and actions.
+   ========================================================= */
+.storyRewardsHub{
+  isolation:isolate;
+}
+.storyRewardsHub .storyRewardsHero{
+  position:relative;
+  background:
+    radial-gradient(circle at 88% 10%,#ffffffb8 0 7px,transparent 8px),
+    radial-gradient(circle at 74% 82%,#ffdb91cc 0 5px,transparent 6px),
+    linear-gradient(128deg,#dff3ff 0%,#eeedff 52%,#ffe6f3 100%);
+  border:2px solid #fff;
+  box-shadow:0 13px 33px #39568724;
+}
+.storyRewardsHub .storyRewardsHero::after{
+  content:"✦";
+  position:absolute;
+  top:12px;
+  right:22%;
+  color:#ffbd65;
+  font-size:29px;
+  text-shadow:0 3px 0 #fff,0 6px 10px #a75b6930;
+  pointer-events:none;
+}
+.storyRewardsHub .storyStarWallet{
+  position:relative;
+  border:2px solid #fff;
+  background:linear-gradient(147deg,#fffaf0,#ffe9b7);
+  box-shadow:0 10px 22px #eab85a32;
+}
+.storyRewardsHub .storyStarWallet>span{
+  filter:drop-shadow(0 3px 2px #dc991e40);
+}
+.storyRewardsHub .storyLevelCard{
+  border:2px solid #fff;
+  background:
+    radial-gradient(circle at 96% 9%,#ffe8ac99,transparent 27%),
+    linear-gradient(125deg,#fffdf5,#f2f7ff 65%,#f7eeff);
+  box-shadow:0 12px 26px #425a9320;
+}
+.storyRewardsHub .storyLevelCard .levelTrack{
+  background:linear-gradient(180deg,#eae7ff,#eaf4ff);
+  box-shadow:inset 0 2px 5px #6f7dba22;
+}
+.storyRewardsHub .storyLevelCard .levelTrack i{
+  background:linear-gradient(90deg,#ffb564,#f6a3cc,#a891ee);
+}
+.storyRewardsHub .rewardsSectionHead h2{
+  color:#213d7a;
+  letter-spacing:-.018em;
+}
+.storyRewardsHub .rewardsSectionHead .eyebrow{
+  color:#795ab8;
+}
+.storyRewardsHub .achievementProgress{
+  border:2px solid #fff;
+  border-radius:23px;
+  background:linear-gradient(135deg,#f1eaff,#e8f6ff);
+  box-shadow:0 8px 19px #495e9116;
+}
+.storyRewardsHub .achievementTrack i{
+  background:linear-gradient(90deg,#ffb95c,#f68ec1,#9e85ef);
+}
+.storyRewardsHub .storyBadgeGrid{
+  gap:13px;
+}
+.storyRewardsHub .storyBadgeCard{
+  isolation:isolate;
+  position:relative;
+  overflow:hidden;
+  border:2px solid #fff;
+  border-radius:25px;
+  background:
+    radial-gradient(circle at 85% 14%,#ffffffc7 0 7px,transparent 8px),
+    linear-gradient(145deg,#fffaf4,#f1f5ff);
+  box-shadow:0 11px 21px #405d9718;
+}
+.storyRewardsHub .storyBadgeCard.unlocked{
+  border-color:#fff;
+  background:
+    radial-gradient(circle at 90% 13%,#fff 0 6px,transparent 7px),
+    linear-gradient(145deg,#fff6cf,#ffe9ef 55%,#f0e8ff);
+  box-shadow:0 10px 22px #bb8d3926;
+}
+.storyRewardsHub .storyBadgeCard .badgeIcon{
+  position:relative;
+  border:4px solid #fff;
+  background:linear-gradient(150deg,#fff1b9,#ffd17a);
+  box-shadow:0 5px 10px #dca56035,inset 0 2px 5px #fffbd7;
+  font-size:39px;
+  line-height:1;
+}
+.storyRewardsHub .storyBadgeCard.unlocked .badgeIcon::after{
+  content:"";
+  position:absolute;
+  inset:-9px;
+  border:2px dashed #f5ce7a;
+  border-radius:50%;
+  pointer-events:none;
+}
+.storyRewardsHub .storyBadgeCard.locked .badgeIcon{
+  border-color:#fff;
+  background:#e8edf5;
+  box-shadow:none;
+}
+.storyRewardsHub .storyBadgeCard .badgeCopy{
+  position:relative;
+  z-index:1;
+}
+.storyRewardsHub .storyBadgeCard .badgeCopy b{
+  color:#213d7a;
+}
+.storyRewardsHub .storyBadgeCard>i{
+  background:linear-gradient(145deg,#76daab,#35b98a);
+  box-shadow:0 3px 6px #379b7230;
+}
+.storyRewardsHub .storyTreasureGrid{
+  gap:13px;
+}
+.storyRewardsHub .storyTreasureItem{
+  border:2px solid #fff;
+  border-radius:23px;
+  background:linear-gradient(145deg,#fff8ef,#f2f1ff);
+  box-shadow:0 9px 19px #465f9017;
+}
+.storyRewardsHub .storyTreasureItem:nth-child(3n+2){
+  background:linear-gradient(145deg,#eaf8ff,#f3edff);
+}
+.storyRewardsHub .storyTreasureItem:nth-child(3n){
+  background:linear-gradient(145deg,#fff2f7,#fff6df);
+}
+.storyRewardsHub .storyTreasureItem .treasurePreview{
+  border:2px solid #fff;
+  border-radius:18px;
+  background:linear-gradient(140deg,#fffce5,#e9ebff);
+  box-shadow:0 5px 12px #415b8b18;
+}
+.storyRewardsHub .storyTreasureItem.equipped{
+  border-color:#b28dff;
+  box-shadow:0 0 0 3px #b28dff30,0 10px 24px #5e52a21c;
+}
+.storyRewardsHub .storyTreasureItem.locked{
+  opacity:.64;
+  filter:saturate(.53);
+}
+.storyRewardsHub .storyTreasureItem button{
+  background:linear-gradient(135deg,#efe6ff,#e6f4ff);
+  color:#6042ae;
+  border:1px solid #d5cbf5;
+}
+.storyRewardsHub .storySurpriseGrid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+.storyRewardsHub .storySurpriseCard{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+  min-height:288px;
+  padding:12px 16px 19px;
+  overflow:hidden;
+  text-align:center;
+  border:2px solid #fff;
+  border-radius:26px;
+  box-shadow:0 12px 25px #53658e23;
+  background:linear-gradient(145deg,#fff5d9,#ffe3ef);
+}
+.storyRewardsHub .storySurprise100{
+  background:linear-gradient(145deg,#ddf3ff,#e9e6ff);
+}
+.storyRewardsHub .storySurprise200{
+  background:linear-gradient(145deg,#f5eaff,#fff0d3);
+}
+.storyRewardsHub .storySurpriseCard.ready{
+  border-color:#ffe08a;
+  box-shadow:0 0 0 3px #ffe9a069,0 12px 26px #d9a65032;
+}
+.storyRewardsHub .storySurpriseCard.opened{
+  border-color:#a2dfbf;
+  background:linear-gradient(145deg,#e1fff2,#eff5ff);
+}
+.storyRewardsHub .storySurpriseArt{
+  position:relative;
+  flex-shrink:0;
+  display:block;
+  width:min(100%,194px);
+  height:148px;
+  margin:-4px auto -6px;
+  padding:0;
+  background:transparent;
+  overflow:visible;
+  line-height:1;
+}
+.storyRewardsHub .storySurpriseArt img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  filter:drop-shadow(0 5px 8px #38548a18);
+}
+.storyRewardsHub .storySurpriseArt i{
+  position:absolute;
+  right:10%;
+  top:14%;
+  display:grid;
+  place-items:center;
+  width:28px;
+  height:28px;
+  border:3px solid #fff;
+  border-radius:50%;
+  color:#fff;
+  background:#40bd88;
+  font-size:14px;
+  font-style:normal;
+  font-weight:900;
+  box-shadow:0 4px 11px #25775635;
+}
+.storyRewardsHub .storySurpriseCard>div{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:3px;
+  min-width:0;
+}
+.storyRewardsHub .storySurpriseCard b{
+  font-size:16px;
+  line-height:1.25;
+  color:#1e437f;
+}
+.storyRewardsHub .storySurpriseCard small{
+  font-size:12px;
+  line-height:1.35;
+  color:#65708b;
+}
+.storyRewardsHub .storySurpriseCard>button,
+.storyRewardsHub .storySurpriseCard>em{
+  margin-top:auto;
+  max-width:100%;
+  white-space:normal;
+}
+.storyRewardsHub .storySurpriseCard .openChestBtn{
+  min-height:38px;
+  padding:9px 17px;
+  border-radius:15px;
+}
+.storyRewardsHub .storySurpriseCard .secretOpenNow{
+  max-width:100%;
+}
+.storyRewardsHub .storySurpriseCard.opened em{
+  background:#d4f6e8;
+  color:#246c58;
+}
+.storyRewardsHub .storyRewardsCta{
+  border:2px solid #fff;
+  background:linear-gradient(135deg,#e7f5ff,#f4e7ff 70%,#fff0d9);
+  box-shadow:0 9px 22px #445f931d;
+}
+.storyRewardsHub button:focus-visible{
+  outline:3px solid #1c60cf;
+  outline-offset:3px;
+}
+@media(max-width:900px){
+ .storyRewardsHub .storySurpriseGrid{grid-template-columns:minmax(0,1fr)}
+ .storyRewardsHub .storyBadgeGrid{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+ }
+ .storyRewardsHub .storySurpriseCard{
+  min-height:0;
+  flex-direction:row;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:flex-start;
+  gap:8px 12px;
+  text-align:left;
+  padding:12px 14px;
+ }
+ .storyRewardsHub .storySurpriseCard>div{
+  flex:1 1 140px;
+  align-items:flex-start;
+ }
+ .storyRewardsHub .storySurpriseArt{
+  width:114px;
+  height:98px;
+  margin:-2px 0;
+ }
+ .storyRewardsHub .storySurpriseCard>button,
+ .storyRewardsHub .storySurpriseCard>em{
+  margin:0 0 0 126px;
+ }
+}
+@media(max-width:650px){
+ .storyRewardsHub .storyRewardsHero::after{top:6px;right:16%;font-size:18px}
+ .storyRewardsHub .storyStarWallet{border-width:1px}
+ .storyRewardsHub .storyBadgeGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .storyRewardsHub .storyBadgeCard{min-height:134px;border-radius:19px;padding:11px 6px}
+ .storyRewardsHub .storyBadgeCard .badgeIcon{
+  width:56px;
+  height:56px;
+  font-size:30px;
+  border-width:3px;
+ }
+ .storyRewardsHub .storyBadgeCard.unlocked .badgeIcon::after{inset:-6px}
+ .storyRewardsHub .storyTreasureGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .storyRewardsHub .storyTreasureItem{border-radius:19px;padding:10px;gap:7px}
+ .storyRewardsHub .storyTreasureItem .treasurePreview{border-radius:14px}
+ .storyRewardsHub .storySurpriseGrid{grid-template-columns:minmax(0,1fr);gap:10px}
+ .storyRewardsHub .storySurpriseCard{
+  display:grid;
+  grid-template-columns:97px minmax(0,1fr);
+  grid-template-rows:auto auto;
+  align-content:center;
+  align-items:center;
+  justify-items:stretch;
+  gap:5px 10px;
+  min-height:119px;
+  padding:10px 12px;
+  border-radius:20px;
+  text-align:left;
+ }
+ .storyRewardsHub .storySurpriseArt{
+  grid-column:1;
+  grid-row:1 / span 2;
+  width:100%;
+  height:100px;
+  margin:0;
+ }
+ .storyRewardsHub .storySurpriseCard>div{
+  grid-column:2;
+  grid-row:1;
+  align-items:flex-start;
+  min-width:0;
+ }
+ .storyRewardsHub .storySurpriseCard b{font-size:13px}
+ .storyRewardsHub .storySurpriseCard small{font-size:11px}
+ .storyRewardsHub .storySurpriseCard>button,
+ .storyRewardsHub .storySurpriseCard>em{
+  grid-column:2;
+  grid-row:2;
+  justify-self:start;
+  margin:0;
+  font-size:11px;
+  line-height:1.25;
+ }
+ .storyRewardsHub .storySurpriseCard .openChestBtn{min-height:34px;padding:7px 13px}
+ .storyRewardsHub .storySurpriseArt i{width:23px;height:23px;font-size:11px;right:3%;top:8%}
+}
+@media(max-width:375px){
+ .storyRewardsHub .storySurpriseCard{grid-template-columns:81px minmax(0,1fr);gap:4px 8px;padding:8px}
+ .storyRewardsHub .storySurpriseArt{height:85px}
+ .storyRewardsHub .storySurpriseCard b{font-size:12px}
+ .storyRewardsHub .storySurpriseCard small{font-size:10px}
+ .storyRewardsHub .storyBadgeCard{min-height:123px}
+}
+@media(prefers-reduced-motion:reduce){
+ .storyRewardsHub .storySurpriseCard,
+ .storyRewardsHub .storyBadgeCard{
+  animation:none;
+  transition:none;
+ }
+}
+
+/* ========================================================
+   Malino Storybook Gallery v1 — visual-only refresh.
+   Never alters saved artwork, per-profile storage or editor.
+   ======================================================== */
+.storybookGalleryPage{
+ isolation:isolate;
+ min-width:0;
+}
+.storybookGalleryPage .storyGalleryHero{
+ position:relative;
+ isolation:isolate;
+ overflow:hidden;
+ border:2px solid #fff;
+ background:
+  radial-gradient(circle at 90% 11%,#fff7b999 0 22px,transparent 23px),
+  radial-gradient(circle at 9% 91%,#ffd8e5a6 0 16px,transparent 17px),
+  linear-gradient(125deg,#e0f5ff 0%,#f1eafe 58%,#fff3dd 100%);
+ box-shadow:0 13px 29px #314b831f;
+}
+.storybookGalleryPage .storyGalleryHero::before{
+ position:absolute;
+ top:12px;
+ right:28%;
+ content:"✦";
+ color:#f9c15b;
+ font-size:26px;
+ text-shadow:0 2px 0 white,0 4px 10px #eab65755;
+ pointer-events:none;
+}
+.storybookGalleryPage .storyGalleryCount{
+ border:2px solid #fff;
+ background:linear-gradient(135deg,#fffaf1,#fbe4f6);
+ box-shadow:0 8px 21px #d5a95924;
+}
+.storybookGalleryPage .storyGalleryCount>span{
+ filter:drop-shadow(0 3px 5px #a77bd755);
+}
+.storybookGalleryPage .storyGalleryHero .galleryNew{
+ border:2px solid #fff;
+ border-radius:15px;
+ background:linear-gradient(130deg,#8970e6,#b877e9);
+ color:white;
+ box-shadow:0 5px 0 #6e56c3;
+}
+.storybookGalleryPage .storyGalleryHero .galleryOpenLatest{
+ border:2px solid #fff;
+ border-radius:15px;
+ background:#fff9ff;
+ color:#7253bd;
+ box-shadow:0 4px 12px #57478519;
+}
+.storybookGalleryPage .storyGallerySectionHead h2{
+ color:#213e7c;
+ letter-spacing:-.02em;
+}
+.storybookGalleryPage .storyGallerySectionHead .eyebrow{
+ color:#8160bd;
+}
+.storybookGalleryPage .storyGallerySectionHead>span{
+ border:2px solid #fff;
+ border-radius:999px;
+ background:linear-gradient(135deg,#f3e9ff,#e3f3ff);
+ color:#6950aa;
+ font-weight:900;
+ box-shadow:0 4px 13px #5d64a01c;
+}
+.storybookGalleryPage .storyGalleryGrid{
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:17px;
+ align-items:stretch;
+}
+.storybookGalleryPage .storyGalleryCard{
+ position:relative;
+ isolation:isolate;
+ min-width:0;
+ overflow:hidden;
+ padding:11px !important;
+ border:3px solid #fff !important;
+ border-radius:26px !important;
+ background:linear-gradient(145deg,#fffaf2,#f7efff) !important;
+ box-shadow:0 12px 23px #4257851c !important;
+ transition:box-shadow .18s ease,transform .18s ease;
+}
+.storybookGalleryPage .storyGalleryCard:nth-child(3n+2){
+ background:linear-gradient(145deg,#eef8ff,#fff5fb) !important;
+}
+.storybookGalleryPage .storyGalleryCard:nth-child(3n){
+ background:linear-gradient(145deg,#fff5e5,#ebf7fa) !important;
+}
+.storybookGalleryPage .storyGalleryCard.latest{
+ border-color:#ffecad !important;
+ box-shadow:0 0 0 3px #ffe69e55,0 13px 27px #b086502d !important;
+}
+.storybookGalleryPage .storyGalleryCard.latest::before{
+ content:"";
+ position:absolute;
+ inset:0;
+ z-index:-1;
+ border-radius:inherit;
+ pointer-events:none;
+ background:radial-gradient(circle at 92% 7%,#fff2baaa,transparent 27%);
+}
+.storybookGalleryPage .storyGalleryOpen{
+ position:relative;
+ display:block;
+ overflow:hidden;
+ width:100%;
+ padding:0;
+ border:3px solid #fff;
+ border-radius:20px;
+ background:#fff;
+ box-shadow:0 5px 12px #4d61941e;
+}
+.storybookGalleryPage .storyGalleryOpen .thumb{
+ width:100%;
+ height:auto;
+ min-height:0;
+ aspect-ratio:4/4.4;
+ border:0;
+ border-radius:16px;
+ background:#fff;
+ box-shadow:none;
+ overflow:hidden;
+}
+.storybookGalleryPage .storyGalleryOpen .thumb img{
+ display:block;
+ width:100%;
+ height:100%;
+ min-height:0;
+ object-fit:contain;
+ object-position:center;
+ transition:none;
+}
+.storybookGalleryPage .storyGalleryCard:hover .storyGalleryOpen .thumb img{
+ transform:none;
+}
+.storybookGalleryPage .storyGalleryOpen .latestBadge{
+ top:10px;
+ left:10px;
+ padding:7px 10px;
+ border:2px solid #fff;
+ background:#fff8d9;
+ color:#7853a7;
+ box-shadow:0 5px 10px #7a608128;
+}
+.storybookGalleryPage .storyGalleryCardText{
+ min-height:73px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:8px;
+ padding:12px 5px 8px !important;
+}
+.storybookGalleryPage .storyGalleryCardText>div{
+ min-width:0;
+ display:grid;
+ gap:4px;
+}
+.storybookGalleryPage .storyGalleryCardText b{
+ color:#29437c;
+ font-size:15px;
+ font-weight:950;
+ white-space:normal;
+ overflow-wrap:anywhere;
+ line-height:1.22;
+}
+.storybookGalleryPage .storyGalleryCardText small{
+ color:#728199;
+ font-size:11px;
+}
+.storybookGalleryPage .storyGalleryCardText>span{
+ display:block;
+ flex:0 1 auto;
+ min-width:0;
+ max-width:46%;
+ overflow-wrap:anywhere;
+ padding:6px 9px;
+ border:1px solid #fff;
+ background:#efe7ff;
+ color:#7655b0;
+ font-size:10px;
+ font-weight:900;
+}
+.storybookGalleryPage .galleryCardActions{
+ display:grid;
+ grid-template-columns:minmax(0,1fr) auto;
+ align-items:center;
+ gap:9px;
+ padding:0 4px 4px;
+}
+.storybookGalleryPage .galleryCardActions .galleryAgain{
+ min-height:43px;
+ margin:0;
+ border:2px solid #fff;
+ border-radius:15px;
+ background:linear-gradient(135deg,#e9e4ff,#e7f2ff);
+ color:#6744b8;
+ font-weight:950;
+ box-shadow:0 4px 9px #5d6aa019;
+}
+.storybookGalleryPage .galleryCardActions .galleryFavorite{
+ width:44px;
+ min-height:43px;
+ border:2px solid #fff;
+ border-radius:15px;
+ background:#fff0f6;
+ box-shadow:0 4px 10px #a16b8b18;
+}
+.storybookGalleryPage .storyGalleryEmpty{
+ position:relative;
+ overflow:hidden;
+ min-height:400px;
+ padding:34px 22px;
+ border:3px solid #fff;
+ border-radius:29px;
+ background:
+  radial-gradient(circle at 87% 17%,#ffdd89a6 0 26px,transparent 27px),
+  radial-gradient(circle at 15% 76%,#d5c3ffa6 0 35px,transparent 36px),
+  linear-gradient(140deg,#e5f6ff,#fff3fa 58%,#fff7e6);
+ box-shadow:0 12px 28px #42568d1b;
+}
+.storybookGalleryPage .storyGalleryEmpty::before{
+ content:"✦";
+ position:absolute;
+ top:29px;
+ left:20%;
+ font-size:36px;
+ color:#f6ba52;
+ text-shadow:0 4px 0 white;
+ pointer-events:none;
+}
+.storybookGalleryPage .storyGalleryEmpty::after{
+ content:"✧";
+ position:absolute;
+ right:18%;
+ bottom:22%;
+ font-size:32px;
+ color:#9e82e5;
+ pointer-events:none;
+}
+.storybookGalleryPage .storyGalleryEmptyMascot{
+ position:relative;
+ z-index:1;
+ filter:drop-shadow(0 11px 11px #58639b28);
+}
+.storybookGalleryPage .storyGalleryEmptyIcon{
+ position:relative;
+ display:grid;
+ place-items:center;
+ width:66px;
+ height:66px;
+ margin:3px 0 10px;
+ border:3px solid #fff;
+ border-radius:23px;
+ background:linear-gradient(145deg,#fff1c6,#f2dfff);
+ box-shadow:0 6px 15px #7764a62b;
+ font-size:39px;
+}
+.storybookGalleryPage .storyGalleryEmptyIcon i{
+ position:absolute;
+ top:-8px;
+ right:-11px;
+ color:#efb84c;
+ font-size:27px;
+ font-style:normal;
+ text-shadow:0 2px 0 #fff;
+}
+.storybookGalleryPage .storyGalleryEmpty h2{
+ margin:5px 0 8px;
+ color:#28477f;
+}
+.storybookGalleryPage .storyGalleryEmpty p{
+ max-width:385px;
+ color:#657891;
+ font-weight:700;
+ line-height:1.45;
+}
+.storybookGalleryPage .storyGalleryEmpty button{
+ position:relative;
+ z-index:1;
+ min-height:47px;
+ padding:12px 18px;
+ border:2px solid #fff;
+ border-radius:16px;
+ background:linear-gradient(135deg,#9471e9,#bd81e6);
+ color:#fff;
+ box-shadow:0 5px 0 #7256ba;
+}
+.storybookGalleryPage button:focus-visible{
+ outline:3px solid #2467c6;
+ outline-offset:3px;
+}
+@media(hover:hover) and (pointer:fine){
+ .storybookGalleryPage .storyGalleryCard:hover{
+  transform:translateY(-3px);
+  box-shadow:0 15px 29px #42578529 !important;
+ }
+}
+@media(max-width:900px){
+ .storybookGalleryPage .storyGalleryGrid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+ }
+ .storybookGalleryPage .storyGalleryCard{
+  padding:9px !important;
+  border-radius:22px !important;
+ }
+}
+@media(max-width:650px){
+ .storybookGalleryPage .storyGalleryGrid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+ }
+ .storybookGalleryPage .storyGalleryCard{
+  padding:7px !important;
+  border-width:2px !important;
+  border-radius:19px !important;
+ }
+ .storybookGalleryPage .storyGalleryOpen{
+  border-width:2px;
+  border-radius:15px;
+ }
+ .storybookGalleryPage .storyGalleryOpen .thumb{
+  min-height:0;
+  aspect-ratio:4/4.4;
+  border-radius:13px;
+ }
+ .storybookGalleryPage .storyGalleryOpen .thumb img{
+  min-height:0;
+  object-fit:contain;
+ }
+ .storybookGalleryPage .storyGalleryCardText{
+  min-height:66px;
+  padding:8px 3px 5px !important;
+  align-items:start;
+  flex-direction:column;
+  gap:5px;
+ }
+ .storybookGalleryPage .storyGalleryCardText b{
+  font-size:13px;
+ }
+ .storybookGalleryPage .storyGalleryCardText small{
+  font-size:10px;
+ }
+ .storybookGalleryPage .storyGalleryCardText>span{
+  max-width:100%;
+  padding:4px 7px;
+  font-size:9px;
+ }
+ .storybookGalleryPage .galleryCardActions{
+  padding:0 1px 2px;
+  gap:5px;
+ }
+ .storybookGalleryPage .galleryCardActions .galleryAgain{
+  min-height:38px;
+  padding:6px 4px;
+  font-size:10px;
+  line-height:1.18;
+  border-radius:11px;
+ }
+ .storybookGalleryPage .galleryCardActions .galleryFavorite{
+  min-height:38px;
+  width:36px;
+  border-radius:11px;
+ }
+ .storybookGalleryPage .storyGalleryEmpty{
+  min-height:350px;
+  padding:24px 15px;
+ }
+ .storybookGalleryPage .storyGalleryEmpty::before{
+  top:19px;
+  left:11%;
+  font-size:28px;
+ }
+ .storybookGalleryPage .storyGalleryEmptyMascot{
+  height:112px;
+ }
+ .storybookGalleryPage .storyGalleryEmptyIcon{
+  width:59px;height:59px;font-size:33px;
+ }
+}
+@media(max-width:375px){
+ .storybookGalleryPage .storyGalleryGrid{gap:7px}
+ .storybookGalleryPage .storyGalleryCardText b{font-size:12px}
+ .storybookGalleryPage .galleryCardActions .galleryAgain{font-size:9px}
+ .storybookGalleryPage .galleryCardActions .galleryFavorite{width:34px}
+}
+@media(prefers-reduced-motion:reduce){
+ .storybookGalleryPage .storyGalleryCard{transition:none}
+ .storybookGalleryPage .storyGalleryCard:hover{transform:none}
+}
+
+/* ========================================================
+   Malino Storybook Daily v1 — decorative update only.
+   Keeps daily challenge selection, bonuses and streak logic.
+   ======================================================== */
+.malinoStoryHome .storyAdventureHeader h2{
+ color:#263F7B;
+ letter-spacing:-.025em;
+}
+.malinoStoryHome .storyAdventureHeader .eyebrow{
+ color:#8057B7;
+}
+.malinoStoryHome .storyTodayAdventureGrid{
+ gap:16px;
+ align-items:stretch;
+ min-width:0;
+}
+.malinoStoryHome .storyDailyCard{
+ position:relative;
+ isolation:isolate;
+ overflow:hidden;
+ min-width:0;
+ padding:18px !important;
+ border:3px solid #fff !important;
+ border-radius:28px !important;
+ background:
+  radial-gradient(circle at 94% 8%,#ffe7a7b5 0 31px,transparent 32px),
+  radial-gradient(circle at 4% 90%,#edddffad 0 48px,transparent 49px),
+  linear-gradient(140deg,#fff8ed,#f4eefe 65%,#eaf7ff) !important;
+ box-shadow:0 14px 28px #52669e20 !important;
+}
+.malinoStoryHome .storyDailyCard::before{
+ content:"✦";
+ position:absolute;
+ top:15px;
+ right:22px;
+ bottom:auto;
+ width:auto;
+ height:auto;
+ border-radius:0;
+ background:none;
+ color:#EDB354;
+ font-size:25px;
+ text-shadow:0 3px 0 #fff,0 5px 10px #c7896129;
+ pointer-events:none;
+}
+.malinoStoryHome .storyDailyCard.dailyDone{
+ border-color:#BFEFD8 !important;
+ background:
+  radial-gradient(circle at 92% 7%,#fff4b9af 0 32px,transparent 33px),
+  linear-gradient(138deg,#e8fff3,#f1f4ff 60%,#fff2fa) !important;
+}
+.malinoStoryHome .storyDailyMagicBadge{
+ border:2px solid #fff;
+ border-radius:999px;
+ background:linear-gradient(130deg,#fffef7,#fff2d3);
+ color:#7453AD;
+ box-shadow:0 5px 12px #8f79bd20;
+}
+.malinoStoryHome .storyDailyChallengeHead{
+ position:relative;
+ z-index:2;
+ gap:10px;
+ align-items:center;
+ margin-bottom:14px;
+}
+.malinoStoryHome .storyDailyChallengeHead .storyDailyTitle{
+ display:flex;
+ align-items:center;
+ gap:8px;
+ min-width:0;
+ font-size:18px;
+ font-weight:950;
+ line-height:1.2;
+ color:#253F80;
+}
+.malinoStoryHome .storyDailyTitle img{
+ display:block;
+ flex:0 0 51px;
+ width:51px;
+ height:51px;
+ object-fit:contain;
+ filter:drop-shadow(0 3px 6px #aa7e6030);
+}
+.malinoStoryHome .storyDailyChallengeHead>span{
+ position:relative;
+ z-index:2;
+ flex:0 0 auto;
+ border:2px solid #fff;
+ border-radius:999px;
+ background:linear-gradient(135deg,#FFF3B8,#FFE1A2);
+ color:#85500C;
+ box-shadow:0 4px 12px #a68a4b1e;
+}
+.malinoStoryHome .storyDailyCard.dailyDone .storyDailyChallengeHead>span{
+ background:#e0f8ec;
+ color:#247650;
+}
+.malinoStoryHome .storyDailyCard>.thumb{
+ position:relative;
+ z-index:1;
+ overflow:hidden;
+ border:4px solid #fff;
+ border-radius:22px !important;
+ background:#fff;
+ box-shadow:0 8px 19px #51699624;
+}
+.malinoStoryHome .storyDailyCard>.thumb img{
+ object-fit:contain !important;
+ background:#fff;
+}
+.malinoStoryHome .storyDailyChallengeInfo{
+ position:relative;
+ z-index:2;
+ margin-top:12px;
+}
+.malinoStoryHome .storyDailyChallengeInfo .dailyTitleRow>b{
+ color:#244780;
+ font-weight:950;
+}
+.malinoStoryHome .storyDailyChallengeInfo .dailyTitleRow>span{
+ border:1px solid #fff;
+ border-radius:999px;
+ background:#f7e6ff;
+ color:#7351AD;
+}
+.malinoStoryHome .storyDailyRewardStrip span{
+ border:1px solid #fff;
+ border-radius:999px;
+ background:#f5eaff;
+ color:#7253B1;
+ box-shadow:0 3px 9px #9a7bb016;
+}
+.malinoStoryHome .storyDailyRewardStrip span:first-child{
+ background:#fff0c7;
+ color:#886018;
+}
+.malinoStoryHome .storyDailyCard.dailyDone .storyDailyRewardStrip span:last-child{
+ background:#e5f9ec;
+ color:#23754B;
+}
+.malinoStoryHome .storyDailyPrimaryButton{
+ min-height:48px;
+ border:2px solid #fff;
+ border-radius:16px !important;
+ background:linear-gradient(135deg,#9069DB,#A77DED);
+ color:#fff;
+ font-weight:950;
+ box-shadow:0 5px 0 #6F4AB9,0 9px 16px #7057AB2E;
+}
+.malinoStoryHome .storyStreakCard{
+ position:relative;
+ isolation:isolate;
+ overflow:hidden;
+ min-width:0;
+ border:3px solid #fff !important;
+ border-radius:28px !important;
+ background:
+  radial-gradient(circle at 89% 8%,#fff8d6 0 18px,transparent 19px),
+  linear-gradient(150deg,#fff0d3,#ffe4e9 65%,#f1eaff) !important;
+ box-shadow:0 13px 27px #a4776821 !important;
+}
+.malinoStoryHome .storyStreakCard::before{
+ content:"";
+ position:absolute;
+ z-index:0;
+ inset:auto -38px -47px auto;
+ width:116px;
+ height:116px;
+ border:15px solid #ffffff69;
+ border-radius:50%;
+ background:none;
+ pointer-events:none;
+}
+.malinoStoryHome .storyStreakCard .streakMiniLabel{
+ color:#995B3F;
+}
+.malinoStoryHome .storyStreakIcon{
+ position:relative;
+ z-index:1;
+ display:grid;
+ place-items:center;
+ flex:0 0 auto;
+ width:84px;
+ height:84px;
+ padding:0;
+ margin-top:18px;
+ border:0;
+ border-radius:50%;
+ background:none;
+ box-shadow:none;
+}
+.malinoStoryHome .storyStreakIcon img{
+ display:block;
+ width:100%;
+ height:100%;
+ object-fit:contain;
+ filter:drop-shadow(0 5px 5px #a97c5928);
+}
+.malinoStoryHome .storyStreakCard .streakText{
+ position:relative;
+ z-index:1;
+}
+.malinoStoryHome .storyStreakCard .streakText>b{
+ color:#995932;
+ font-weight:950;
+}
+.malinoStoryHome .storyStreakDots{
+ grid-template-columns:repeat(7,minmax(0,1fr));
+ gap:5px;
+}
+.malinoStoryHome .storyStreakDots i{
+ display:grid;
+ place-items:center;
+ min-width:0;
+ border:2px solid #fff;
+ border-radius:11px;
+ background:#fff9ef;
+ color:#C3A08C;
+}
+.malinoStoryHome .storyStreakDots i.on{
+ background:linear-gradient(145deg,#fff1b9,#ffe0a6);
+ color:#A5572F;
+ border-color:#fff;
+ box-shadow:0 4px 12px #AE7C3D27;
+}
+.malinoStoryHome .storyStreakMilestone{
+ position:relative;
+ z-index:1;
+ border:2px solid #fff !important;
+ border-radius:999px;
+ background:#fff9e8 !important;
+ color:#97612A;
+ box-shadow:0 5px 12px #A4794A1A;
+}
+.malinoStoryHome .storyStreakCard:focus-visible,
+.malinoStoryHome .storyDailyPrimaryButton:focus-visible,
+.malinoStoryHome .storyAdventureHeader>button:focus-visible{
+ outline:3px solid #275DCA;
+ outline-offset:4px;
+}
+@media(max-width:900px){
+ .malinoStoryHome .storyTodayAdventureGrid{
+  grid-template-columns:minmax(0,1fr);
+  gap:12px;
+ }
+ .malinoStoryHome .storyStreakCard{
+  min-height:155px !important;
+  flex-direction:row;
+  flex-wrap:wrap;
+  justify-content:flex-start;
+  gap:14px;
+  text-align:left;
+ }
+ .malinoStoryHome .storyStreakCard .streakText{
+  flex:1 1 180px;
+  place-items:start;
+ }
+ .malinoStoryHome .storyStreakCard .streakText>small{text-align:left}
+ .malinoStoryHome .storyStreakIcon{
+  width:72px;
+  height:72px;
+  margin-top:0;
+ }
+ .malinoStoryHome .storyStreakMilestone{
+  margin:0 0 0 auto;
+ }
+}
+@media(max-width:650px){
+ .malinoStoryHome .storyTodayAdventureGrid{gap:10px}
+ .malinoStoryHome .storyDailyCard{
+  padding:12px !important;
+  border-width:2px !important;
+  border-radius:22px !important;
+ }
+ .malinoStoryHome .storyDailyCard::before{top:13px;right:16px;font-size:18px}
+ .malinoStoryHome .storyDailyChallengeHead{
+  gap:5px;
+  margin-bottom:10px;
+ }
+ .malinoStoryHome .storyDailyTitle img{
+  flex-basis:42px;
+  width:42px;
+  height:42px;
+ }
+ .malinoStoryHome .storyDailyChallengeHead .storyDailyTitle{
+  gap:5px;
+  font-size:14px;
+ }
+ .malinoStoryHome .storyDailyChallengeHead>span{
+  padding:5px 7px;
+  font-size:10px;
+ }
+ .malinoStoryHome .storyDailyCard>.thumb{
+  border-width:3px;
+  border-radius:18px !important;
+ }
+ .malinoStoryHome .storyDailyPrimaryButton{
+  min-height:44px;
+  margin-top:10px;
+ }
+ .malinoStoryHome .storyStreakCard{
+  min-height:142px !important;
+  border-width:2px !important;
+  border-radius:22px !important;
+  padding:32px 11px 14px !important;
+  gap:9px;
+ }
+ .malinoStoryHome .storyStreakIcon{
+  flex-basis:54px;
+  width:54px;
+  height:54px;
+ }
+ .malinoStoryHome .storyStreakCard .streakText>b{font-size:16px !important}
+ .malinoStoryHome .storyStreakCard .streakText>small{font-size:11px}
+ .malinoStoryHome .storyStreakDots{gap:3px}
+ .malinoStoryHome .storyStreakDots i{
+  height:25px;
+  border-width:1px;
+  border-radius:8px;
+  font-size:10px;
+ }
+ .malinoStoryHome .storyStreakMilestone{
+  padding:7px 8px !important;
+  font-size:11px !important;
+ }
+}
+@media(max-width:375px){
+ .malinoStoryHome .storyDailyTitle img{
+  flex-basis:35px;
+  width:35px;
+  height:35px;
+ }
+ .malinoStoryHome .storyDailyChallengeHead .storyDailyTitle{font-size:12px}
+ .malinoStoryHome .storyDailyChallengeHead>span{font-size:9px}
+ .malinoStoryHome .storyStreakIcon{width:46px;height:46px;flex-basis:46px}
+ .malinoStoryHome .storyStreakCard .streakText>b{font-size:14px !important}
+ .malinoStoryHome .storyStreakDots i{height:22px;font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){
+ .malinoStoryHome .storyDailyCard,
+ .malinoStoryHome .storyStreakCard{
+  animation:none;
+  transition:none;
+ }
+}
+
+/* ========================================================
+   Malino Storybook Profiles v1 — presentation only.
+   Profile storage, PIN security, sound and progress unchanged.
+   ======================================================== */
+.storyParentsPage{
+ align-items:start;
+ gap:18px;
+ padding-bottom:155px;
+ min-width:0;
+}
+.storyParentsPage>.parentPinGate{
+ grid-column:1/-1;
+}
+.storyParentsPage>.storyProfilePanel,
+.storyParentsPage>.storyProfileStatsPanel{
+ min-width:0;
+ overflow:hidden;
+ padding:23px;
+ border:2px solid #fff;
+ border-radius:27px;
+ box-shadow:0 13px 27px #314d811d;
+}
+.storyParentsPage>.storyProfilePanel{
+ background:
+  radial-gradient(circle at 92% 4%,#ffe4a99c 0 25px,transparent 26px),
+  linear-gradient(145deg,#f8f0ff,#eaf8ff 70%,#fff6e5);
+}
+.storyParentsPage>.storyProfileStatsPanel{
+ background:
+  radial-gradient(circle at 92% 9%,#ffffffb5 0 18px,transparent 19px),
+  linear-gradient(140deg,#fff8e9,#f7efff 63%,#edf7ff);
+}
+.storyParentsPage .storyProfilePanel>h1{
+ margin:0 0 16px;
+ color:#254783;
+ font-weight:950;
+ letter-spacing:-.03em;
+}
+.storyParentsPage .storyProfilePanel .parentSecurityCard{
+ background:#ffffffcd;
+ border:2px solid #fff;
+ border-radius:18px;
+ box-shadow:0 6px 17px #576d8e12;
+}
+.storyParentsPage .storyProfilePanel .parentTestCard{
+ background:#fff9e9d9;
+ border:2px solid #fff;
+ border-radius:18px;
+ box-shadow:0 6px 17px #b17d2b10;
+}
+.storyParentsPage .storyProfilesHead{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ margin:23px 0 15px;
+ padding:14px;
+ border:2px solid #fff;
+ border-radius:22px;
+ background:linear-gradient(135deg,#ffe9f4,#ede8ff 55%,#eafaff);
+ box-shadow:0 9px 18px #6864b61a;
+}
+.storyParentsPage .storyProfilesHeadArt{
+ display:grid;
+ place-items:center;
+ flex:0 0 65px;
+ width:65px;
+ height:65px;
+ border:3px solid #fff;
+ border-radius:19px;
+ background:linear-gradient(145deg,#fff2c8,#ffe0f1);
+ box-shadow:0 5px 13px #9f689526;
+ font-size:38px;
+ line-height:1;
+}
+.storyParentsPage .storyProfilesHead>div{
+ display:grid;
+ gap:5px;
+ min-width:0;
+}
+.storyParentsPage .storyProfilesHead .eyebrow{
+ justify-self:start;
+ color:#7856b1;
+ font-size:10px;
+}
+.storyParentsPage .storyProfilesHead h2{
+ margin:0;
+ color:#254681;
+ font-size:23px;
+ line-height:1.18;
+}
+.storyParentsPage .storyProfilesActive{
+ display:block;
+ margin:0;
+ color:#687894;
+ font-size:12px;
+ line-height:1.4;
+ font-weight:800;
+}
+.storyParentsPage .storyProfilesActive>b{
+ display:inline-flex;
+ align-items:center;
+ gap:5px;
+ margin-left:4px;
+ color:#6746ac;
+ max-width:100%;
+ overflow-wrap:anywhere;
+}
+.storyParentsPage .storyProfilesActive .inlineProfileAvatar{
+ display:inline-block;
+ margin:0;
+}
+.storyParentsPage .storyProfileGrid{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:12px;
+ margin:0 0 17px;
+}
+.storyParentsPage .storyProfileChoice{
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:7px;
+ min-width:0;
+ min-height:156px;
+ padding:15px 8px 12px;
+ border:3px solid #fff;
+ border-radius:23px;
+ background:linear-gradient(145deg,#fffdf7,#eaf4ff);
+ color:#26437d;
+ box-shadow:0 9px 17px #4c64951a;
+ font:inherit;
+ text-align:center;
+ cursor:pointer;
+ transition:transform .15s ease,box-shadow .15s ease;
+}
+.storyParentsPage .storyProfileChoice:nth-child(4n+2){
+ background:linear-gradient(145deg,#fff3fc,#f0e7ff);
+}
+.storyParentsPage .storyProfileChoice:nth-child(4n+3){
+ background:linear-gradient(145deg,#e7fff7,#ecf5ff);
+}
+.storyParentsPage .storyProfileChoice:nth-child(4n){
+ background:linear-gradient(145deg,#fff2dc,#f5efff);
+}
+.storyParentsPage .storyProfileChoice.isActive{
+ border-color:#b9a0fa;
+ box-shadow:0 0 0 3px #bca5ff4e,0 11px 21px #7568aa2d;
+ background:linear-gradient(135deg,#fceaff,#efe9ff 62%,#e6f6ff);
+}
+.storyParentsPage .storyProfileChoice .profileChoiceAvatar{
+ display:grid;
+ place-items:center;
+ float:none;
+ width:66px;
+ height:66px;
+ margin:0;
+ border:3px solid #fff;
+ border-radius:22px;
+ background:linear-gradient(150deg,#fff2c3,#f4dbff);
+ box-shadow:0 6px 12px #9276a320;
+ font-size:39px;
+ line-height:1;
+}
+.storyParentsPage .storyProfileChoice.isActive .profileChoiceAvatar{
+ background:linear-gradient(140deg,#ffe9b3,#ffdcec);
+}
+.storyParentsPage .storyProfileChoiceName{
+ min-width:0;
+ max-width:100%;
+ color:#25447d;
+ font-size:15px;
+ font-weight:950;
+ overflow-wrap:anywhere;
+ line-height:1.2;
+}
+.storyParentsPage .storyProfileChoiceState{
+ align-self:center;
+ float:none;
+ font-size:12px;
+ color:#7561aa;
+ font-weight:950;
+}
+.storyParentsPage .storyProfileChoice.isActive .storyProfileChoiceState{
+ padding:4px 9px;
+ border:1px solid #fff;
+ border-radius:999px;
+ background:#e6dfff;
+ color:#6147af;
+}
+.storyParentsPage .storyProfilePanel>button.storyProfileAction{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:12px;
+ min-height:49px;
+ margin:6px 0;
+ padding:12px 15px;
+ border:2px solid #fff;
+ border-radius:16px;
+ background:#ffffffd9;
+ color:#315386;
+ text-align:left;
+ font-weight:900;
+ box-shadow:0 4px 11px #52679612;
+}
+.storyParentsPage .storyProfilePanel>button.storyProfileAction span{
+ float:none;
+ margin-left:auto;
+ color:#9972c0;
+}
+.storyParentsPage .storyProfilePanel>button.storyProfileActionAdd{
+ background:linear-gradient(135deg,#f5e6ff,#e2f3ff);
+ color:#6447ad;
+}
+.storyParentsPage .storyProfilePanel>button.storyProfileActionCaution{
+ background:#fff9f6db;
+ color:#8b6a5b;
+}
+.storyParentsPage .storyProfileStatsPanel>h2{
+ display:flex;
+ align-items:center;
+ gap:9px;
+ margin:0 0 16px;
+ color:#29477c;
+}
+.storyParentsPage .storyProfileStatsArt{
+ display:grid;
+ place-items:center;
+ width:40px;
+ height:40px;
+ flex:0 0 40px;
+ border:2px solid #fff;
+ border-radius:14px;
+ background:#ffebc0;
+ box-shadow:0 4px 10px #cd936e23;
+}
+.storyParentsPage .storyProfileStatsPanel>p{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:9px;
+ margin:0;
+ padding:12px 5px;
+ border-bottom:1px dashed #adb7d156;
+ color:#64758b;
+ font-size:13px;
+ font-weight:750;
+}
+.storyParentsPage .storyProfileStatsPanel>p b{
+ text-align:right;
+ color:#244b86;
+ font-size:14px;
+ overflow-wrap:anywhere;
+}
+.storyParentsPage .storyProfileStatsPanel .bars{
+ margin-top:20px;
+ height:146px;
+ border-bottom:3px solid #cbdcf3;
+}
+.storyParentsPage .storyProfileStatsPanel .bars i{
+ width:26px;
+ max-width:11%;
+ background:linear-gradient(180deg,#d6bcff,#90aff5 55%,#84ddcb);
+ border-radius:11px 11px 0 0;
+}
+.storyParentsPage .storyProfileChoice:focus-visible,
+.storyParentsPage .storyProfileAction:focus-visible,
+.storyProfileDialogCard button:focus-visible{
+ outline:3px solid #2368d1;
+ outline-offset:3px;
+}
+.storyProfileDialogCard{
+ border:3px solid #fff;
+ border-radius:30px !important;
+ background:
+  radial-gradient(circle at 89% 5%,#ffe5a4b0 0 21px,transparent 22px),
+  linear-gradient(135deg,#fcf7ff,#f4f8ff 66%,#fff8ed);
+ box-shadow:0 22px 60px #3e568432 !important;
+}
+.storyProfileDialogCard>h2{
+ color:#254783;
+}
+.storyProfileDialogCard>input{
+ box-sizing:border-box;
+ max-width:100%;
+}
+.storyProfileDialogCard .storyProfileAvatarPicker{
+ margin-top:10px;
+ padding:13px;
+ border:2px solid #fff;
+ border-radius:22px;
+ background:linear-gradient(135deg,#f4eaff,#edf8ff);
+}
+.storyProfileDialogCard .storyProfileAvatarPicker>b{
+ color:#58468c;
+}
+.storyProfileDialogCard .storyProfileAvatarGrid{
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:9px;
+}
+.storyProfileDialogCard .storyProfileAvatarGrid button{
+ min-width:0;
+ min-height:82px;
+ padding:9px 5px;
+ border:3px solid #fff;
+ border-radius:19px;
+ background:#fffdfc;
+ box-shadow:0 6px 13px #7b6b9b16;
+}
+.storyProfileDialogCard .storyProfileAvatarGrid button:nth-child(4n+2){
+ background:#fff2f9;
+}
+.storyProfileDialogCard .storyProfileAvatarGrid button:nth-child(4n+3){
+ background:#effbf4;
+}
+.storyProfileDialogCard .storyProfileAvatarGrid button:nth-child(4n){
+ background:#f0f3ff;
+}
+.storyProfileDialogCard .storyProfileAvatarGrid button.selected{
+ border-color:#a884ee;
+ background:#efe5ff;
+ box-shadow:0 0 0 3px #ba9ef046,0 8px 17px #8066bc2b;
+}
+.storyProfileDialogCard .storyProfileAvatarGrid button>span{
+ font-size:32px;
+}
+.storyProfileDialogCard .storyProfileAvatarGrid button>small{
+ font-size:10px;
+ font-weight:900;
+ color:#556e91;
+ text-align:center;
+ line-height:1.2;
+}
+@media(hover:hover) and (pointer:fine){
+ .storyParentsPage .storyProfileChoice:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 21px #5b66962b;
+ }
+}
+@media(max-width:1100px){
+ .storyParentsPage{
+  grid-template-columns:minmax(0,1fr);
+  gap:14px;
+ }
+ .storyParentsPage .storyProfileGrid{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+ }
+}
+@media(max-width:650px){
+ .storyParentsPage{
+  padding-bottom:150px;
+ }
+ .storyParentsPage>.storyProfilePanel,
+ .storyParentsPage>.storyProfileStatsPanel{
+  padding:15px;
+  border-radius:22px;
+ }
+ .storyParentsPage .storyProfilesHead{
+  margin:17px 0 13px;
+  padding:10px;
+  gap:9px;
+  border-radius:17px;
+ }
+ .storyParentsPage .storyProfilesHeadArt{
+  width:48px;
+  height:48px;
+  flex-basis:48px;
+  border-radius:14px;
+  font-size:29px;
+ }
+ .storyParentsPage .storyProfilesHead h2{font-size:18px}
+ .storyParentsPage .storyProfilesHead .eyebrow{font-size:9px}
+ .storyParentsPage .storyProfilesActive{font-size:11px}
+ .storyParentsPage .storyProfileGrid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+ }
+ .storyParentsPage .storyProfileChoice{
+  min-height:138px;
+  gap:6px;
+  padding:10px 6px;
+  border-radius:19px;
+ }
+ .storyParentsPage .storyProfileChoice .profileChoiceAvatar{
+  width:56px;
+  height:56px;
+  font-size:33px;
+  border-radius:17px;
+ }
+ .storyParentsPage .storyProfileChoiceName{font-size:13px}
+ .storyParentsPage .storyProfileChoiceState{font-size:10px}
+ .storyProfileDialogCard{
+  padding:22px 15px !important;
+  border-radius:24px !important;
+ }
+ .storyProfileDialogCard .storyProfileAvatarPicker{
+  padding:10px;
+  border-radius:17px;
+ }
+ .storyProfileDialogCard .storyProfileAvatarGrid{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:6px;
+ }
+ .storyProfileDialogCard .storyProfileAvatarGrid button{
+  min-height:69px;
+  padding:6px 2px;
+  border-radius:13px;
+  border-width:2px;
+ }
+ .storyProfileDialogCard .storyProfileAvatarGrid button>span{font-size:26px}
+ .storyProfileDialogCard .storyProfileAvatarGrid button>small{font-size:8px}
+}
+@media(max-width:360px){
+ .storyParentsPage .storyProfilesHead h2{font-size:16px}
+ .storyParentsPage .storyProfileChoice .profileChoiceAvatar{
+  width:51px;height:51px;font-size:28px;
+ }
+ .storyProfileDialogCard .storyProfileAvatarGrid button>span{font-size:24px}
+ .storyProfileDialogCard .storyProfileAvatarGrid button>small{font-size:7px}
+}
+@media(prefers-reduced-motion:reduce){
+ .storyParentsPage .storyProfileChoice{
+  transition:none;
+ }
+ .storyParentsPage .storyProfileChoice:hover{transform:none}
+}
