@@ -3781,7 +3781,7 @@ export default function Page(){
   </div>}
 
   {profileDialog&&<div className="rewardUnlockOverlay" role="dialog" aria-modal="true" aria-label="Kinderprofil">
-   <div className="rewardUnlockCard" style={{maxWidth:520}}>
+   <div className="rewardUnlockCard storyProfileDialogCard" style={{maxWidth:520}}>
     <button className="rewardClose" onClick={closeProfileDialog} aria-label="Schließen">×</button>
 
     {profileDialog==="add"&&<>
@@ -3798,10 +3798,10 @@ export default function Page(){
       placeholder="z. B. Mia"
       style={{width:"100%",padding:"14px 16px",border:"2px solid #dbe7f5",borderRadius:16,fontSize:18,outline:"none",margin:"4px 0 16px",background:"#fff",color:"#123a7a"}}
      />
-     <div className="profileAvatarPicker">
+     <div className="profileAvatarPicker storyProfileAvatarPicker">
       <b>Avatar auswählen</b>
-      <div className="profileAvatarGrid">
-       {PROFILE_AVATARS.map(a=><button key={a.id} type="button" className={profileAvatarInput===a.id?"selected":""} onClick={()=>setProfileAvatarInput(a.id)} aria-label={a.label}>
+      <div className="profileAvatarGrid storyProfileAvatarGrid">
+       {PROFILE_AVATARS.map(a=><button key={a.id} type="button" className={profileAvatarInput===a.id?"selected":""} aria-pressed={profileAvatarInput===a.id} onClick={()=>setProfileAvatarInput(a.id)} aria-label={a.label}>
         <span>{a.emoji}</span><small>{a.label}</small>
        </button>)}
       </div>
@@ -3825,10 +3825,10 @@ export default function Page(){
       maxLength={24}
       style={{width:"100%",padding:"14px 16px",border:"2px solid #dbe7f5",borderRadius:16,fontSize:18,outline:"none",margin:"4px 0 16px",background:"#fff",color:"#123a7a"}}
      />
-          <div className="profileAvatarPicker">
+          <div className="profileAvatarPicker storyProfileAvatarPicker">
       <b>Avatar auswählen</b>
-      <div className="profileAvatarGrid">
-       {PROFILE_AVATARS.map(a=><button key={a.id} type="button" className={profileAvatarInput===a.id?"selected":""} onClick={()=>setProfileAvatarInput(a.id)} aria-label={a.label}>
+      <div className="profileAvatarGrid storyProfileAvatarGrid">
+       {PROFILE_AVATARS.map(a=><button key={a.id} type="button" className={profileAvatarInput===a.id?"selected":""} aria-pressed={profileAvatarInput===a.id} onClick={()=>setProfileAvatarInput(a.id)} aria-label={a.label}>
         <span>{a.emoji}</span><small>{a.label}</small>
        </button>)}
       </div>
@@ -3871,7 +3871,7 @@ export default function Page(){
    </div>
   </div>}
 
-  {screen==="parent"&&<section key={`parent-${activeProfileId}-${profileStatsStars}-${profileStatsDone.length}-${profileStatsGallery.length}-${profileStatsRewards.length}`} className="parents"> 
+  {screen==="parent"&&<section key={`parent-${activeProfileId}-${profileStatsStars}-${profileStatsDone.length}-${profileStatsGallery.length}-${profileStatsRewards.length}`} className="parents storyParentsPage"> 
    {parentPinMode!=="unlocked"?<div className="parentPinGate">
     <div className="parentPinCard">
      <div className="parentPinIcon">🔐</div>
@@ -3903,7 +3903,7 @@ export default function Page(){
     </div>
    </div>:<>
 
-   <div className="panel">
+   <div className="panel storyProfilePanel">
     <h1>Elternbereich</h1>
     <div className="parentSecurityCard">
      <div><b>🔐 Elternschutz</b><small>Der Elternbereich ist mit einer 4-stelligen PIN geschützt.</small></div>
@@ -3913,24 +3913,25 @@ export default function Page(){
      <div><b>🧪 Testmodus</b><small>Zum Prüfen der Belohnungen während der Entwicklung.</small></div>
      <button onClick={addTestStars}>+50 ⭐</button>
     </div>
-    <h2>👧 Kinderprofile</h2>
-    <p style={{color:"#65738c",fontWeight:700}}>Aktiv: <b style={{color:"#123a7a"}}><span className="inlineProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span>{activeProfile.name}</b></p>
-    {profiles.map(p=><button key={p.id} onClick={()=>switchProfile(p.id)} style={p.id===activeProfileId?{background:"#e8f1ff",color:"#1769ff",fontWeight:900}:{}}>
-     <span className="profileChoiceAvatar">{avatarEmoji(profileData?.[p.id]?.avatar)}</span><span data-i18n-ignore="true">{p.name}</span>
-     <span>{p.id===activeProfileId?"Aktiv":"›"}</span>
+    <div className="storyProfilesHead"><span className="storyProfilesHeadArt" aria-hidden="true">🦁</span><div><span className="eyebrow">Malinos Freunde</span><h2>👧 Kinderprofile</h2><p className="storyProfilesActive">Aktiv: <b><span className="inlineProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><span data-i18n-ignore="true">{activeProfile.name}</span></b></p></div></div>
+    <div className="storyProfileGrid">
+    {profiles.map(p=><button key={p.id} type="button" className={`storyProfileChoice ${p.id===activeProfileId?"isActive":""}`} aria-pressed={p.id===activeProfileId} onClick={()=>switchProfile(p.id)}>
+     <span className="profileChoiceAvatar">{avatarEmoji(profileData?.[p.id]?.avatar)}</span><span className="storyProfileChoiceName" data-i18n-ignore="true">{p.name}</span>
+     <span className="storyProfileChoiceState">{p.id===activeProfileId?"✓ Aktiv":"›"}</span>
     </button>)}
-    <button onClick={addProfile}>➕ Neues Kinderprofil<span>›</span></button>
-    <button onClick={renameActiveProfile}>🎨 Profil bearbeiten<span>›</span></button>
-    <button onClick={resetActiveProfile}>↺ Fortschritt zurücksetzen<span>›</span></button>
-    {profiles.length>1&&<button onClick={deleteActiveProfile}>🗑️ Profil löschen<span>›</span></button>}
+    </div>
+    <button className="storyProfileAction storyProfileActionAdd" onClick={addProfile}>➕ Neues Kinderprofil<span>›</span></button>
+    <button className="storyProfileAction" onClick={renameActiveProfile}>🎨 Profil bearbeiten<span>›</span></button>
+    <button className="storyProfileAction storyProfileActionCaution" onClick={resetActiveProfile}>↺ Fortschritt zurücksetzen<span>›</span></button>
+    {profiles.length>1&&<button className="storyProfileAction storyProfileActionCaution" onClick={deleteActiveProfile}>🗑️ Profil löschen<span>›</span></button>}
     <button onClick={()=>openParentTool("screenTime")}>⏱️ Bildschirmzeit<span>›</span></button>
     <button onClick={()=>openParentTool("settings")}>⚙️ App-Einstellungen<span>›</span></button>
     <button onClick={()=>openParentTool("export")}>🖨️ Export & Drucken<span>›</span></button>
     <button onClick={()=>openParentTool("help")}>❓ Hilfe & Feedback<span>›</span></button>
     <button onClick={()=>openParentTool("about")}>ℹ️ Über Malino<span>›</span></button>
    </div>
-   <div className="panel">
-    <h2>Profil-Statistik</h2>
+   <div className="panel storyProfileStatsPanel">
+    <h2><span className="storyProfileStatsArt" aria-hidden="true">✨</span> Profil-Statistik</h2>
     <p>Profil <b><span className="inlineProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><span data-i18n-ignore="true">{activeProfile.name}</span></b></p>
     <p>Gemalte Bilder <b>{profileStatsDone.length}</b></p>
     <p>Erhaltene Sterne <b>{profileStatsStars} ⭐</b></p>
