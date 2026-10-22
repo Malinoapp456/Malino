@@ -9101,3 +9101,349 @@ header:has(.languageSwitcher){z-index:31}
  .storybookGalleryPage .storyGalleryCard{transition:none}
  .storybookGalleryPage .storyGalleryCard:hover{transform:none}
 }
+
+/* ========================================================
+   Malino Storybook Daily v1 — decorative update only.
+   Keeps daily challenge selection, bonuses and streak logic.
+   ======================================================== */
+.malinoStoryHome .storyAdventureHeader h2{
+ color:#263F7B;
+ letter-spacing:-.025em;
+}
+.malinoStoryHome .storyAdventureHeader .eyebrow{
+ color:#8057B7;
+}
+.malinoStoryHome .storyTodayAdventureGrid{
+ gap:16px;
+ align-items:stretch;
+ min-width:0;
+}
+.malinoStoryHome .storyDailyCard{
+ position:relative;
+ isolation:isolate;
+ overflow:hidden;
+ min-width:0;
+ padding:18px !important;
+ border:3px solid #fff !important;
+ border-radius:28px !important;
+ background:
+  radial-gradient(circle at 94% 8%,#ffe7a7b5 0 31px,transparent 32px),
+  radial-gradient(circle at 4% 90%,#edddffad 0 48px,transparent 49px),
+  linear-gradient(140deg,#fff8ed,#f4eefe 65%,#eaf7ff) !important;
+ box-shadow:0 14px 28px #52669e20 !important;
+}
+.malinoStoryHome .storyDailyCard::before{
+ content:"✦";
+ position:absolute;
+ top:15px;
+ right:22px;
+ bottom:auto;
+ width:auto;
+ height:auto;
+ border-radius:0;
+ background:none;
+ color:#EDB354;
+ font-size:25px;
+ text-shadow:0 3px 0 #fff,0 5px 10px #c7896129;
+ pointer-events:none;
+}
+.malinoStoryHome .storyDailyCard.dailyDone{
+ border-color:#BFEFD8 !important;
+ background:
+  radial-gradient(circle at 92% 7%,#fff4b9af 0 32px,transparent 33px),
+  linear-gradient(138deg,#e8fff3,#f1f4ff 60%,#fff2fa) !important;
+}
+.malinoStoryHome .storyDailyMagicBadge{
+ border:2px solid #fff;
+ border-radius:999px;
+ background:linear-gradient(130deg,#fffef7,#fff2d3);
+ color:#7453AD;
+ box-shadow:0 5px 12px #8f79bd20;
+}
+.malinoStoryHome .storyDailyChallengeHead{
+ position:relative;
+ z-index:2;
+ gap:10px;
+ align-items:center;
+ margin-bottom:14px;
+}
+.malinoStoryHome .storyDailyChallengeHead .storyDailyTitle{
+ display:flex;
+ align-items:center;
+ gap:8px;
+ min-width:0;
+ font-size:18px;
+ font-weight:950;
+ line-height:1.2;
+ color:#253F80;
+}
+.malinoStoryHome .storyDailyTitle img{
+ display:block;
+ flex:0 0 51px;
+ width:51px;
+ height:51px;
+ object-fit:contain;
+ filter:drop-shadow(0 3px 6px #aa7e6030);
+}
+.malinoStoryHome .storyDailyChallengeHead>span{
+ position:relative;
+ z-index:2;
+ flex:0 0 auto;
+ border:2px solid #fff;
+ border-radius:999px;
+ background:linear-gradient(135deg,#FFF3B8,#FFE1A2);
+ color:#85500C;
+ box-shadow:0 4px 12px #a68a4b1e;
+}
+.malinoStoryHome .storyDailyCard.dailyDone .storyDailyChallengeHead>span{
+ background:#e0f8ec;
+ color:#247650;
+}
+.malinoStoryHome .storyDailyCard>.thumb{
+ position:relative;
+ z-index:1;
+ overflow:hidden;
+ border:4px solid #fff;
+ border-radius:22px !important;
+ background:#fff;
+ box-shadow:0 8px 19px #51699624;
+}
+.malinoStoryHome .storyDailyCard>.thumb img{
+ object-fit:contain !important;
+ background:#fff;
+}
+.malinoStoryHome .storyDailyChallengeInfo{
+ position:relative;
+ z-index:2;
+ margin-top:12px;
+}
+.malinoStoryHome .storyDailyChallengeInfo .dailyTitleRow>b{
+ color:#244780;
+ font-weight:950;
+}
+.malinoStoryHome .storyDailyChallengeInfo .dailyTitleRow>span{
+ border:1px solid #fff;
+ border-radius:999px;
+ background:#f7e6ff;
+ color:#7351AD;
+}
+.malinoStoryHome .storyDailyRewardStrip span{
+ border:1px solid #fff;
+ border-radius:999px;
+ background:#f5eaff;
+ color:#7253B1;
+ box-shadow:0 3px 9px #9a7bb016;
+}
+.malinoStoryHome .storyDailyRewardStrip span:first-child{
+ background:#fff0c7;
+ color:#886018;
+}
+.malinoStoryHome .storyDailyCard.dailyDone .storyDailyRewardStrip span:last-child{
+ background:#e5f9ec;
+ color:#23754B;
+}
+.malinoStoryHome .storyDailyPrimaryButton{
+ min-height:48px;
+ border:2px solid #fff;
+ border-radius:16px !important;
+ background:linear-gradient(135deg,#9069DB,#A77DED);
+ color:#fff;
+ font-weight:950;
+ box-shadow:0 5px 0 #6F4AB9,0 9px 16px #7057AB2E;
+}
+.malinoStoryHome .storyStreakCard{
+ position:relative;
+ isolation:isolate;
+ overflow:hidden;
+ min-width:0;
+ border:3px solid #fff !important;
+ border-radius:28px !important;
+ background:
+  radial-gradient(circle at 89% 8%,#fff8d6 0 18px,transparent 19px),
+  linear-gradient(150deg,#fff0d3,#ffe4e9 65%,#f1eaff) !important;
+ box-shadow:0 13px 27px #a4776821 !important;
+}
+.malinoStoryHome .storyStreakCard::before{
+ content:"";
+ position:absolute;
+ z-index:0;
+ inset:auto -38px -47px auto;
+ width:116px;
+ height:116px;
+ border:15px solid #ffffff69;
+ border-radius:50%;
+ background:none;
+ pointer-events:none;
+}
+.malinoStoryHome .storyStreakCard .streakMiniLabel{
+ color:#995B3F;
+}
+.malinoStoryHome .storyStreakIcon{
+ position:relative;
+ z-index:1;
+ display:grid;
+ place-items:center;
+ flex:0 0 auto;
+ width:84px;
+ height:84px;
+ padding:0;
+ margin-top:18px;
+ border:0;
+ border-radius:50%;
+ background:none;
+ box-shadow:none;
+}
+.malinoStoryHome .storyStreakIcon img{
+ display:block;
+ width:100%;
+ height:100%;
+ object-fit:contain;
+ filter:drop-shadow(0 5px 5px #a97c5928);
+}
+.malinoStoryHome .storyStreakCard .streakText{
+ position:relative;
+ z-index:1;
+}
+.malinoStoryHome .storyStreakCard .streakText>b{
+ color:#995932;
+ font-weight:950;
+}
+.malinoStoryHome .storyStreakDots{
+ grid-template-columns:repeat(7,minmax(0,1fr));
+ gap:5px;
+}
+.malinoStoryHome .storyStreakDots i{
+ display:grid;
+ place-items:center;
+ min-width:0;
+ border:2px solid #fff;
+ border-radius:11px;
+ background:#fff9ef;
+ color:#C3A08C;
+}
+.malinoStoryHome .storyStreakDots i.on{
+ background:linear-gradient(145deg,#fff1b9,#ffe0a6);
+ color:#A5572F;
+ border-color:#fff;
+ box-shadow:0 4px 12px #AE7C3D27;
+}
+.malinoStoryHome .storyStreakMilestone{
+ position:relative;
+ z-index:1;
+ border:2px solid #fff !important;
+ border-radius:999px;
+ background:#fff9e8 !important;
+ color:#97612A;
+ box-shadow:0 5px 12px #A4794A1A;
+}
+.malinoStoryHome .storyStreakCard:focus-visible,
+.malinoStoryHome .storyDailyPrimaryButton:focus-visible,
+.malinoStoryHome .storyAdventureHeader>button:focus-visible{
+ outline:3px solid #275DCA;
+ outline-offset:4px;
+}
+@media(max-width:900px){
+ .malinoStoryHome .storyTodayAdventureGrid{
+  grid-template-columns:minmax(0,1fr);
+  gap:12px;
+ }
+ .malinoStoryHome .storyStreakCard{
+  min-height:155px !important;
+  flex-direction:row;
+  flex-wrap:wrap;
+  justify-content:flex-start;
+  gap:14px;
+  text-align:left;
+ }
+ .malinoStoryHome .storyStreakCard .streakText{
+  flex:1 1 180px;
+  place-items:start;
+ }
+ .malinoStoryHome .storyStreakCard .streakText>small{text-align:left}
+ .malinoStoryHome .storyStreakIcon{
+  width:72px;
+  height:72px;
+  margin-top:0;
+ }
+ .malinoStoryHome .storyStreakMilestone{
+  margin:0 0 0 auto;
+ }
+}
+@media(max-width:650px){
+ .malinoStoryHome .storyTodayAdventureGrid{gap:10px}
+ .malinoStoryHome .storyDailyCard{
+  padding:12px !important;
+  border-width:2px !important;
+  border-radius:22px !important;
+ }
+ .malinoStoryHome .storyDailyCard::before{top:13px;right:16px;font-size:18px}
+ .malinoStoryHome .storyDailyChallengeHead{
+  gap:5px;
+  margin-bottom:10px;
+ }
+ .malinoStoryHome .storyDailyTitle img{
+  flex-basis:42px;
+  width:42px;
+  height:42px;
+ }
+ .malinoStoryHome .storyDailyChallengeHead .storyDailyTitle{
+  gap:5px;
+  font-size:14px;
+ }
+ .malinoStoryHome .storyDailyChallengeHead>span{
+  padding:5px 7px;
+  font-size:10px;
+ }
+ .malinoStoryHome .storyDailyCard>.thumb{
+  border-width:3px;
+  border-radius:18px !important;
+ }
+ .malinoStoryHome .storyDailyPrimaryButton{
+  min-height:44px;
+  margin-top:10px;
+ }
+ .malinoStoryHome .storyStreakCard{
+  min-height:142px !important;
+  border-width:2px !important;
+  border-radius:22px !important;
+  padding:32px 11px 14px !important;
+  gap:9px;
+ }
+ .malinoStoryHome .storyStreakIcon{
+  flex-basis:54px;
+  width:54px;
+  height:54px;
+ }
+ .malinoStoryHome .storyStreakCard .streakText>b{font-size:16px !important}
+ .malinoStoryHome .storyStreakCard .streakText>small{font-size:11px}
+ .malinoStoryHome .storyStreakDots{gap:3px}
+ .malinoStoryHome .storyStreakDots i{
+  height:25px;
+  border-width:1px;
+  border-radius:8px;
+  font-size:10px;
+ }
+ .malinoStoryHome .storyStreakMilestone{
+  padding:7px 8px !important;
+  font-size:11px !important;
+ }
+}
+@media(max-width:375px){
+ .malinoStoryHome .storyDailyTitle img{
+  flex-basis:35px;
+  width:35px;
+  height:35px;
+ }
+ .malinoStoryHome .storyDailyChallengeHead .storyDailyTitle{font-size:12px}
+ .malinoStoryHome .storyDailyChallengeHead>span{font-size:9px}
+ .malinoStoryHome .storyStreakIcon{width:46px;height:46px;flex-basis:46px}
+ .malinoStoryHome .storyStreakCard .streakText>b{font-size:14px !important}
+ .malinoStoryHome .storyStreakDots i{height:22px;font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){
+ .malinoStoryHome .storyDailyCard,
+ .malinoStoryHome .storyStreakCard{
+  animation:none;
+  transition:none;
+ }
+}
