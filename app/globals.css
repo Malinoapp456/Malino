@@ -8341,3 +8341,371 @@ header:has(.languageSwitcher){z-index:31}
  .libraryStoryPage .storyCategory{transition:none}
  .libraryStoryPage .storyCategory:hover{transform:none}
 }
+
+/* =========================================================
+   Malino Storybook Rewards v1 — decorative theme only.
+   Keeps the same achievement thresholds, unlocks and actions.
+   ========================================================= */
+.storyRewardsHub{
+  isolation:isolate;
+}
+.storyRewardsHub .storyRewardsHero{
+  position:relative;
+  background:
+    radial-gradient(circle at 88% 10%,#ffffffb8 0 7px,transparent 8px),
+    radial-gradient(circle at 74% 82%,#ffdb91cc 0 5px,transparent 6px),
+    linear-gradient(128deg,#dff3ff 0%,#eeedff 52%,#ffe6f3 100%);
+  border:2px solid #fff;
+  box-shadow:0 13px 33px #39568724;
+}
+.storyRewardsHub .storyRewardsHero::after{
+  content:"✦";
+  position:absolute;
+  top:12px;
+  right:22%;
+  color:#ffbd65;
+  font-size:29px;
+  text-shadow:0 3px 0 #fff,0 6px 10px #a75b6930;
+  pointer-events:none;
+}
+.storyRewardsHub .storyStarWallet{
+  position:relative;
+  border:2px solid #fff;
+  background:linear-gradient(147deg,#fffaf0,#ffe9b7);
+  box-shadow:0 10px 22px #eab85a32;
+}
+.storyRewardsHub .storyStarWallet>span{
+  filter:drop-shadow(0 3px 2px #dc991e40);
+}
+.storyRewardsHub .storyLevelCard{
+  border:2px solid #fff;
+  background:
+    radial-gradient(circle at 96% 9%,#ffe8ac99,transparent 27%),
+    linear-gradient(125deg,#fffdf5,#f2f7ff 65%,#f7eeff);
+  box-shadow:0 12px 26px #425a9320;
+}
+.storyRewardsHub .storyLevelCard .levelTrack{
+  background:linear-gradient(180deg,#eae7ff,#eaf4ff);
+  box-shadow:inset 0 2px 5px #6f7dba22;
+}
+.storyRewardsHub .storyLevelCard .levelTrack i{
+  background:linear-gradient(90deg,#ffb564,#f6a3cc,#a891ee);
+}
+.storyRewardsHub .rewardsSectionHead h2{
+  color:#213d7a;
+  letter-spacing:-.018em;
+}
+.storyRewardsHub .rewardsSectionHead .eyebrow{
+  color:#795ab8;
+}
+.storyRewardsHub .achievementProgress{
+  border:2px solid #fff;
+  border-radius:23px;
+  background:linear-gradient(135deg,#f1eaff,#e8f6ff);
+  box-shadow:0 8px 19px #495e9116;
+}
+.storyRewardsHub .achievementTrack i{
+  background:linear-gradient(90deg,#ffb95c,#f68ec1,#9e85ef);
+}
+.storyRewardsHub .storyBadgeGrid{
+  gap:13px;
+}
+.storyRewardsHub .storyBadgeCard{
+  isolation:isolate;
+  position:relative;
+  overflow:hidden;
+  border:2px solid #fff;
+  border-radius:25px;
+  background:
+    radial-gradient(circle at 85% 14%,#ffffffc7 0 7px,transparent 8px),
+    linear-gradient(145deg,#fffaf4,#f1f5ff);
+  box-shadow:0 11px 21px #405d9718;
+}
+.storyRewardsHub .storyBadgeCard.unlocked{
+  border-color:#fff;
+  background:
+    radial-gradient(circle at 90% 13%,#fff 0 6px,transparent 7px),
+    linear-gradient(145deg,#fff6cf,#ffe9ef 55%,#f0e8ff);
+  box-shadow:0 10px 22px #bb8d3926;
+}
+.storyRewardsHub .storyBadgeCard .badgeIcon{
+  position:relative;
+  border:4px solid #fff;
+  background:linear-gradient(150deg,#fff1b9,#ffd17a);
+  box-shadow:0 5px 10px #dca56035,inset 0 2px 5px #fffbd7;
+  font-size:39px;
+  line-height:1;
+}
+.storyRewardsHub .storyBadgeCard.unlocked .badgeIcon::after{
+  content:"";
+  position:absolute;
+  inset:-9px;
+  border:2px dashed #f5ce7a;
+  border-radius:50%;
+  pointer-events:none;
+}
+.storyRewardsHub .storyBadgeCard.locked .badgeIcon{
+  border-color:#fff;
+  background:#e8edf5;
+  box-shadow:none;
+}
+.storyRewardsHub .storyBadgeCard .badgeCopy{
+  position:relative;
+  z-index:1;
+}
+.storyRewardsHub .storyBadgeCard .badgeCopy b{
+  color:#213d7a;
+}
+.storyRewardsHub .storyBadgeCard>i{
+  background:linear-gradient(145deg,#76daab,#35b98a);
+  box-shadow:0 3px 6px #379b7230;
+}
+.storyRewardsHub .storyTreasureGrid{
+  gap:13px;
+}
+.storyRewardsHub .storyTreasureItem{
+  border:2px solid #fff;
+  border-radius:23px;
+  background:linear-gradient(145deg,#fff8ef,#f2f1ff);
+  box-shadow:0 9px 19px #465f9017;
+}
+.storyRewardsHub .storyTreasureItem:nth-child(3n+2){
+  background:linear-gradient(145deg,#eaf8ff,#f3edff);
+}
+.storyRewardsHub .storyTreasureItem:nth-child(3n){
+  background:linear-gradient(145deg,#fff2f7,#fff6df);
+}
+.storyRewardsHub .storyTreasureItem .treasurePreview{
+  border:2px solid #fff;
+  border-radius:18px;
+  background:linear-gradient(140deg,#fffce5,#e9ebff);
+  box-shadow:0 5px 12px #415b8b18;
+}
+.storyRewardsHub .storyTreasureItem.equipped{
+  border-color:#b28dff;
+  box-shadow:0 0 0 3px #b28dff30,0 10px 24px #5e52a21c;
+}
+.storyRewardsHub .storyTreasureItem.locked{
+  opacity:.64;
+  filter:saturate(.53);
+}
+.storyRewardsHub .storyTreasureItem button{
+  background:linear-gradient(135deg,#efe6ff,#e6f4ff);
+  color:#6042ae;
+  border:1px solid #d5cbf5;
+}
+.storyRewardsHub .storySurpriseGrid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+.storyRewardsHub .storySurpriseCard{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+  min-height:288px;
+  padding:12px 16px 19px;
+  overflow:hidden;
+  text-align:center;
+  border:2px solid #fff;
+  border-radius:26px;
+  box-shadow:0 12px 25px #53658e23;
+  background:linear-gradient(145deg,#fff5d9,#ffe3ef);
+}
+.storyRewardsHub .storySurprise100{
+  background:linear-gradient(145deg,#ddf3ff,#e9e6ff);
+}
+.storyRewardsHub .storySurprise200{
+  background:linear-gradient(145deg,#f5eaff,#fff0d3);
+}
+.storyRewardsHub .storySurpriseCard.ready{
+  border-color:#ffe08a;
+  box-shadow:0 0 0 3px #ffe9a069,0 12px 26px #d9a65032;
+}
+.storyRewardsHub .storySurpriseCard.opened{
+  border-color:#a2dfbf;
+  background:linear-gradient(145deg,#e1fff2,#eff5ff);
+}
+.storyRewardsHub .storySurpriseArt{
+  position:relative;
+  flex-shrink:0;
+  display:block;
+  width:min(100%,194px);
+  height:148px;
+  margin:-4px auto -6px;
+  padding:0;
+  background:transparent;
+  overflow:visible;
+  line-height:1;
+}
+.storyRewardsHub .storySurpriseArt img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  filter:drop-shadow(0 5px 8px #38548a18);
+}
+.storyRewardsHub .storySurpriseArt i{
+  position:absolute;
+  right:10%;
+  top:14%;
+  display:grid;
+  place-items:center;
+  width:28px;
+  height:28px;
+  border:3px solid #fff;
+  border-radius:50%;
+  color:#fff;
+  background:#40bd88;
+  font-size:14px;
+  font-style:normal;
+  font-weight:900;
+  box-shadow:0 4px 11px #25775635;
+}
+.storyRewardsHub .storySurpriseCard>div{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:3px;
+  min-width:0;
+}
+.storyRewardsHub .storySurpriseCard b{
+  font-size:16px;
+  line-height:1.25;
+  color:#1e437f;
+}
+.storyRewardsHub .storySurpriseCard small{
+  font-size:12px;
+  line-height:1.35;
+  color:#65708b;
+}
+.storyRewardsHub .storySurpriseCard>button,
+.storyRewardsHub .storySurpriseCard>em{
+  margin-top:auto;
+  max-width:100%;
+  white-space:normal;
+}
+.storyRewardsHub .storySurpriseCard .openChestBtn{
+  min-height:38px;
+  padding:9px 17px;
+  border-radius:15px;
+}
+.storyRewardsHub .storySurpriseCard .secretOpenNow{
+  max-width:100%;
+}
+.storyRewardsHub .storySurpriseCard.opened em{
+  background:#d4f6e8;
+  color:#246c58;
+}
+.storyRewardsHub .storyRewardsCta{
+  border:2px solid #fff;
+  background:linear-gradient(135deg,#e7f5ff,#f4e7ff 70%,#fff0d9);
+  box-shadow:0 9px 22px #445f931d;
+}
+.storyRewardsHub button:focus-visible{
+  outline:3px solid #1c60cf;
+  outline-offset:3px;
+}
+@media(max-width:900px){
+ .storyRewardsHub .storySurpriseGrid{grid-template-columns:minmax(0,1fr)}
+ .storyRewardsHub .storyBadgeGrid{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+ }
+ .storyRewardsHub .storySurpriseCard{
+  min-height:0;
+  flex-direction:row;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:flex-start;
+  gap:8px 12px;
+  text-align:left;
+  padding:12px 14px;
+ }
+ .storyRewardsHub .storySurpriseCard>div{
+  flex:1 1 140px;
+  align-items:flex-start;
+ }
+ .storyRewardsHub .storySurpriseArt{
+  width:114px;
+  height:98px;
+  margin:-2px 0;
+ }
+ .storyRewardsHub .storySurpriseCard>button,
+ .storyRewardsHub .storySurpriseCard>em{
+  margin:0 0 0 126px;
+ }
+}
+@media(max-width:650px){
+ .storyRewardsHub .storyRewardsHero::after{top:6px;right:16%;font-size:18px}
+ .storyRewardsHub .storyStarWallet{border-width:1px}
+ .storyRewardsHub .storyBadgeGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .storyRewardsHub .storyBadgeCard{min-height:134px;border-radius:19px;padding:11px 6px}
+ .storyRewardsHub .storyBadgeCard .badgeIcon{
+  width:56px;
+  height:56px;
+  font-size:30px;
+  border-width:3px;
+ }
+ .storyRewardsHub .storyBadgeCard.unlocked .badgeIcon::after{inset:-6px}
+ .storyRewardsHub .storyTreasureGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .storyRewardsHub .storyTreasureItem{border-radius:19px;padding:10px;gap:7px}
+ .storyRewardsHub .storyTreasureItem .treasurePreview{border-radius:14px}
+ .storyRewardsHub .storySurpriseGrid{grid-template-columns:minmax(0,1fr);gap:10px}
+ .storyRewardsHub .storySurpriseCard{
+  display:grid;
+  grid-template-columns:97px minmax(0,1fr);
+  grid-template-rows:auto auto;
+  align-content:center;
+  align-items:center;
+  justify-items:stretch;
+  gap:5px 10px;
+  min-height:119px;
+  padding:10px 12px;
+  border-radius:20px;
+  text-align:left;
+ }
+ .storyRewardsHub .storySurpriseArt{
+  grid-column:1;
+  grid-row:1 / span 2;
+  width:100%;
+  height:100px;
+  margin:0;
+ }
+ .storyRewardsHub .storySurpriseCard>div{
+  grid-column:2;
+  grid-row:1;
+  align-items:flex-start;
+  min-width:0;
+ }
+ .storyRewardsHub .storySurpriseCard b{font-size:13px}
+ .storyRewardsHub .storySurpriseCard small{font-size:11px}
+ .storyRewardsHub .storySurpriseCard>button,
+ .storyRewardsHub .storySurpriseCard>em{
+  grid-column:2;
+  grid-row:2;
+  justify-self:start;
+  margin:0;
+  font-size:11px;
+  line-height:1.25;
+ }
+ .storyRewardsHub .storySurpriseCard .openChestBtn{min-height:34px;padding:7px 13px}
+ .storyRewardsHub .storySurpriseArt i{width:23px;height:23px;font-size:11px;right:3%;top:8%}
+}
+@media(max-width:375px){
+ .storyRewardsHub .storySurpriseCard{grid-template-columns:81px minmax(0,1fr);gap:4px 8px;padding:8px}
+ .storyRewardsHub .storySurpriseArt{height:85px}
+ .storyRewardsHub .storySurpriseCard b{font-size:12px}
+ .storyRewardsHub .storySurpriseCard small{font-size:10px}
+ .storyRewardsHub .storyBadgeCard{min-height:123px}
+}
+@media(prefers-reduced-motion:reduce){
+ .storyRewardsHub .storySurpriseCard,
+ .storyRewardsHub .storyBadgeCard{
+  animation:none;
+  transition:none;
+ }
+}
