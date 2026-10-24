@@ -7,6 +7,7 @@ import {legacyActivityKeys,migrateLegacyActivities,profileActivities} from "../l
 import {dabStyle} from "../lib/paint-input.mjs";
 import {LANGUAGE_KEY,normalizedLanguage,installUiTranslation,translateGerman} from "../lib/i18n.mjs";
 import {numberColoringNote,numberColoringPrintCopy,numberColoringBoardTitle} from "../lib/number-coloring-copy.mjs";
+import InteractiveMaze from "../components/InteractiveMaze.jsx";
 import {worldStatus,worldProgressMessage,worldAccessibilityLabel} from "../lib/world-map.mjs";
 import {createHiddenPlacements,hiddenSceneDataUri} from "../lib/hidden-board.mjs";
 import {createDifferenceChanges,applyDifferenceChanges,differenceSceneUri} from "../lib/difference-board.mjs";
@@ -642,6 +643,7 @@ export default function Page(){
  const [mazeThemeId,setMazeThemeId]=useState("fox");
  const [mazeDifficulty,setMazeDifficulty]=useState("leicht");
  const [mazeSeed,setMazeSeed]=useState(2311);
+ const [mazePlayMode,setMazePlayMode]=useState("play");
  const [differenceThemeId,setDifferenceThemeId]=useState("farm");
  const [differenceDifficulty,setDifferenceDifficulty]=useState("leicht");
  const [differenceSeed,setDifferenceSeed]=useState(2401);
@@ -3059,12 +3061,16 @@ export default function Page(){
       <div className="mazeHint"><span>💡</span><p><b>Immer wieder neu</b><small>„Neue Variante“ erzeugt einen anderen Weg mit demselben Motiv.</small></p></div>
      </div>
 
-     <div className="mazePanel mazePreviewPanel">
-      <div className="craftStepHead"><span>3</span><div><b>Vorschau & Drucken</b><small>{activeMazeTheme.title}</small></div></div>
-      <div className="mazePreviewWrap">
+     <div className="mazePanel mazePreviewPanel mazePlayPreviewPanel">
+      <div className="craftStepHead"><span>3</span><div><b>Spielen oder Drucken</b><small>{activeMazeTheme.title}</small></div></div>
+      <div className="mazePlayModeSwitch" role="group" aria-label="Labyrinth-Modus">
+       <button type="button" className={mazePlayMode==="play"?"active":""} aria-pressed={mazePlayMode==="play"} onClick={()=>setMazePlayMode("play")}>🎮 Spielen</button>
+       <button type="button" className={mazePlayMode==="print"?"active":""} aria-pressed={mazePlayMode==="print"} onClick={()=>setMazePlayMode("print")}>🖨️ Drucken</button>
+      </div>
+      {mazePlayMode==="play"?<InteractiveMaze key={`${mazeThemeId}-${mazeDifficulty}-${mazeSeed}`} maze={activeMaze} goalEmoji={activeMazeTheme.end} language={language} onComplete={()=>playSound("reward")}/>:<div className="mazePreviewWrap">
        <div className="mazeStartGoal"><span>{activeMazeTheme.start} START</span><span>ZIEL {activeMazeTheme.end}</span></div>
        <MazeBoard maze={activeMaze} startEmoji={activeMazeTheme.start} endEmoji={activeMazeTheme.end}/>
-      </div>
+      </div>}
       <div className="mazeActions">
        <button className="craftSaveBtn" onClick={saveMaze}>💾 Speichern</button>
        <button className="craftPrintBtn" onClick={shareMazePdf}>↗️ Teilen / Drucken</button>
