@@ -9994,7 +9994,6 @@ header:has(.languageSwitcher){z-index:31}
  outline:none;
 }
 .malinoMazePlayBoard:active{cursor:grabbing}
-.malinoMazePlayBoard>*{pointer-events:none}
 .malinoMazePlayBoard:focus-visible,
 .mazePlayModeSwitch button:focus-visible,
 .malinoMazeDirectionPad button:focus-visible,
