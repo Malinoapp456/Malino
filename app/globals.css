@@ -9875,3 +9875,271 @@ header:has(.languageSwitcher){z-index:31}
  }
  .storyParentsPage .storyProfileChoice:hover{transform:none}
 }
+
+/* ============================================================
+   Malino Interactive Maze v1 — touch, keyboard and print.
+   Scoped to Labyrinthe; the existing static A4 board stays.
+   ============================================================ */
+.mazePlayPreviewPanel{
+ background:
+  radial-gradient(circle at 95% 6%,#ffe4b87d,transparent 27%),
+  linear-gradient(145deg,#fff7e9,#f3edff 60%,#eff9ff);
+ border:2px solid #fff;
+ box-shadow:0 12px 26px #6370a51d;
+}
+.mazePlayModeSwitch{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:9px;
+ margin:13px 0 14px;
+ padding:5px;
+ border:2px solid #fff;
+ border-radius:18px;
+ background:#eae5f8;
+}
+.mazePlayModeSwitch button{
+ min-height:46px;
+ padding:9px 12px;
+ border:2px solid transparent;
+ border-radius:13px;
+ background:transparent;
+ color:#615e92;
+ font-size:13px;
+ font-weight:950;
+ cursor:pointer;
+}
+.mazePlayModeSwitch button.active{
+ color:#6246a4;
+ border-color:#fff;
+ background:linear-gradient(135deg,#fff7db,#fff,#ffe9fa);
+ box-shadow:0 5px 12px #816eab22;
+}
+.malinoMazeInteractive{
+ min-width:0;
+ padding:12px;
+ border:2px solid #fff;
+ border-radius:24px;
+ background:
+  radial-gradient(circle at 10% 3%,#ffedf58c 0 24px,transparent 25px),
+  linear-gradient(145deg,#f6f0ff,#eff9ff 64%,#fff3e5);
+ box-shadow:inset 0 2px 8px #849cd20e;
+}
+.malinoMazePlayIntro{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ padding:0 0 13px;
+}
+.malinoMazePlayIntro>div:nth-child(2){
+ flex:1;
+ min-width:0;
+ display:grid;
+ gap:4px;
+}
+.malinoMazePlayIntro b{
+ color:#324c83;
+ font-size:13px;
+ line-height:1.3;
+}
+.malinoMazePlayIntro small{
+ color:#677895;
+ font-size:10px;
+ font-weight:750;
+ line-height:1.35;
+}
+.malinoMazePlaySticker{
+ display:grid;
+ place-items:center;
+ flex:0 0 49px;
+ width:49px;
+ height:49px;
+ border:3px solid #fff;
+ border-radius:16px;
+ background:linear-gradient(140deg,#ffe4bd,#f5d9ff);
+ box-shadow:0 6px 14px #9e709e28;
+ font-size:31px;
+}
+.malinoMazeStepCount{
+ align-self:start;
+ flex:0 0 auto;
+ padding:7px 9px;
+ border:2px solid #fff;
+ border-radius:12px;
+ background:#fff9e8;
+ color:#80683b;
+ font-size:10px;
+ font-weight:950;
+}
+.malinoMazePlaySurface{
+ position:relative;
+ overflow:hidden;
+ padding:7px;
+ border:3px solid #fff;
+ border-radius:21px;
+ background:#fff;
+ box-shadow:0 8px 18px #55649b27;
+}
+.malinoMazePlayBoard{
+ display:block;
+ width:100%;
+ height:auto;
+ max-height:460px;
+ margin:auto;
+ border-radius:15px;
+ background:#fff9f4;
+ touch-action:none;
+ user-select:none;
+ -webkit-user-select:none;
+ cursor:grab;
+ outline:none;
+}
+.malinoMazePlayBoard:active{cursor:grabbing}
+.malinoMazePlayBoard:focus-visible,
+.mazePlayModeSwitch button:focus-visible,
+.malinoMazeDirectionPad button:focus-visible,
+.malinoMazeRestart:focus-visible,
+.malinoMazeVictory button:focus-visible{
+ outline:3px solid #3573cb;
+ outline-offset:3px;
+}
+.malinoMazeVictory{
+ position:absolute;
+ z-index:4;
+ inset:0;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:13px;
+ padding:18px;
+ text-align:center;
+ border-radius:18px;
+ background:#fff8e9ed;
+ color:#345483;
+ box-shadow:inset 0 0 34px #ffdf8a44;
+}
+.malinoMazeVictory strong{
+ font-size:clamp(16px,2.5vw,25px);
+ line-height:1.25;
+ font-weight:950;
+}
+.malinoMazeStars{
+ font-size:clamp(28px,5vw,47px);
+ letter-spacing:5px;
+ animation:malinoMazeYay .6s ease-out both;
+}
+@keyframes malinoMazeYay{
+ from{opacity:.5;transform:translateY(10px) scale(.8)}
+ to{opacity:1;transform:none}
+}
+.malinoMazeVictory button{
+ min-height:46px;
+ padding:10px 19px;
+ border:2px solid #fff;
+ border-radius:16px;
+ background:linear-gradient(135deg,#7e68d5,#b987e5);
+ color:#fff;
+ font-weight:950;
+ box-shadow:0 5px 0 #7057b7;
+}
+.malinoMazeDirectionPad{
+ display:grid;
+ justify-content:center;
+ grid-template-columns:repeat(3,minmax(50px,66px));
+ grid-template-areas:". up ." "left down right";
+ gap:7px;
+ margin:13px 0 5px;
+}
+.malinoMazeDirectionPad button{
+ display:grid;
+ place-items:center;
+ width:100%;
+ min-height:47px;
+ border:2px solid #fff;
+ border-radius:15px;
+ background:linear-gradient(145deg,#f9f2ff,#e8ecff);
+ color:#6752aa;
+ font-size:23px;
+ font-weight:900;
+ box-shadow:0 4px 9px #555e9922;
+ cursor:pointer;
+}
+.malinoMazeDirectionPad button:active{
+ transform:translateY(1px);
+ background:#e0d9fc;
+}
+.malinoMazeDirectionPad button:disabled{
+ opacity:.42;
+ cursor:default;
+}
+.mazePadUp{grid-area:up}
+.mazePadRight{grid-area:right}
+.mazePadDown{grid-area:down}
+.mazePadLeft{grid-area:left}
+.malinoMazeHelp{
+ min-height:16px;
+ margin:10px 0 3px;
+ color:#667994;
+ text-align:center;
+ font-size:10px;
+ font-weight:750;
+ line-height:1.4;
+}
+.malinoMazeRestart{
+ display:block;
+ min-height:41px;
+ margin:9px auto 0;
+ padding:8px 16px;
+ border:2px solid #fff;
+ border-radius:14px;
+ background:#fff5df;
+ color:#855f3a;
+ font-weight:900;
+}
+@media(max-width:950px){
+ .mazePlayPreviewPanel{
+  grid-column:1/-1;
+ }
+ .malinoMazePlayIntro b{font-size:14px}
+ .malinoMazePlayIntro small{font-size:11px}
+}
+@media(max-width:650px){
+ .malinoMazeInteractive{padding:8px;border-radius:19px}
+ .malinoMazePlayIntro{
+  flex-wrap:wrap;
+  gap:7px;
+ }
+ .malinoMazePlaySticker{
+  width:42px;
+  height:42px;
+  flex-basis:42px;
+  font-size:27px;
+  border-radius:13px;
+ }
+ .malinoMazeStepCount{
+  margin-left:auto;
+  font-size:10px;
+ }
+ .malinoMazePlaySurface{
+  padding:4px;
+  border-radius:16px;
+ }
+ .malinoMazePlayBoard{max-height:360px;border-radius:12px}
+ .malinoMazeDirectionPad{
+  grid-template-columns:repeat(3,minmax(48px,61px));
+  gap:8px;
+ }
+ .malinoMazeDirectionPad button{min-height:49px}
+ .malinoMazePlayIntro b{font-size:12px}
+ .malinoMazePlayIntro small{font-size:10px}
+}
+@media(max-width:360px){
+ .malinoMazePlayIntro>div:nth-child(2){
+  flex-basis:calc(100% - 60px);
+ }
+ .malinoMazeStepCount{margin:2px 0 0 auto}
+}
+@media(prefers-reduced-motion:reduce){
+ .malinoMazeStars{animation:none}
+ .malinoMazeDirectionPad button:active{transform:none}
+}
