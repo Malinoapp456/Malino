@@ -87,6 +87,19 @@ export default function InteractivePuzzle({imageSrc,imageWidth,imageHeight,piece
   if(existing!==null)selectPiece(existing);
  };
 
+ const clickOccupiedSlot=(event,piece,slot)=>{
+  const ignored=ignoreClickRef.current;
+  if(ignored&&ignored.id===piece&&Date.now()-ignored.when<220){
+   ignoreClickRef.current=null;
+   return;
+  }
+  if(selectedRef.current!==null&&selectedRef.current!==piece){
+   movePiece(selectedRef.current,slot);
+  }else{
+   selectPiece(piece);
+  }
+ };
+
  const onPieceClick=(event,id)=>{
   // A drag often synthesizes a click on the captured piece. Swallow that
   // synthetic click, but keep normal mouse, touch, keyboard and AT clicks.
@@ -157,8 +170,8 @@ export default function InteractivePuzzle({imageSrc,imageWidth,imageHeight,piece
       const occupied=piece!==null;
       const isCorrect=occupied&&piece===slot;
       return <button type="button" key={slot}
-       className={`malinoPuzzleSlot ${occupied?"isPlaced":""} ${isCorrect?"isCorrect":""} ${selected!==null?"isAvailable":""}`}
-       onClick={event=>occupied?onPieceClick(event,piece):clickSlot(slot)}
+       className={`malinoPuzzleSlot ${occupied?"isPlaced":""} ${isCorrect?"isCorrect":""} ${selected!==null?"isAvailable":""} ${occupied&&selected===piece?"isSelected":""}`}
+       onClick={event=>occupied?clickOccupiedSlot(event,piece,slot):clickSlot(slot)}
        onPointerDown={occupied?event=>pointerDown(event,piece):undefined}
        onPointerMove={occupied?pointerMove:undefined}
        onPointerUp={occupied?pointerUp:undefined}
