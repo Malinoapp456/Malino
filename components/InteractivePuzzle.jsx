@@ -17,6 +17,7 @@ export default function InteractivePuzzle({imageSrc,imageWidth,imageHeight,piece
  const [selected,setSelected]=useState(null);
  const [notice,setNotice]=useState("");
  const [round,setRound]=useState(0);
+ const [dragVisual,setDragVisual]=useState(null);
  const boardRef=useRef(null);
  const dragRef=useRef(null);
  const placedRef=useRef([]);
@@ -29,7 +30,7 @@ export default function InteractivePuzzle({imageSrc,imageWidth,imageHeight,piece
 
  useEffect(()=>{
   placedRef.current=[];selectedRef.current=null;finishedRef.current=false;dragRef.current=null;
-  setPlaced([]);setSelected(null);setNotice("");
+  setPlaced([]);setSelected(null);setNotice("");setDragVisual(null);
  },[imageSrc,pieceCount,round]);
 
  const choosePiece=id=>{
@@ -55,19 +56,22 @@ export default function InteractivePuzzle({imageSrc,imageWidth,imageHeight,piece
   if(placedRef.current.includes(id)||finishedRef.current||!event.isPrimary)return;
   if(event.pointerType==="mouse"&&event.button!==0)return;
   event.preventDefault();
-  dragRef.current={id,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,moved:false};
+  const rect=event.currentTarget.getBoundingClientRect();
+  dragRef.current={id,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,moved:false,width:rect.width,height:rect.height};
   event.currentTarget.setPointerCapture?.(event.pointerId);
  };
  const pointerMove=event=>{
   const drag=dragRef.current;
   if(!drag||drag.pointerId!==event.pointerId)return;
   if(Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY)>9)drag.moved=true;
+  if(drag.moved)setDragVisual({id:drag.id,x:event.clientX,y:event.clientY,width:drag.width,height:drag.height});
   if(event.cancelable)event.preventDefault();
  };
  const pointerUp=event=>{
   const drag=dragRef.current;
   if(!drag||drag.pointerId!==event.pointerId)return;
   dragRef.current=null;
+  setDragVisual(null);
   if(event.currentTarget.hasPointerCapture?.(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId);
   if(drag.moved){
    const rect=boardRef.current?.getBoundingClientRect();
@@ -76,7 +80,7 @@ export default function InteractivePuzzle({imageSrc,imageWidth,imageHeight,piece
   }else{choosePiece(drag.id)}
  };
  const pointerCancel=event=>{
-  if(dragRef.current?.pointerId===event.pointerId)dragRef.current=null;
+  if(dragRef.current?.pointerId===event.pointerId){dragRef.current=null;setDragVisual(null)}
  };
  const clickPiece=(event,id)=>{
   // Pointer interactions are handled on pointerup. Keyboard/AT clicks
@@ -136,5 +140,8 @@ export default function InteractivePuzzle({imageSrc,imageWidth,imageHeight,piece
     {!done&&<button className="malinoPuzzleReset" type="button" onClick={reset}>↻ {t.replay}</button>}
    </div>
   </div>
+  {dragVisual&&<div className="malinoPuzzleDragGhost" aria-hidden="true" style={{left:dragVisual.x-dragVisual.width/2,top:dragVisual.y-dragVisual.height/2,width:dragVisual.width,height:dragVisual.height}}>
+   <span style={{backgroundImage:`url("${imageSrc}")`,...puzzlePieceBackground(dragVisual.id,cols,rows)}}/>
+  </div>}
  </div>;
 }
