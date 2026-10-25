@@ -1,7 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
-import {puzzleGridForCount,puzzleShuffledOrder,puzzleTargetFromPoint,puzzleCanPlace,puzzlePieceBackground} from "../lib/puzzle-play.mjs";
+import {
+ puzzleGridForCount,puzzleShuffledOrder,puzzleTargetFromPoint,puzzleCanPlace,
+ puzzleMovePiece,puzzleReturnToTray,puzzleIsComplete,puzzlePieceBackground
+} from "../lib/puzzle-play.mjs";
 
 const page=readFileSync(new URL("../app/page.js",import.meta.url),"utf8");
 const styles=readFileSync(new URL("../app/globals.css",import.meta.url),"utf8");
@@ -26,16 +29,51 @@ test("scrambled pieces are unique, repeatable and not initially solved",()=>{
  }
 });
 
-test("each piece can be dropped only on its proper unoccupied slot",()=>{
- assert.equal(puzzleCanPlace(3,3,6,[]),true);
- assert.equal(puzzleCanPlace(3,1,6,[]),false);
- assert.equal(puzzleCanPlace(3,3,6,[3]),false);
- assert.equal(puzzleCanPlace(-1,-1,6,[]),false);
- assert.equal(puzzleCanPlace(6,6,6,[]),false);
- assert.equal(puzzleCanPlace(3.5,3.5,6,[]),false);
+test("every valid slot accepts a puzzle piece, not just its final correct one",()=>{
+ const blank=Array(6).fill(null);
+ for(let slot=0;slot<6;slot++)assert.equal(puzzleCanPlace(3,slot,6,blank),true);
+ assert.equal(puzzleCanPlace(-1,0,6,blank),false);
+ assert.equal(puzzleCanPlace(6,0,6,blank),false);
+ assert.equal(puzzleCanPlace(3,6,6,blank),false);
+ assert.equal(puzzleCanPlace(3.5,3,6,blank),false);
 });
 
-test("touch drop target uses responsive board coordinates and excludes outside touches",()=>{
+test("tap placement, rearrangement and swaps preserve all pieces",()=>{
+ const blank=Array(4).fill(null);
+ const wrong=puzzleMovePiece(blank,3,0);
+ assert.deepEqual(wrong,[3,null,null,null]);
+ const moved=puzzleMovePiece(wrong,3,2);
+ assert.deepEqual(moved,[null,null,3,null]);
+ const another=puzzleMovePiece(moved,1,0);
+ assert.deepEqual(another,[1,null,3,null]);
+ const swapped=puzzleMovePiece(another,1,2);
+ assert.deepEqual(swapped,[3,null,1,null]);
+ assert.deepEqual([...swapped].filter(x=>x!==null).sort((a,b)=>a-b),[1,3]);
+ assert.equal(puzzleMovePiece(swapped,1,2),swapped,"dropping in the same slot must not change the board");
+});
+
+test("placing a tray piece over an occupied slot returns its displaced piece to the tray",()=>{
+ const layout=[null,1,2,null];
+ const next=puzzleMovePiece(layout,3,1);
+ assert.deepEqual(next,[null,3,2,null]);
+ assert.equal(next.includes(1),false);
+ assert.deepEqual(layout,[null,1,2,null],"pure helper leaves the previous layout intact");
+ const returned=puzzleReturnToTray(next,3);
+ assert.deepEqual(returned,[null,null,2,null]);
+ assert.equal(puzzleReturnToTray(returned,3),returned);
+});
+
+test("completion is awarded only when all puzzle tiles are correctly arranged",()=>{
+ assert.equal(puzzleIsComplete([0,1,2,3]),true);
+ assert.equal(puzzleIsComplete([0,null,2,3]),false);
+ assert.equal(puzzleIsComplete([1,0,2,3]),false);
+ assert.equal(puzzleIsComplete([]),false);
+ let layout=Array(4).fill(null);
+ for(let piece=0;piece<4;piece++)layout=puzzleMovePiece(layout,piece,piece);
+ assert.equal(puzzleIsComplete(layout),true);
+});
+
+test("touch drops use responsive board coordinates and exclude touches outside",()=>{
  const rect={left:40,top:80,width:300,height:400};
  assert.equal(puzzleTargetFromPoint({x:60,y:110},rect,3,2),0);
  assert.equal(puzzleTargetFromPoint({x:160,y:110},rect,3,2),1);
@@ -54,7 +92,7 @@ test("piece background crops the appropriate image region",()=>{
  assert.deepEqual(puzzlePieceBackground(1,2,2),{backgroundSize:"200% 200%",backgroundPosition:"100% 0%",backgroundRepeat:"no-repeat"});
 });
 
-test("existing print, save, reopen and deletion remain intact in crafting section",()=>{
+test("existing print, save, reopen and deletion remain intact",()=>{
  assert.ok(page.includes('const [puzzlePlayMode,setPuzzlePlayMode]=useState("play")'));
  assert.ok(page.includes('onClick={()=>setPuzzlePlayMode("play")}'));
  assert.ok(page.includes('onClick={()=>setPuzzlePlayMode("print")}'));
@@ -70,19 +108,26 @@ test("existing print, save, reopen and deletion remain intact in crafting sectio
  assert.ok(page.includes('const printCraftPuzzle=()=>'));
 });
 
-test("game supports real finger drag, tap-to-place, keyboard and accessible progress",()=>{
- for(const needle of ['onPointerDown={event=>pointerDown(event,id)}','onPointerMove={pointerMove}','onPointerUp={pointerUp}','onPointerCancel={pointerCancel}','setPointerCapture?.(event.pointerId)','puzzleTargetFromPoint(','onClick={()=>tryPlace(selectedRef.current,slot)}','if(event.detail===0)choosePiece(id)','aria-pressed={selected===id}','role="status"','aria-live="polite"','malinoPuzzleWin','onComplete?.()','setRound(value=>value+1)','malinoPuzzleDragGhost'])
-  assert.ok(comp.includes(needle),needle);
- assert.ok(!comp.includes('localStorage'),"game keeps profile storage untouched");
- assert.ok(!comp.includes('setStars'),"no unapproved reward accounting changes");
+test("touch movement, tap selection, occupied-slot swaps and tray return are wired up",()=>{
+ for(const needle of [
+  'onPointerDown={event=>pointerDown(event,id)}','onPointerDown={occupied?event=>pointerDown(event,piece):undefined}',
+  'onPointerMove={pointerMove}','onPointerUp={pointerUp}','onPointerCancel={pointerCancel}',
+  'setPointerCapture(event.pointerId)','puzzleTargetFromPoint(','clickOccupiedSlot(event,piece,slot)',
+  'movePiece(selectedRef.current,slot)','puzzleMovePiece(before,id,slot)',
+  'puzzleReturnToTray(before,id)','puzzleIsComplete(next)','aria-pressed={selected===id}',
+  'aria-live="polite"','malinoPuzzleWin','onComplete?.()','setRound(r=>r+1)','malinoPuzzleDragGhost'
+ ])assert.ok(comp.includes(needle),needle);
+ assert.ok(comp.includes('const correct=layout.filter((piece,slot)=>piece===slot).length'));
+ assert.ok(!comp.includes("localStorage"),"game leaves profile storage alone");
+ assert.ok(!comp.includes("setStars"),"no unapproved star-accounting change");
 });
 
-test("touch dragging cannot pan page, other app areas stay scrollable",()=>{
- assert.ok(styles.includes(".malinoPuzzlePiece{"));
+test("pieces do not pan the whole page and other app areas can scroll",()=>{
  assert.match(styles,/\.malinoPuzzlePiece\{[^}]*touch-action:none;/);
- assert.ok(styles.includes(".malinoPuzzleDragGhost{"));
+ assert.match(styles,/\.malinoPuzzleSlot\.isPlaced\{[^}]*touch-action:none;/);
+ assert.match(styles,/\.malinoPuzzlePlayBoard\{[^}]*touch-action:none;/);
  assert.match(styles,/\.malinoPuzzleDragGhost\{[^}]*pointer-events:none;/);
- assert.match(styles,/\.malinoPuzzleSlot\{[^}]*touch-action:manipulation;/);
+ assert.ok(styles.includes(".malinoPuzzleReturn{"));
  assert.ok(styles.includes("@media(max-width:650px)"));
  assert.ok(styles.includes("@media(prefers-reduced-motion:reduce)"));
 });
