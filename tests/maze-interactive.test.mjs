@@ -87,3 +87,18 @@ test("gameplay styles are isolated and touch-friendly and honor reduced motion",
  for(const key of [".mazePlayModeSwitch{",".malinoMazeInteractive{",".malinoMazePlayBoard{","touch-action:none",".malinoMazeDirectionPad button{","min-height:47px","@media(max-width:650px)","@media(prefers-reduced-motion:reduce)"])
   assert.ok(css.includes(key),key);
 });
+
+test("mobile page panning stays disabled only on the active maze surface",()=>{
+ assert.ok(component.includes('const playSurfaceRef=useRef(null)'));
+ assert.ok(component.includes('ref={playSurfaceRef}'));
+ assert.ok(component.includes('surface.addEventListener("touchmove",stopPagePan,{passive:false})'));
+ assert.ok(component.includes('surface.removeEventListener("touchmove",stopPagePan)'));
+ assert.ok(component.includes('if(event.cancelable)event.preventDefault()'));
+ assert.ok(component.includes('onPointerMove={pointerMove}'));
+ assert.ok(css.includes(".malinoMazePlaySurface{"));
+ assert.match(css,/\.malinoMazePlaySurface\{[^}]*touch-action:none;/);
+ assert.match(css,/\.malinoMazePlaySurface\{[^}]*overscroll-behavior:contain;/);
+ assert.ok(css.includes(".malinoMazePlaySurface svg,"));
+ assert.ok(css.includes(".malinoMazePlaySurface svg *{"));
+ assert.ok(!css.includes("body{touch-action:none}"),"normal scrolling outside maze stays enabled");
+});
