@@ -16,21 +16,22 @@ export default function InteractiveMaze({maze,goalEmoji="🏠",language="de",res
  const [notice,setNotice]=useState("");
  const [replays,setReplays]=useState(0);
  const svgRef=useRef(null);
+ const playSurfaceRef=useRef(null);
  const positionRef=useRef(0);
  const finishedRef=useRef(false);
  const dragRef=useRef(null);
 
- // React can attach passive touch listeners on mobile. Use a non-passive
- // native listener on the board so Safari/Chrome never scroll the document
- // while a finger is tracing a maze path. Elsewhere page scrolling works.
+ // A native non-passive touchmove listener is needed for Safari and Chrome,
+ // even when the finger begins on a border/padding around the SVG.
+ // Only the play surface blocks page pan; outside it scrolling stays normal.
  useEffect(()=>{
-  const board=svgRef.current;
-  if(!board)return;
+  const surface=playSurfaceRef.current;
+  if(!surface)return;
   const stopPagePan=event=>{
    if(event.cancelable)event.preventDefault();
   };
-  board.addEventListener("touchmove",stopPagePan,{passive:false});
-  return()=>board.removeEventListener("touchmove",stopPagePan);
+  surface.addEventListener("touchmove",stopPagePan,{passive:false});
+  return()=>surface.removeEventListener("touchmove",stopPagePan);
  },[]);
 
  const goal=(maze?.cols||1)*(maze?.rows||1)-1;
@@ -108,6 +109,7 @@ export default function InteractiveMaze({maze,goalEmoji="🏠",language="de",res
  const pointerMove=event=>{
   const drag=dragRef.current;
   if(!drag||drag.id!==event.pointerId||finishedRef.current)return;
+  if(event.cancelable)event.preventDefault();
   const point=pointFromEvent(event);
   if(!point)return;
   const cells=mazeTraceDrag(maze,positionRef.current,drag.last,point);
@@ -136,7 +138,7 @@ export default function InteractiveMaze({maze,goalEmoji="🏠",language="de",res
    <div><b>{t.instructions}</b><small>{t.touch}</small></div>
    <span className="malinoMazeStepCount">👣 {t.steps}: {Math.max(0,trail.length-1)}</span>
   </div>
-  <div className="malinoMazePlaySurface">
+  <div className="malinoMazePlaySurface" ref={playSurfaceRef}>
    <svg ref={svgRef} tabIndex={0} className="malinoMazePlayBoard" viewBox={`0 0 ${w} ${h}`}
     role="group" aria-label={t.board}
     onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerEnd} onPointerCancel={pointerEnd}>
