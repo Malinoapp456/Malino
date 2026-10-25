@@ -10869,3 +10869,10 @@ header:has(.languageSwitcher){z-index:31}
 @media(prefers-reduced-motion:reduce){
  .malinoMemoryCardInner{transition:none}
 }
+
+/* Spoken instructions: scoped to Malino's helper panel. */
+.talkingMalino{display:flex;align-items:center;gap:12px;margin:14px auto;padding:14px 18px;max-width:1100px;border:2px solid #fff;border-radius:22px;background:linear-gradient(120deg,#fff4d9,#f1eaff);box-shadow:0 5px 18px #71618d14;color:#51416c}
+.talkingMalinoLion{font-size:42px;flex-shrink:0}
+.talkingMalinoCopy{flex:1;min-width:0}.talkingMalinoCopy strong{font-size:15px}.talkingMalinoCopy p{margin:5px 0;line-height:1.5;font-size:14px}.talkingMalinoCopy small{display:block;font-size:11px;line-height:1.4;color:#665874}
+.talkingMalino button{flex-shrink:0;min-height:44px;padding:10px 15px;border:2px solid #fff;border-radius:14px;background:#7052a3;color:white;font-weight:800;cursor:pointer}.talkingMalino button:disabled{opacity:.55;cursor:default}.talkingMalino button:focus-visible{outline:3px solid #2167b5;outline-offset:3px}
+@media(max-width:650px){.talkingMalino{margin:10px;padding:12px;flex-wrap:wrap;gap:10px}.talkingMalinoLion{font-size:32px}.talkingMalino button{width:100%}.talkingMalinoCopy p{font-size:13px}}

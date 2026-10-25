@@ -10,6 +10,8 @@ import {numberColoringNote,numberColoringPrintCopy,numberColoringBoardTitle} fro
 import InteractiveMaze from "../components/InteractiveMaze.jsx";
 import InteractivePuzzle from "../components/InteractivePuzzle.jsx";
 import MemoryGame from "../components/MemoryGame.jsx";
+import TalkingMalino from "../components/TalkingMalino.jsx";
+import {spokenHelp} from "../lib/malino-speech.mjs";
 import {worldStatus,worldProgressMessage,worldAccessibilityLabel} from "../lib/world-map.mjs";
 import {createHiddenPlacements,hiddenSceneDataUri} from "../lib/hidden-board.mjs";
 import {createDifferenceChanges,applyDifferenceChanges,differenceSceneUri} from "../lib/difference-board.mjs";
@@ -701,8 +703,10 @@ export default function Page(){
  const rasterRef=useRef(null);
  const feedbackTimer=useRef(null);
  const soundPool=useRef({});
+ const talkingMalinoRef=useRef(null);
  const playSound=type=>{
   if(!soundEnabled||typeof window==="undefined")return;
+  talkingMalinoRef.current?.praise(type);
   try{
    const base=soundPool.current[type];
    if(!base)return;
@@ -2822,6 +2826,8 @@ export default function Page(){
     </div>}
    </div>
    <Logo/><div><span key={`stars-${activeProfileId}-${headerStarCount}`}>⭐ {headerStarCount}</span><button key={`profile-${activeProfileId}`} onClick={openParentArea}><span className="headerProfileAvatar">{avatarEmoji(profileData?.[activeProfileId]?.avatar)}</span><span className="headerProfileName" data-i18n-ignore="true">{activeProfile.name}</span></button></div></header>
+
+  <TalkingMalino ref={talkingMalinoRef} instruction={spokenHelp(screen,craftMode,craftMode==="puzzle"?puzzlePlayMode:craftMode==="maze"?mazePlayMode:null)} soundEnabled={soundEnabled} language={language} context={`${screen}-${craftMode}-${activeProfileId}`}/>
 
   {screen==="start"&&<section className="home premiumHome malinoStoryHome">
    <div className="premiumHero malinoStoryHero">
