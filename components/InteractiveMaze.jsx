@@ -19,6 +19,20 @@ export default function InteractiveMaze({maze,goalEmoji="🏠",language="de",res
  const positionRef=useRef(0);
  const finishedRef=useRef(false);
  const dragRef=useRef(null);
+
+ // React can attach passive touch listeners on mobile. Use a non-passive
+ // native listener on the board so Safari/Chrome never scroll the document
+ // while a finger is tracing a maze path. Elsewhere page scrolling works.
+ useEffect(()=>{
+  const board=svgRef.current;
+  if(!board)return;
+  const stopPagePan=event=>{
+   if(event.cancelable)event.preventDefault();
+  };
+  board.addEventListener("touchmove",stopPagePan,{passive:false});
+  return()=>board.removeEventListener("touchmove",stopPagePan);
+ },[]);
+
  const goal=(maze?.cols||1)*(maze?.rows||1)-1;
  const total=maze?.cols*maze?.rows||0;
 
