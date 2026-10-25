@@ -10547,3 +10547,325 @@ header:has(.languageSwitcher){z-index:31}
  outline:3px solid #3671cc;
  outline-offset:3px;
 }
+
+/* ============================================================
+   Malino Premium — Fairy-tale Memory minigame (isolated styles)
+   ============================================================ */
+.craftModeTabs6{grid-template-columns:repeat(3,minmax(0,1fr))}
+.malinoMemory{
+ margin-top:15px;
+ padding:14px;
+ border:2px solid #fff;
+ border-radius:26px;
+ background:
+  radial-gradient(circle at 95% 2%,#fff2b97d,transparent 25%),
+  radial-gradient(circle at 0% 100%,#f7cffa7a,transparent 27%),
+  linear-gradient(135deg,#f5f0ff,#eafaff 53%,#fff4e8);
+ box-shadow:0 12px 30px #6674a421;
+}
+.malinoMemoryHero{
+ display:flex;
+ align-items:center;
+ gap:15px;
+ min-width:0;
+ padding:16px;
+ border:2px solid #fff;
+ border-radius:23px;
+ background:linear-gradient(110deg,#fff9df,#fff2fb 65%,#eef0ff);
+ box-shadow:0 6px 15px #72639b19;
+}
+.malinoMemoryHeroLion{
+ display:grid;
+ place-items:center;
+ flex:0 0 74px;
+ width:74px;
+ height:74px;
+ border:3px solid #fff;
+ border-radius:24px;
+ background:linear-gradient(140deg,#ffe3bc,#f0cff9);
+ box-shadow:0 7px 14px #b486a82b;
+ font-size:49px;
+}
+.malinoMemoryHero>div{flex:1;min-width:0}
+.malinoMemoryEyebrow{
+ display:block;
+ color:#8a72ae;
+ font-size:11px;
+ font-weight:950;
+ letter-spacing:.07em;
+}
+.malinoMemoryHero h2{
+ margin:3px 0 4px;
+ color:#4e497e;
+ font-size:clamp(22px,3vw,34px);
+ line-height:1.13;
+ font-weight:950;
+}
+.malinoMemoryHero p{
+ margin:0;
+ color:#68819b;
+ font-size:12px;
+ font-weight:700;
+ line-height:1.45;
+}
+.malinoMemoryHeroDecoration{
+ align-self:flex-start;
+ color:#9467b6;
+ font-size:22px;
+ white-space:nowrap;
+}
+.malinoMemorySettings{
+ display:grid;
+ grid-template-columns:.85fr 1.15fr;
+ gap:12px;
+ margin-top:12px;
+}
+.malinoMemorySettingsGroup{
+ min-width:0;
+ padding:13px;
+ border:2px solid #fff;
+ border-radius:20px;
+ background:#ffffffd6;
+ box-shadow:0 5px 14px #5c6f9912;
+}
+.malinoMemorySettingsGroup>b{
+ display:block;
+ margin-bottom:9px;
+ color:#65598e;
+ font-size:13px;
+ font-weight:950;
+}
+.malinoMemoryThemeButtons,
+.malinoMemoryLevelButtons{
+ display:grid;
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:7px;
+}
+.malinoMemoryThemeButtons button,
+.malinoMemoryLevelButtons button{
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:3px;
+ min-height:63px;
+ min-width:0;
+ padding:7px 4px;
+ border:2px solid #e6e4f5;
+ border-radius:13px;
+ background:#fff;
+ color:#685e8b;
+ font-size:11px;
+ font-weight:900;
+ line-height:1.2;
+ cursor:pointer;
+}
+.malinoMemoryThemeButtons button>span{font-size:25px}
+.malinoMemoryLevelButtons strong{font-size:12px}
+.malinoMemoryLevelButtons small{font-size:9px;white-space:nowrap}
+.malinoMemoryThemeButtons button.active,
+.malinoMemoryLevelButtons button.active{
+ border-color:#ab82e0;
+ background:linear-gradient(145deg,#fff4d8,#f1e6ff);
+ color:#5746a1;
+ box-shadow:0 0 0 2px #f8eaff;
+}
+.malinoMemoryGamePanel{
+ min-width:0;
+ max-width:870px;
+ margin:13px auto 0;
+ padding:15px;
+ border:2px solid #fff;
+ border-radius:23px;
+ background:linear-gradient(165deg,#fffdf9,#f3efff);
+ box-shadow:0 8px 23px #72719d1b;
+}
+.malinoMemoryScoreboard{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:8px;
+ flex-wrap:wrap;
+ margin:0 0 14px;
+ color:#5f588d;
+ font-size:13px;
+ font-weight:800;
+}
+.malinoMemoryScoreboard>span{
+ padding:8px 10px;
+ border:2px solid #fff;
+ border-radius:11px;
+ background:#f1eafd;
+}
+.malinoMemoryScoreboard b{font-weight:950;color:#345b85}
+.malinoMemoryScoreboard button{
+ min-height:40px;
+ padding:9px 12px;
+ border:2px solid #fff;
+ border-radius:12px;
+ background:#fff2da;
+ color:#865e57;
+ font-size:11px;
+ font-weight:950;
+ cursor:pointer;
+}
+.malinoMemoryGrid{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:12px;
+ width:100%;
+ max-width:720px;
+ margin:0 auto;
+}
+.malinoMemoryCard{
+ position:relative;
+ display:block;
+ width:100%;
+ aspect-ratio:1 / 1;
+ min-width:0;
+ min-height:0;
+ padding:0;
+ border:0;
+ border-radius:17px;
+ background:transparent;
+ cursor:pointer;
+ touch-action:manipulation;
+ -webkit-tap-highlight-color:transparent;
+ perspective:650px;
+}
+.malinoMemoryCardInner{
+ position:relative;
+ display:block;
+ width:100%;
+ height:100%;
+ border-radius:16px;
+ transform-style:preserve-3d;
+ transition:transform .35s ease;
+}
+.malinoMemoryCard.isOpen .malinoMemoryCardInner{transform:rotateY(180deg)}
+.malinoMemoryCardBack,
+.malinoMemoryCardFace{
+ position:absolute;
+ inset:0;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ border:3px solid #fff;
+ border-radius:16px;
+ -webkit-backface-visibility:hidden;
+ backface-visibility:hidden;
+ overflow:hidden;
+ box-shadow:0 5px 0 #d6c7f0,0 9px 15px #656ba12a;
+}
+.malinoMemoryCardBack{
+ gap:3px;
+ background:
+  radial-gradient(circle at 90% 11%,#fff8db44 0 9%,transparent 10%),
+  radial-gradient(circle at 10% 83%,#fff8db44 0 9%,transparent 10%),
+  linear-gradient(145deg,#a68ee6,#8470d2 63%,#6ba4e1);
+ color:#fff7d1;
+}
+.malinoMemoryCardPaw{font-size:clamp(29px,5vw,48px);filter:drop-shadow(0 3px 2px #4e47884a)}
+.malinoMemoryCardSparkle{font-size:clamp(11px,2vw,19px)}
+.malinoMemoryCardFace{
+ transform:rotateY(180deg);
+ background:linear-gradient(135deg,#fff9e8,#f5edff,#eaf8ff);
+}
+.malinoMemoryCardFace>span:first-child{
+ font-size:clamp(28px,6vw,58px);
+ line-height:1;
+}
+.malinoMemoryCard.isMatched .malinoMemoryCardFace{
+ background:linear-gradient(135deg,#e9ffe9,#fff8d9);
+ border-color:#d9f8c8;
+}
+.malinoMemoryCardCheck{
+ position:absolute;
+ right:5px;
+ bottom:4px;
+ display:grid;
+ place-items:center;
+ width:21px;
+ height:21px;
+ border:2px solid #fff;
+ border-radius:50%;
+ background:#64ba88;
+ color:#fff;
+ font-size:13px;
+ font-weight:950;
+}
+.malinoMemoryCard:disabled{cursor:default}
+.malinoMemoryCard:focus-visible,
+.malinoMemorySettings button:focus-visible,
+.malinoMemoryScoreboard button:focus-visible,
+.malinoMemoryVictory button:focus-visible{
+ outline:3px solid #306fd2;
+ outline-offset:3px;
+}
+.malinoMemoryMessage{
+ min-height:24px;
+ margin:15px auto 0;
+ color:#746d9d;
+ font-size:12px;
+ font-weight:900;
+ text-align:center;
+ line-height:1.4;
+}
+.malinoMemoryVictory{
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ gap:8px;
+ padding:18px;
+ margin:12px 0 0;
+ border:3px solid #fff;
+ border-radius:21px;
+ background:linear-gradient(135deg,#fff0bc,#ffecf8 55%,#e9f2ff);
+ color:#554e87;
+ text-align:center;
+ box-shadow:0 7px 17px #786bb422;
+}
+.malinoMemoryVictory>span{font-size:clamp(31px,5vw,48px)}
+.malinoMemoryVictory strong{font-size:clamp(15px,2.5vw,23px);font-weight:950}
+.malinoMemoryVictory p{margin:0;font-size:12px;font-weight:700}
+.malinoMemoryVictory button{
+ min-height:46px;
+ padding:10px 19px;
+ border:2px solid #fff;
+ border-radius:15px;
+ background:linear-gradient(135deg,#846bd5,#ac89e2);
+ color:#fff;
+ font-weight:950;
+ box-shadow:0 4px 0 #765eb0;
+}
+@media(max-width:950px){
+ .malinoMemorySettings{grid-template-columns:1fr}
+ .craftModeTabs6{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:650px){
+ .craftModeTabs6{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .malinoMemory{padding:8px;border-radius:19px}
+ .malinoMemoryHero{padding:11px;gap:10px;border-radius:17px}
+ .malinoMemoryHeroLion{width:55px;height:55px;flex-basis:55px;font-size:38px;border-radius:17px}
+ .malinoMemoryHeroDecoration{display:none}
+ .malinoMemoryHero h2{font-size:22px}
+ .malinoMemoryHero p{font-size:10px}
+ .malinoMemorySettingsGroup{padding:9px;border-radius:16px}
+ .malinoMemoryThemeButtons button,.malinoMemoryLevelButtons button{min-height:60px;font-size:10px}
+ .malinoMemoryGamePanel{padding:10px;border-radius:17px}
+ .malinoMemoryGrid{gap:7px}
+ .malinoMemoryCard,.malinoMemoryCardInner{border-radius:12px}
+ .malinoMemoryCardBack,.malinoMemoryCardFace{border-radius:11px;border-width:2px}
+ .malinoMemoryScoreboard{gap:6px;font-size:11px}
+ .malinoMemoryScoreboard>span{padding:6px 7px}
+ .malinoMemoryScoreboard button{font-size:10px;padding:6px 8px}
+ .malinoMemoryCardCheck{right:2px;bottom:2px;width:17px;height:17px;font-size:10px}
+}
+@media(max-width:380px){
+ .malinoMemoryGrid{gap:5px}
+ .malinoMemoryThemeButtons,.malinoMemoryLevelButtons{gap:5px}
+ .malinoMemoryLevelButtons small{font-size:8px}
+}
+@media(prefers-reduced-motion:reduce){
+ .malinoMemoryCardInner{transition:none}
+}

@@ -9,6 +9,7 @@ import {LANGUAGE_KEY,normalizedLanguage,installUiTranslation,translateGerman} fr
 import {numberColoringNote,numberColoringPrintCopy,numberColoringBoardTitle} from "../lib/number-coloring-copy.mjs";
 import InteractiveMaze from "../components/InteractiveMaze.jsx";
 import InteractivePuzzle from "../components/InteractivePuzzle.jsx";
+import MemoryGame from "../components/MemoryGame.jsx";
 import {worldStatus,worldProgressMessage,worldAccessibilityLabel} from "../lib/world-map.mjs";
 import {createHiddenPlacements,hiddenSceneDataUri} from "../lib/hidden-board.mjs";
 import {createDifferenceChanges,applyDifferenceChanges,differenceSceneUri} from "../lib/difference-board.mjs";
@@ -2957,18 +2958,22 @@ export default function Page(){
     <div>
      <span className="eyebrow">Kreativ ohne Bildschirm</span>
      <h1>Basteln & Spielen ✂️</h1>
-     <p>Gestalte Puzzle oder Labyrinthe, speichere sie und teile sie als A4-PDF zum Drucken.</p>
+     <p>{language==="pl"?"Układaj puzzle, rozwiązuj labirynty, graj w Memory lub drukuj własne zadania.":"Spiele Memory, lege Puzzle, löse Labyrinthe oder drucke eigene Aufgaben aus."}</p>
     </div>
-    <div className="craftScore"><span>{craftMode==="maze"?"🌀":"🧩"}</span><b>{craftMode==="maze"?savedMazes.length:savedCraftPuzzles.length}</b><small>gespeichert</small></div>
+    {craftMode!=="memory"&&<div className="craftScore"><span>{craftMode==="maze"?"🌀":"🧩"}</span><b>{craftMode==="maze"?savedMazes.length:savedCraftPuzzles.length}</b><small>gespeichert</small></div>}
    </div>
 
-   <div className="craftModeTabs craftModeTabs5" role="tablist" aria-label="Basteln & Spielen">
+   <div className="craftModeTabs craftModeTabs5 craftModeTabs6" role="tablist" aria-label="Basteln & Spielen">
     <button className={craftMode==="puzzle"?"active":""} onClick={()=>setCraftMode("puzzle")}><span>🧩</span><div><b>Meine Puzzle</b><small>Ausmalen, schneiden & puzzeln</small></div></button>
     <button className={craftMode==="maze"?"active":""} onClick={()=>setCraftMode("maze")}><span>🌀</span><div><b>Labyrinthe</b><small>Weg finden, speichern & drucken</small></div></button>
     <button className={craftMode==="difference"?"active":""} onClick={()=>setCraftMode("difference")}><span>🔎</span><div><b>Unterschiede</b><small>Genau hinschauen & entdecken</small></div></button>
     <button className={craftMode==="hidden"?"active":""} onClick={()=>setCraftMode("hidden")}><span>🔍</span><div><b>Versteckte Dinge</b><small>Suchen, finden & markieren</small></div></button>
     <button className={craftMode==="numbers"?"active":""} onClick={()=>setCraftMode("numbers")}><span>🎨</span><div><b>Malen nach Zahlen</b><small>Farben nach Nummern entdecken</small></div></button>
+    <button className={craftMode==="memory"?"active":""} aria-pressed={craftMode==="memory"} onClick={()=>setCraftMode("memory")}><span>🧠</span><div><b>Memory</b><small>Paare finden & entdecken</small></div></button>
    </div>
+
+   {craftMode==="memory"&&<MemoryGame key={activeProfileId} language={language} onSound={playSound}/>}
+
 
    {craftMode==="puzzle"&&<>
     <div className="craftFlow">
