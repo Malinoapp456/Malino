@@ -8,6 +8,7 @@ import {dabStyle} from "../lib/paint-input.mjs";
 import {LANGUAGE_KEY,normalizedLanguage,installUiTranslation,translateGerman} from "../lib/i18n.mjs";
 import {numberColoringNote,numberColoringPrintCopy,numberColoringBoardTitle} from "../lib/number-coloring-copy.mjs";
 import InteractiveMaze from "../components/InteractiveMaze.jsx";
+import InteractivePuzzle from "../components/InteractivePuzzle.jsx";
 import {worldStatus,worldProgressMessage,worldAccessibilityLabel} from "../lib/world-map.mjs";
 import {createHiddenPlacements,hiddenSceneDataUri} from "../lib/hidden-board.mjs";
 import {createDifferenceChanges,applyDifferenceChanges,differenceSceneUri} from "../lib/difference-board.mjs";
@@ -640,6 +641,7 @@ export default function Page(){
  const [craftPieces,setCraftPieces]=useState(6);
  const [craftStyle,setCraftStyle]=useState("bw");
  const [craftMode,setCraftMode]=useState("puzzle");
+ const [puzzlePlayMode,setPuzzlePlayMode]=useState("play");
  const [mazeThemeId,setMazeThemeId]=useState("fox");
  const [mazeDifficulty,setMazeDifficulty]=useState("leicht");
  const [mazeSeed,setMazeSeed]=useState(2311);
@@ -2993,16 +2995,20 @@ export default function Page(){
       <p>Je mehr Teile, desto schwieriger.</p>
      </div>
 
-     <div className="craftStep craftStep3">
-      <div className="craftStepHead"><span>3</span><div><b>Vorschau & Drucken</b><small>So sieht dein Puzzle aus</small></div></div>
-      <div className="craftPreviewStage">
+     <div className="craftStep craftStep3 storyPuzzlePlayStep">
+      <div className="craftStepHead"><span>3</span><div><b>Spielen oder Drucken</b><small>Lege dein Puzzle zusammen!</small></div></div>
+      <div className="storyPuzzleModeSwitch" role="group" aria-label="Puzzle-Modus">
+       <button type="button" className={puzzlePlayMode==="play"?"active":""} aria-pressed={puzzlePlayMode==="play"} onClick={()=>setPuzzlePlayMode("play")}>🎮 Spielen</button>
+       <button type="button" className={puzzlePlayMode==="print"?"active":""} aria-pressed={puzzlePlayMode==="print"} onClick={()=>setPuzzlePlayMode("print")}>🖨️ Drucken</button>
+      </div>
+      {puzzlePlayMode==="play"?<InteractivePuzzle key={`${activeCraftTemplate.id}-${craftStyle}-${craftPieces}`} imageSrc={activeCraftSrc} imageWidth={activeCraftTemplate.w} imageHeight={activeCraftTemplate.h} pieceCount={craftPieces} language={language} onCorrect={()=>playSound("click")} onComplete={()=>playSound("reward")}/>:<div className="craftPreviewStage">
        <div className={`craftPreview ${craftStyle==="bw"?"bw":""}`} style={{aspectRatio:`${activeCraftTemplate.w}/${activeCraftTemplate.h}`}}>
         <img src={activeCraftSrc} alt={activeCraftTemplate.title}/>
         {Array.from({length:craftGrid[0]-1},(_,i)=><i key={`v${i}`} className="cutV" style={{left:`${(i+1)*100/craftGrid[0]}%`}}/>)}
         {Array.from({length:craftGrid[1]-1},(_,i)=><i key={`h${i}`} className="cutH" style={{top:`${(i+1)*100/craftGrid[1]}%`}}/>)}
         <span className="cutScissors cutScissorsA">✂️</span><span className="cutScissors cutScissorsB">✂️</span>
        </div>
-      </div>
+      </div>}
       <div className="craftActions">
        <button className="craftSaveBtn" onClick={saveCraftPuzzle}>💾 Speichern</button>
        <button className="craftPrintBtn" onClick={printCraftPuzzle}>↗️ Teilen / Drucken</button>
