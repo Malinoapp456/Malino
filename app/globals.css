@@ -10463,3 +10463,27 @@ header:has(.languageSwitcher){z-index:31}
   transition:none;
  }
 }
+
+/* The dragged jigsaw fragment follows the finger, without capturing touch. */
+.malinoPuzzleDragGhost{
+ position:fixed;
+ z-index:9999;
+ padding:0;
+ overflow:hidden;
+ pointer-events:none;
+ touch-action:none;
+ border:3px solid #ffdf87;
+ border-radius:11px;
+ background:#fff;
+ box-shadow:0 12px 25px #4d4d9066;
+ opacity:.93;
+ box-sizing:border-box;
+}
+.malinoPuzzleDragGhost>span{
+ display:block;
+ width:100%;
+ height:100%;
+ pointer-events:none;
+ background-color:#fff;
+ background-repeat:no-repeat;
+}
