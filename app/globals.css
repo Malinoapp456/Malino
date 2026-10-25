@@ -10487,3 +10487,63 @@ header:has(.languageSwitcher){z-index:31}
  background-color:#fff;
  background-repeat:no-repeat;
 }
+
+/* Revised free-placement puzzle interaction: every board position accepts
+   a piece; a selected piece may be moved, swapped, or returned to the tray. */
+.malinoPuzzlePlayBoard{
+ touch-action:none;
+ overscroll-behavior:contain;
+ -webkit-user-select:none;
+ user-select:none;
+}
+.malinoPuzzleSlot.isPlaced{
+ cursor:grab;
+ touch-action:none;
+ -webkit-user-select:none;
+ user-select:none;
+}
+.malinoPuzzleSlot.isPlaced:active{cursor:grabbing}
+.malinoPuzzleSlot.isPlaced.isSelected{
+ box-shadow:inset 0 0 0 3px #9b70e7;
+ z-index:1;
+}
+.malinoPuzzleSlot.isAvailable:not(.isPlaced){
+ background:#ede1ff;
+ box-shadow:inset 0 0 0 2px #ab8bee;
+}
+.malinoPuzzleSlot.isPlaced:not(.isCorrect){
+ background:#fff9ed;
+ border:1px solid #e6bba7;
+}
+.malinoPuzzlePlacedCheck{
+ position:absolute;
+ right:2px;
+ bottom:2px;
+ display:grid;
+ place-items:center;
+ width:19px;
+ height:19px;
+ border:2px solid #fff;
+ border-radius:50%;
+ background:#5ab886;
+ color:#fff;
+ font-size:12px;
+ font-weight:950;
+ pointer-events:none;
+}
+.malinoPuzzleReturn{
+ display:block;
+ min-height:44px;
+ margin:8px auto;
+ padding:9px 16px;
+ border:2px solid #fff;
+ border-radius:14px;
+ background:#e6f5ff;
+ color:#476ba0;
+ font-weight:950;
+ cursor:pointer;
+}
+.malinoPuzzleReturn:focus-visible{
+ outline:3px solid #3671cc;
+ outline-offset:3px;
+}
