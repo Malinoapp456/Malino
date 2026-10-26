@@ -10,6 +10,7 @@ import {numberColoringNote,numberColoringPrintCopy,numberColoringBoardTitle} fro
 import InteractiveMaze from "../components/InteractiveMaze.jsx";
 import InteractivePuzzle from "../components/InteractivePuzzle.jsx";
 import MemoryGame from "../components/MemoryGame.jsx";
+import {STICKERS,stickerPlacement,drawSticker} from "../lib/magic-stickers.mjs";
 import {worldStatus,worldProgressMessage,worldAccessibilityLabel} from "../lib/world-map.mjs";
 import {createHiddenPlacements,hiddenSceneDataUri} from "../lib/hidden-board.mjs";
 import {createDifferenceChanges,applyDifferenceChanges,differenceSceneUri} from "../lib/difference-board.mjs";
@@ -133,11 +134,13 @@ function Dino({fills,paint}){
  </svg>
 }
 
-const RasterPainter=forwardRef(function RasterPainter({src,color,tool,onFeedback,profileId,itemId,restoreArtwork},ref){
+const RasterPainter=forwardRef(function RasterPainter({src,color,tool,onFeedback,profileId,itemId,restoreArtwork,sticker,stickerSize,language},ref){
  const canvasRef=useRef(null),baseRef=useRef(null),drawing=useRef(false),last=useRef(null),undoStack=useRef([]),barrierRef=useRef(null),fitRectRef=useRef(null);
  const [sparkles,setSparkles]=useState([]),[fillPulse,setFillPulse]=useState(false);
  const sparkleTimer=useRef(null),pulseTimer=useRef(null);
  const magicHueRef=useRef(0);
+ const [stickerCursor,setStickerCursor]=useState({x:.5,y:.5});
+ const [stickerNotice,setStickerNotice]=useState(0);
  const hexToRgb=hex=>{const n=parseInt(hex.replace("#",""),16);return[(n>>16)&255,(n>>8)&255,n&255]};
  const rebuildBarrier=()=>{
   const base=baseRef.current;if(!base||!base.width||!base.height)return;
@@ -223,7 +226,20 @@ const RasterPainter=forwardRef(function RasterPainter({src,color,tool,onFeedback
   if(painted>area*.62){undoStack.current.pop();onFeedback?.("leak");return}
   ctx.putImageData(img,0,0);celebrate(e);
  };
+ const stamp=p=>{
+  const c=canvasRef.current,fit=fitRectRef.current;
+  if(!c||!fit||!STICKERS.some(s=>s.id===sticker))return;
+  snapshot();drawSticker(c.getContext("2d"),sticker,stickerPlacement(fit,p,stickerSize));
+  setStickerNotice(n=>n+1);
+ };
+ const stickerKey=e=>{
+  if(tool!=="sticker")return;
+  const directions={ArrowLeft:[-.05,0],ArrowRight:[.05,0],ArrowUp:[0,-.05],ArrowDown:[0,.05]};
+  if(directions[e.key]){e.preventDefault();const [dx,dy]=directions[e.key];setStickerCursor(p=>({x:Math.max(0,Math.min(1,p.x+dx)),y:Math.max(0,Math.min(1,p.y+dy))}));}
+  if(e.key==="Enter"||e.key===" "){e.preventDefault();const c=canvasRef.current;stamp({x:stickerCursor.x*c.width,y:stickerCursor.y*c.height});}
+ };
  const down=e=>{
+  if(tool==="sticker"){stamp(point(e));return}
   e.currentTarget.setPointerCapture?.(e.pointerId);
   if(tool==="fill"){fillAt(e);return}
   snapshot();drawing.current=true;last.current=point(e);
@@ -286,7 +302,7 @@ const RasterPainter=forwardRef(function RasterPainter({src,color,tool,onFeedback
   return {preview,layer};
  };
  useImperativeHandle(ref,()=>({undo,clear,save,capture}));
- return <div className={`rasterPainter ${fillPulse?"fillSuccess":""}`}><img id="malino-paint-image" src={src} alt="Malbild" draggable="false" onLoad={drawBase}/><canvas ref={baseRef} className="baseMap" aria-hidden="true"/><canvas ref={canvasRef} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}/>{sparkles.map(s=><span key={s.id} className="fillSparkle" style={{left:s.x+"%",top:s.y+"%"}} aria-hidden="true"><i>✦</i><i>✧</i><i>★</i></span>)}</div>
+ return <div className={`rasterPainter ${fillPulse?"fillSuccess":""}`}><img id="malino-paint-image" src={src} alt="Malbild" draggable="false" onLoad={drawBase}/><canvas ref={baseRef} className="baseMap" aria-hidden="true"/><canvas ref={canvasRef} tabIndex={tool==="sticker"?0:undefined} aria-label={tool==="sticker"?(language==="pl"?"Naklejki: strzałki przesuwają cel, Enter wstawia naklejkę":"Sticker: Pfeiltasten bewegen das Ziel, Enter setzt den Sticker"):undefined} onKeyDown={stickerKey} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}/>{tool==="sticker"&&<span className="stickerCursor" aria-hidden="true" style={{left:`${stickerCursor.x*100}%`,top:`${stickerCursor.y*100}%`}}>＋</span>}<span className="stickerAnnounce" role="status" aria-live="polite" data-i18n-ignore="true">{stickerNotice>0?(language==="pl"?`Dodano naklejkę ${stickerNotice}`:`Sticker ${stickerNotice} hinzugefügt`):""}</span>{sparkles.map(s=><span key={s.id} className="fillSparkle" style={{left:s.x+"%",top:s.y+"%"}} aria-hidden="true"><i>✦</i><i>✧</i><i>★</i></span>)}</div>
 });
 const PROFILE_AVATARS=[
  {id:"lion",emoji:"🦁",label:"Löwe"},
@@ -692,6 +708,8 @@ export default function Page(){
  const [cat,setCat]=useState("Alle");
  const [selected,setSelected]=useState("#22c55e");
  const [tool,setTool]=useState("fill");
+ const [sticker,setSticker]=useState("star");
+ const [stickerSize,setStickerSize]=useState("medium");
  const [fills,setFills]=useState({});
  const [history,setHistory]=useState([]);
  const [fillFeedback,setFillFeedback]=useState(null);
@@ -3564,6 +3582,11 @@ export default function Page(){
 
   {screen==="paint"&&<section className="paintScreen">
    <div className="painthead"><button onClick={()=>setScreen("library")}>←</button><button onClick={()=>setScreen("start")}>🏠</button><div><Lion/><b>Du malst großartig!</b></div><span>{done.length+1}/{availableItems.length} Bilder</span></div>
+   {current.mode==="draw"&&<div className="magicStickerTray" data-i18n-ignore="true">
+    <div className="magicStickerHeading"><strong>✨ {language==="pl"?"Magiczne naklejki":"Zauber-Sticker"}</strong><span>{language==="pl"?"Wybierz naklejkę i dotknij obrazka. Cofnij, aby ją usunąć.":"Wähle einen Sticker und tippe auf dein Bild. Mit Rückgängig entfernst du ihn."}</span></div>
+    <div className="magicStickerChoices" role="group" aria-label={language==="pl"?"Wybierz naklejkę":"Sticker wählen"}>{STICKERS.map(s=><button key={s.id} type="button" aria-pressed={tool==="sticker"&&sticker===s.id} onClick={()=>{setSticker(s.id);setTool("sticker")}}><span aria-hidden="true">{s.icon}</span>{language==="pl"?s.pl:s.de}</button>)}</div>
+    <div className="magicStickerSizes" role="group" aria-label={language==="pl"?"Rozmiar naklejki":"Stickergröße"}>{[["small","Mała","Klein"],["medium","Średnia","Mittel"],["large","Duża","Groß"]].map(([id,pl,de])=><button key={id} type="button" aria-pressed={stickerSize===id} onClick={()=>setStickerSize(id)}>{language==="pl"?pl:de}</button>)}</div>
+   </div>}
    <div className="workspace"><aside className="paintTools">
     <button className={tool==="brush"?"on":""} onClick={()=>setTool("brush")}><ToolIcon type="brush"/><span>Pinsel</span></button>
     {hasChest100&&<button className={tool==="magic"?"on":""} onClick={()=>setTool("magic")} title="Zauberpinsel"><ToolIcon type="magic"/><span>Zauber</span></button>}
@@ -3571,9 +3594,9 @@ export default function Page(){
     <button className={tool==="eraser"?"on":""} onClick={()=>setTool("eraser")}><ToolIcon type="eraser"/><span>Radierer</span></button>
     <button className="historyTool" onClick={undo}><ToolIcon type="undo"/><span>Rückgängig</span></button>
     <button className="newTool" onClick={()=>{if(current.mode==="draw")rasterRef.current?.clear();else{setFills({});setHistory([])}}}><ToolIcon type="new"/><span>Neu</span></button>
-   </aside><div className="canvas">{current.mode==="draw"?<RasterPainter ref={rasterRef} src={current.image} color={selected} tool={tool} onFeedback={showFillFeedback} profileId={activeProfileId} itemId={current.id} restoreArtwork={restoreArtwork}/>:<Dino fills={fills} paint={paint}/>}</div></div>
-   <div className={`toolHelp ${fillFeedback?"feedback "+fillFeedback:""}`}>{fillFeedback==="small"?"👆 Diese Fläche ist sehr klein – probiere eine größere.":fillFeedback==="leak"?"🛡️ Malino hat ein Auslaufen gestoppt – tippe in eine geschlossene Fläche.":fillFeedback==="empty"?"🎨 Male zuerst etwas, bevor du das Bild fertigstellst.":fillFeedback==="save-failed"?"⚠️ Das Bild konnte nicht gespeichert werden. Bitte versuche es erneut.":tool==="fill"?"🪣 Tippe in eine Fläche – Malino füllt sie für dich aus.":tool==="brush"?"🖌️ Male frei mit dem Finger.":"🧽 Wische über Farbe, um sie zu entfernen."}</div>
-   <div className={`palette ${hasChest50?"hasBonusColors":""}`}>{paintColors.map(c=>{const bonus=chest50Colors.some(x=>x.value===c);return <button key={c} title={bonus?(chest50Colors.find(x=>x.value===c)?.name||"Bonusfarbe"):""} style={{background:c}} className={`${selected===c&&tool!=="eraser"?"sel":""} ${bonus?"bonusColor":""}`} onClick={()=>{playSound("color");setSelected(c);if(tool==="eraser")setTool("fill")}}>{bonus&&<span className="bonusSpark">✦</span>}</button>})}</div>
+   </aside><div className="canvas">{current.mode==="draw"?<RasterPainter ref={rasterRef} src={current.image} color={selected} tool={tool} onFeedback={showFillFeedback} profileId={activeProfileId} itemId={current.id} restoreArtwork={restoreArtwork} sticker={sticker} stickerSize={stickerSize} language={language}/>:<Dino fills={fills} paint={paint}/>}</div></div>
+   <div className={`toolHelp ${fillFeedback?"feedback "+fillFeedback:""}`}>{fillFeedback==="small"?"👆 Diese Fläche ist sehr klein – probiere eine größere.":fillFeedback==="leak"?"🛡️ Malino hat ein Auslaufen gestoppt – tippe in eine geschlossene Fläche.":fillFeedback==="empty"?"🎨 Male zuerst etwas, bevor du das Bild fertigstellst.":fillFeedback==="save-failed"?"⚠️ Das Bild konnte nicht gespeichert werden. Bitte versuche es erneut.":tool==="sticker"?(language==="pl"?"✨ Dotknij obrazka, aby dodać naklejkę. Klawiatura: Tab do obrazka, strzałki i Enter.":"✨ Tippe auf dein Bild. Tastatur: Tab zum Bild, Pfeiltasten und Enter."):tool==="fill"?"🪣 Tippe in eine Fläche – Malino füllt sie für dich aus.":tool==="brush"?"🖌️ Male frei mit dem Finger.":"🧽 Wische über Farbe, um sie zu entfernen."}</div>
+   <div className={`palette ${hasChest50?"hasBonusColors":""}`}>{paintColors.map(c=>{const bonus=chest50Colors.some(x=>x.value===c);return <button key={c} title={bonus?(chest50Colors.find(x=>x.value===c)?.name||"Bonusfarbe"):""} style={{background:c}} className={`${selected===c&&tool!=="eraser"?"sel":""} ${bonus?"bonusColor":""}`} onClick={()=>{playSound("color");setSelected(c);if(tool==="eraser"||tool==="sticker")setTool("fill")}}>{bonus&&<span className="bonusSpark">✦</span>}</button>})}</div>
    <div className="actions"><button onClick={()=>setScreen("library")}>Vorlagen</button><button className="finish" onClick={finish}>✓ Fertig!</button><button className="saveImageBtn" onClick={()=>rasterRef.current?.save()}><SaveIcon/><span>Bild speichern</span></button></div>
   </section>}
 
