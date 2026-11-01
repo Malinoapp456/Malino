@@ -18,6 +18,11 @@ function Animal({id,color=false,reveal=false}){
   {color&&<g className={reveal?styles.reveal:undefined}><image href={props.src} width={animal.width} height="220" preserveAspectRatio="none" clipPath={'url(#'+clip+')'}/></g>}
  </svg>;
 }
+export function PenguinShadowIcon(){
+ return <span className={styles.penguinPair} aria-hidden="true">
+  <Animal id="pinguin" color/><Animal id="pinguin"/>
+ </span>;
+}
 export default function ShadowGame({language}){
  const t=copy[language]||copy.de;
  const [rounds,setRounds]=useState([]);
