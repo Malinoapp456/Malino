@@ -10892,3 +10892,35 @@ header:has(.languageSwitcher){z-index:31}
  }
  .craftBackToGames:focus-visible{outline:3px solid #276bc1;outline-offset:2px}
 }
+
+/* Seven-game mobile picker: enlarge artwork inside unchanged tile sizes and gaps. */
+@media(max-width:760px){
+ .craftPage[data-game-open="false"]>.craftModeTabs button{
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+  padding:3px 6px;
+ }
+ .craftPage[data-game-open="false"]>.craftModeTabs button>span{
+  flex:none;
+  font-size:36px;
+  line-height:1;
+ }
+ .craftPage[data-game-open="false"]>.craftModeTabs button>div{
+  display:block;
+  min-width:0;
+  max-width:100%;
+  text-align:center;
+ }
+ .craftPage[data-game-open="false"]>.craftModeTabs button b{
+  display:block;
+  width:100%;
+  font-size:clamp(10px,2.9vw,12px);
+  line-height:1.15;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+ }
+ .craftPage[data-game-open="false"]>.craftModeTabs button small{display:none}
+}
