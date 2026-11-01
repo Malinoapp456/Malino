@@ -11,7 +11,7 @@ test("mobile game picker retains all seven games and the existing compact grid",
  const end=page.indexOf('<div className="craftGameContent">',start);
  assert.ok(start>=0 && end>start);
  const picker=page.slice(start,end);
- assert.equal((picker.match(/<button\\b/g)||[]).length,7);
+ assert.equal((picker.match(/<button\b/g)||[]).length,7);
  assert.ok(picker.includes("<PenguinShadowIcon/>"));
  assert.ok(css.includes(".craftPage>.craftModeTabs{grid-template-columns:repeat(2,minmax(0,1fr))}"));
  assert.ok(css.includes(".craftModeTabs{gap:7px}"));
