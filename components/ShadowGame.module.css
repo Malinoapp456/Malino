@@ -3,7 +3,11 @@
 .animal{display:block;width:100%;height:100%;overflow:visible}.reference{width:clamp(100px,22vw,155px);margin:14px auto}.reference svg{height:clamp(95px,18vw,135px)}.reference strong{display:block;margin-top:4px}
 .demo,.choices{display:flex;align-items:center;justify-content:center;gap:clamp(6px,2vw,16px);margin:15px auto}
 .demo>svg,.demoTarget{width:clamp(72px,19vw,120px);height:125px}.demoTarget{position:relative}.demoOverlay{position:absolute;inset:0;animation:demoFit 3s ease both}.demo>span{font-size:28px;color:#6b589b}
-.choices button{position:relative;width:clamp(64px,23vw,145px);min-width:0;aspect-ratio:1;background:#fff;border:3px solid #cdc6e4;border-radius:18px;padding:8px 8px 21px;cursor:pointer}.choices button span{position:absolute;bottom:2px;left:0;right:0;font-weight:800;color:#524775}.choices .correct{background:#e4f7df;border-color:#37955d}.choices .miss{border-style:dashed;opacity:.58}
+.choices button{position:relative;width:clamp(64px,23vw,145px);min-width:0;aspect-ratio:1;background:#fff;border:3px solid #cdc6e4;border-radius:18px;padding:8px 8px 21px;cursor:pointer}.choices button span{position:absolute;bottom:2px;left:0;right:0;font-weight:800;color:#524775}.choices .correct{background:#e4f7df;border-color:#37955d}.choices .miss{background:#fff1f0;border-color:#c63136}
+.choices button:disabled{opacity:1;cursor:default}
+.missMark,.matchMark{position:absolute;pointer-events:none;height:auto}
+.missMark{width:58%;left:50%;top:50%;transform:translate(-50%,-50%);color:#bc232d}
+.matchMark{width:40%;right:2%;bottom:2%;color:#187341}
 .feedback{min-height:1.5em;font-weight:700}.primary{padding:12px 22px;border:0;border-radius:14px;background:#654b9b;color:white;font-size:16px;font-weight:800;cursor:pointer}.game button:focus-visible{outline:3px solid #235caf;outline-offset:3px}
 .reveal{transform-box:fill-box;transform-origin:center;animation:fit .38s ease-out}
 @keyframes fit{from{transform:translateY(-12%) scale(.85);opacity:.4}to{transform:none;opacity:1}}

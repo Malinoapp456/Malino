@@ -5,8 +5,8 @@ import {animals,makeRounds} from "../lib/shadow-game.mjs";
 import styles from "./ShadowGame.module.css";
 
 const copy={
- pl:{title:"Znajdź cień",intro:"Popatrz, jak pingwin pasuje do swojego cienia.",demo:"Runda pokazowa",play:"Zagraj",round:"Runda",question:"Który cień pasuje?",try:"Przyjrzyj się jeszcze raz. Spróbuj innego cienia.",yes:"Pasuje!",next:"Dalej",finish:"Zobacz wynik",done:"Wszystkie cienie znalezione!",again:"Zagraj ponownie",shadow:"Cień",matches:"Znalezione cienie"},
- de:{title:"Finde den Schatten",intro:"Schau, wie der Pinguin zu seinem Schatten passt.",demo:"So geht’s",play:"Spielen",round:"Runde",question:"Welcher Schatten passt?",try:"Schau noch einmal hin. Probiere einen anderen Schatten.",yes:"Das passt!",next:"Weiter",finish:"Zum Ergebnis",done:"Alle Schatten gefunden!",again:"Noch einmal spielen",shadow:"Schatten",matches:"Gefundene Schatten"}
+ pl:{title:"Znajdź cień",intro:"Popatrz, jak pingwin pasuje do swojego cienia.",demo:"Runda pokazowa",play:"Zagraj",round:"Runda",question:"Który cień pasuje?",try:"Przyjrzyj się jeszcze raz. Spróbuj innego cienia.",yes:"Brawo! To ten cień!",next:"Dalej",finish:"Zobacz wynik",done:"Wszystkie cienie znalezione!",again:"Zagraj ponownie",shadow:"Cień",matches:"Znalezione cienie"},
+ de:{title:"Finde den Schatten",intro:"Schau, wie der Pinguin zu seinem Schatten passt.",demo:"So geht’s",play:"Spielen",round:"Runde",question:"Welcher Schatten passt?",try:"Schau noch einmal hin. Probiere einen anderen Schatten.",yes:"Super! Das passt!",next:"Weiter",finish:"Zum Ergebnis",done:"Alle Schatten gefunden!",again:"Noch einmal spielen",shadow:"Schatten",matches:"Gefundene Schatten"}
 };
 function Animal({id,color=false,reveal=false}){
  const clip=useId().replace(/[^a-zA-Z0-9_-]/g,"");
@@ -46,7 +46,13 @@ export default function ShadowGame({language}){
     const correct=matched&&id===round.target,miss=misses.includes(id);
     return <button key={index+'-'+id} aria-label={t.shadow+' '+(i+1)+' — '+name(id)} disabled={matched||miss} className={correct?styles.correct:miss?styles.miss:undefined}
      onClick={()=>id===round.target?setMatched(true):setMisses(v=>[...v,id])}>
-     <Animal id={id} color={correct} reveal={correct}/><span aria-hidden="true">{correct?'✓':miss?'↺':i+1}</span>
+     <Animal id={id} color={correct} reveal={correct}/>
+     {correct || miss ? (
+      <svg aria-hidden="true" className={correct ? styles.matchMark : styles.missMark} viewBox="0 0 40 40">
+       <circle cx="20" cy="20" r="18" fill="white" stroke="currentColor" strokeWidth="2"/>
+       <path d={correct ? "M10 20l7 7 14-15" : "M12 12l16 16m0-16L12 28"} fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+     ) : <span aria-hidden="true">{i+1}</span>}
     </button>;
    })}</div>
    <p role="status" className={styles.feedback}>{matched?t.yes:misses.length?t.try:''}</p>
