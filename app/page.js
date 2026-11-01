@@ -9,6 +9,7 @@ import {LANGUAGE_KEY,normalizedLanguage,installUiTranslation,translateGerman} fr
 import {numberColoringNote,numberColoringPrintCopy,numberColoringBoardTitle} from "../lib/number-coloring-copy.mjs";
 import InteractiveMaze from "../components/InteractiveMaze.jsx";
 import InteractivePuzzle from "../components/InteractivePuzzle.jsx";
+import ShadowGame from "../components/ShadowGame.jsx";
 import MemoryGame from "../components/MemoryGame.jsx";
 import {STICKERS,stickerPlacement,drawSticker} from "../lib/magic-stickers.mjs";
 import {worldStatus,worldProgressMessage,worldAccessibilityLabel} from "../lib/world-map.mjs";
@@ -2978,7 +2979,7 @@ export default function Page(){
      <h1>Basteln & Spielen ✂️</h1>
      <p>{language==="pl"?"Układaj puzzle, rozwiązuj labirynty, graj w Memory lub drukuj własne zadania.":"Spiele Memory, lege Puzzle, löse Labyrinthe oder drucke eigene Aufgaben aus."}</p>
     </div>
-    {craftMode!=="memory"&&<div className="craftScore"><span>{craftMode==="maze"?"🌀":"🧩"}</span><b>{craftMode==="maze"?savedMazes.length:savedCraftPuzzles.length}</b><small>gespeichert</small></div>}
+    {craftMode!=="memory"&&craftMode!=="shadow"&&<div className="craftScore"><span>{craftMode==="maze"?"🌀":"🧩"}</span><b>{craftMode==="maze"?savedMazes.length:savedCraftPuzzles.length}</b><small>gespeichert</small></div>}
    </div>
 
    <div className="craftModeTabs craftModeTabs5 craftModeTabs6" role="tablist" aria-label="Basteln & Spielen">
@@ -2988,8 +2989,10 @@ export default function Page(){
     <button className={craftMode==="hidden"?"active":""} onClick={()=>setCraftMode("hidden")}><span>🔍</span><div><b>Versteckte Dinge</b><small>Suchen, finden & markieren</small></div></button>
     <button className={craftMode==="numbers"?"active":""} onClick={()=>setCraftMode("numbers")}><span>🎨</span><div><b>Malen nach Zahlen</b><small>Farben nach Nummern entdecken</small></div></button>
     <button className={craftMode==="memory"?"active":""} aria-pressed={craftMode==="memory"} onClick={()=>setCraftMode("memory")}><span>🧠</span><div><b>Memory</b><small>Paare finden & entdecken</small></div></button>
+    <button className={craftMode==="shadow"?"active":""} aria-pressed={craftMode==="shadow"} onClick={()=>setCraftMode("shadow")}><span>🔍</span><div><b>{language==="pl"?"Znajdź cień":"Finde den Schatten"}</b><small>{language==="pl"?"Dopasuj zwierzę":"Tierschatten entdecken"}</small></div></button>
    </div>
 
+   {craftMode==="shadow"&&<ShadowGame key={activeProfileId} language={language}/>}
    {craftMode==="memory"&&<MemoryGame key={activeProfileId} language={language} onSound={playSound}/>}
 
 

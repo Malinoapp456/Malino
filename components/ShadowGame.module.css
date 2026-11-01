@@ -1,0 +1,11 @@
+.game{margin:1rem auto;padding:clamp(16px,3vw,34px);border:2px solid white;border-radius:24px;text-align:center;background:linear-gradient(145deg,#fff6df,#f5f1ff 60%,#e4f8f5);color:#33415d}
+.game h2{margin:0 0 10px;font-size:clamp(24px,4vw,36px)}.game h3{margin:10px 0}.game p{margin:8px auto 14px;line-height:1.4}
+.animal{display:block;width:100%;height:100%;overflow:visible}.reference{width:clamp(100px,22vw,155px);margin:14px auto}.reference svg{height:clamp(95px,18vw,135px)}.reference strong{display:block;margin-top:4px}
+.demo,.choices{display:flex;align-items:center;justify-content:center;gap:clamp(6px,2vw,16px);margin:15px auto}
+.demo>svg,.demoTarget{width:clamp(72px,19vw,120px);height:125px}.demoTarget{position:relative}.demoOverlay{position:absolute;inset:0;animation:demoFit 3s ease both}.demo>span{font-size:28px;color:#6b589b}
+.choices button{position:relative;width:clamp(64px,23vw,145px);min-width:0;aspect-ratio:1;background:#fff;border:3px solid #cdc6e4;border-radius:18px;padding:8px 8px 21px;cursor:pointer}.choices button span{position:absolute;bottom:2px;left:0;right:0;font-weight:800;color:#524775}.choices .correct{background:#e4f7df;border-color:#37955d}.choices .miss{border-style:dashed;opacity:.58}
+.feedback{min-height:1.5em;font-weight:700}.primary{padding:12px 22px;border:0;border-radius:14px;background:#654b9b;color:white;font-size:16px;font-weight:800;cursor:pointer}.game button:focus-visible{outline:3px solid #235caf;outline-offset:3px}
+.reveal{transform-box:fill-box;transform-origin:center;animation:fit .38s ease-out}
+@keyframes fit{from{transform:translateY(-12%) scale(.85);opacity:.4}to{transform:none;opacity:1}}
+@keyframes demoFit{0%,40%{opacity:0;transform:translateX(-70%)}75%,100%{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.reveal,.demoOverlay{animation:none}}
