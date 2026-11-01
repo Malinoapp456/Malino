@@ -9,7 +9,7 @@ import {LANGUAGE_KEY,normalizedLanguage,installUiTranslation,translateGerman} fr
 import {numberColoringNote,numberColoringPrintCopy,numberColoringBoardTitle} from "../lib/number-coloring-copy.mjs";
 import InteractiveMaze from "../components/InteractiveMaze.jsx";
 import InteractivePuzzle from "../components/InteractivePuzzle.jsx";
-import ShadowGame from "../components/ShadowGame.jsx";
+import ShadowGame, {PenguinShadowIcon} from "../components/ShadowGame.jsx";
 import MemoryGame from "../components/MemoryGame.jsx";
 import {STICKERS,stickerPlacement,drawSticker} from "../lib/magic-stickers.mjs";
 import {worldStatus,worldProgressMessage,worldAccessibilityLabel} from "../lib/world-map.mjs";
@@ -659,6 +659,32 @@ export default function Page(){
  const [craftPieces,setCraftPieces]=useState(6);
  const [craftStyle,setCraftStyle]=useState("bw");
  const [craftMode,setCraftMode]=useState("puzzle");
+ const [craftGameOpen,setCraftGameOpen]=useState(false);
+ const craftBackRef=useRef(null);
+ const chosenCraftTile=useRef(null);
+
+ function enterCraftGame(event){
+  const tile=event.target.closest("button");
+  if(!tile)return;
+  chosenCraftTile.current=tile;
+  setCraftGameOpen(true);
+  requestAnimationFrame(()=>{
+   const back=craftBackRef.current;
+   if(!back?.getClientRects().length)return;
+   back.focus({preventScroll:true});
+   back.scrollIntoView({block:"start",behavior:"instant"});
+  });
+ }
+
+ function showCraftPicker(){
+  setCraftGameOpen(false);
+  requestAnimationFrame(()=>{
+   const tile=chosenCraftTile.current;
+   if(!tile?.isConnected)return;
+   tile.focus({preventScroll:true});
+   tile.scrollIntoView({block:"nearest",behavior:"instant"});
+  });
+ }
  const [puzzlePlayMode,setPuzzlePlayMode]=useState("play");
  const [mazeThemeId,setMazeThemeId]=useState("fox");
  const [mazeDifficulty,setMazeDifficulty]=useState("leicht");
@@ -2879,7 +2905,7 @@ export default function Page(){
      <span className="malinoPlayCardText"><strong>{language==="pl"?"Zagadki":"Rätsel"}</strong><small>{language==="pl"?"Myśl i odkrywaj":"Rätseln & entdecken"}</small></span>
      <span className="malinoPlayCardArrow" aria-hidden="true">›</span>
     </button>
-    <button type="button" className="malinoPlayCard malinoPlayCardCrafts" onClick={()=>setScreen("crafts")}>
+    <button type="button" className="malinoPlayCard malinoPlayCardCrafts" onClick={()=>{setCraftGameOpen(false);setScreen("crafts")}}>
      <span className="malinoPlayCardArt"><img src="/ui/home-crafts.svg" alt="" loading="lazy"/><span className="malinoPlayCardSymbol" aria-hidden="true">✂️</span></span>
      <span className="malinoPlayCardText"><strong>{language==="pl"?"Twórz i baw się":"Basteln & Spielen"}</strong><small>{language==="pl"?"Puzzle i kreatywność":"Puzzeln & gestalten"}</small></span>
      <span className="malinoPlayCardArrow" aria-hidden="true">›</span>
@@ -2971,7 +2997,8 @@ export default function Page(){
    </div>
   </section>}
 
-  {screen==="crafts"&&<section className="craftPage">
+  {screen==="crafts"&&<section className="craftPage" data-game-open={craftGameOpen}>
+   <button type="button" className="craftBackToGames" ref={craftBackRef} onClick={showCraftPicker} data-i18n-ignore="true">← {language==="pl"?"Wszystkie gry":"Alle Spiele"}</button>
    <div className="craftHero">
     <div className="craftMascot"><img src="/malino-hero-mascot.png" alt="Malino"/></div>
     <div>
@@ -2982,16 +3009,17 @@ export default function Page(){
     {craftMode!=="memory"&&craftMode!=="shadow"&&<div className="craftScore"><span>{craftMode==="maze"?"🌀":"🧩"}</span><b>{craftMode==="maze"?savedMazes.length:savedCraftPuzzles.length}</b><small>gespeichert</small></div>}
    </div>
 
-   <div className="craftModeTabs craftModeTabs5 craftModeTabs6" role="tablist" aria-label="Basteln & Spielen">
+   <div className="craftModeTabs craftModeTabs5 craftModeTabs6" onClick={enterCraftGame} role="tablist" aria-label="Basteln & Spielen">
     <button className={craftMode==="puzzle"?"active":""} onClick={()=>setCraftMode("puzzle")}><span>🧩</span><div><b>Meine Puzzle</b><small>Ausmalen, schneiden & puzzeln</small></div></button>
     <button className={craftMode==="maze"?"active":""} onClick={()=>setCraftMode("maze")}><span>🌀</span><div><b>Labyrinthe</b><small>Weg finden, speichern & drucken</small></div></button>
     <button className={craftMode==="difference"?"active":""} onClick={()=>setCraftMode("difference")}><span>🔎</span><div><b>Unterschiede</b><small>Genau hinschauen & entdecken</small></div></button>
     <button className={craftMode==="hidden"?"active":""} onClick={()=>setCraftMode("hidden")}><span>🔍</span><div><b>Versteckte Dinge</b><small>Suchen, finden & markieren</small></div></button>
     <button className={craftMode==="numbers"?"active":""} onClick={()=>setCraftMode("numbers")}><span>🎨</span><div><b>Malen nach Zahlen</b><small>Farben nach Nummern entdecken</small></div></button>
     <button className={craftMode==="memory"?"active":""} aria-pressed={craftMode==="memory"} onClick={()=>setCraftMode("memory")}><span>🧠</span><div><b>Memory</b><small>Paare finden & entdecken</small></div></button>
-    <button className={craftMode==="shadow"?"active":""} aria-pressed={craftMode==="shadow"} onClick={()=>setCraftMode("shadow")}><span>🔍</span><div><b>{language==="pl"?"Znajdź cień":"Finde den Schatten"}</b><small>{language==="pl"?"Dopasuj zwierzę":"Tierschatten entdecken"}</small></div></button>
+    <button className={craftMode==="shadow"?"active":""} aria-pressed={craftMode==="shadow"} onClick={()=>setCraftMode("shadow")}><PenguinShadowIcon/><div><b>{language==="pl"?"Znajdź cień":"Finde den Schatten"}</b><small>{language==="pl"?"Dopasuj zwierzę":"Tierschatten entdecken"}</small></div></button>
    </div>
 
+   <div className="craftGameContent">
    {craftMode==="shadow"&&<ShadowGame key={activeProfileId} language={language}/>}
    {craftMode==="memory"&&<MemoryGame key={activeProfileId} language={language} onSound={playSound}/>}
 
@@ -3394,6 +3422,7 @@ export default function Page(){
     <div className="craftSavedHead"><div><span className="eyebrow">Meine Sammlung</span><h2>Gespeicherte Zahlenbilder</h2></div><span>{savedNumberArt.length}</span></div>
     {savedNumberArt.length===0?<div className="craftEmpty"><span>🎨</span><div><b>Noch kein Zahlenbild gespeichert</b><small>Male oben dein erstes Bild.</small></div></div>:<div className="differenceSavedGrid">{savedNumberArt.map(item=>{const board=numberBoards.find(x=>x.id===item.themeId)||numberBoards[0];return <article key={item.id} className="differenceSavedCard" role="button" onClick={()=>openSavedNumberArt(item)}><span className={board.id==="malino"?"numberSavedMascotIcon":""}>{board.id==="malino"?<img src="/malino-hero-mascot.png" alt="" aria-hidden="true" loading="lazy" className="numberSavedMascotImage"/>:board.icon}</span><div><b>{numberColoringBoardTitle(board.id,language)}</b><small>4 Farben · Zahlen 1–4</small><em>Öffnen ›</em></div><button onClick={e=>{e.stopPropagation();setSavedNumberArt(savedNumberArt.filter(x=>x.id!==item.id))}}>×</button></article>})}</div>}
    </>}
+   </div>
 </section>}
 
   {screen==="puzzles"&&<section className="puzzlePage puzzleWorldPage">

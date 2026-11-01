@@ -13,3 +13,6 @@
 @keyframes fit{from{transform:translateY(-12%) scale(.85);opacity:.4}to{transform:none;opacity:1}}
 @keyframes demoFit{0%,40%{opacity:0;transform:translateX(-70%)}75%,100%{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.reveal,.demoOverlay{animation:none}}
+.penguinPair{display:flex;align-items:center;flex:0 0 2.65rem;height:2rem}
+.penguinPair svg{width:53%;height:100%}
+.penguinPair svg+svg{margin-left:-6%;transform:scale(.9)}
