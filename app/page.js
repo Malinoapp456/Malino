@@ -11,6 +11,7 @@ import InteractiveMaze from "../components/InteractiveMaze.jsx";
 import InteractivePuzzle from "../components/InteractivePuzzle.jsx";
 import ShadowGame, {PenguinShadowIcon} from "../components/ShadowGame.jsx";
 import CraftTileIcon from "../components/CraftTileIcon.jsx";
+import ArtworkDownload from "../components/ArtworkDownload.jsx";
 import MemoryGame from "../components/MemoryGame.jsx";
 import {STICKERS,stickerPlacement,drawSticker} from "../lib/magic-stickers.mjs";
 import {worldStatus,worldProgressMessage,worldAccessibilityLabel} from "../lib/world-map.mjs";
@@ -4123,7 +4124,8 @@ export default function Page(){
       <span className="parentUtilityIcon">🖨️</span>
       <span className="eyebrow">Export & Drucken</span>
       <h2>Daten sichern</h2>
-      <p>Exportiere das aktive Kinderprofil als Datei oder öffne den Druckdialog des Geräts.</p>
+      <ArtworkDownload key={activeProfileId} profileId={activeProfileId} profileName={activeProfile.name} gallery={gallery} language={language}/>
+      <p data-i18n-ignore="true">{language==="pl"?"Plik JSON zawiera dane profilu i postępy dziecka.":"Die JSON-Datei enthält die Profildaten und den Fortschritt des Kindes."}</p>
       <div className="parentUtilityActions">
        <button className="parentUtilityPrimary" onClick={exportProfileData}>⬇️ Profildaten exportieren</button>
        <button className="parentUtilitySecondary" onClick={printParentArea}>🖨️ Drucken</button>
