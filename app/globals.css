@@ -4883,6 +4883,10 @@ main{
 .screenTimeOptions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
 .screenTimeOptions button{border:1px solid #dfe7f2;border-radius:14px;padding:11px 7px;background:#fff;color:#526985;font-weight:850}
 .screenTimeOptions button.selected{border-color:#2679ed;background:#eaf3ff;color:#1769ff}
+.artworkDownload{margin:12px 0}
+.artworkDownload a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none}
+.artworkDownload a:focus-visible{outline:3px solid #255ba4;outline-offset:3px}
+
 .parentUtilityActions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
 .parentUtilityPrimary,.parentUtilitySecondary{border:0;border-radius:14px;padding:12px 14px;font-weight:900}
 .parentUtilityPrimary{background:#2679ed;color:#fff}.parentUtilitySecondary{background:#eef3f9;color:#4e6682}.fullWidth{width:100%}
