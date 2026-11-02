@@ -2,7 +2,7 @@
 import {forwardRef,useEffect,useImperativeHandle,useMemo,useRef,useState} from "react";
 import {advanceDailyUsage,hasVisiblePaint} from "../lib/progress.mjs";
 import {createPinRecord,verifyPinRecord,recordFailedPin,remainingPinLockMs} from "../lib/parent-pin.mjs";
-import {saveArtwork,loadArtwork,deleteProfileArtwork} from "../lib/artwork-storage.mjs";
+import {saveArtwork,loadArtwork,deleteProfileArtwork,saveDraft,loadDraft} from "../lib/artwork-storage.mjs";
 import {legacyActivityKeys,migrateLegacyActivities,profileActivities} from "../lib/profile-activities.mjs";
 import {dabStyle} from "../lib/paint-input.mjs";
 import {LANGUAGE_KEY,normalizedLanguage,installUiTranslation,translateGerman} from "../lib/i18n.mjs";
@@ -119,6 +119,21 @@ function ArtworkThumb({it,profileId}){
  if(!url)return <Thumb it={it} done/>;
  return <div className="thumb" style={{background:it.bg}}><img src={url} alt={it.name}/><i>✓</i></div>;
 }
+function DraftShortcut({profileId,language,onOpen}){
+ const [item,setItem]=useState(null);
+ useEffect(()=>{
+  let active=true;
+  loadDraft(profileId).then(draft=>{
+   if(active&&draft)setItem([...items,secretMalinoItem].find(it=>it.id===draft.itemId));
+  }).catch(()=>{});
+  return()=>{active=false;};
+ },[profileId]);
+ if(!item)return null;
+ return <button className="draftResume" onClick={()=>onOpen(item,"draft")}>
+  <b data-i18n-ignore="true">🖌️ {language==="pl"?"Wróć do szkicu":"Am Entwurf weitermalen"}</b>
+  <span>{item.name}</span>
+ </button>;
+}
 function Dino({fills,paint}){
  const f=k=>fills[k]||"#fff";
  return <svg viewBox="0 0 800 650">
@@ -185,25 +200,60 @@ const RasterPainter=forwardRef(function RasterPainter({src,color,tool,onFeedback
   requestAnimationFrame(drawBase);
  };
  useEffect(()=>{sizeCanvas();window.addEventListener("resize",sizeCanvas);return()=>window.removeEventListener("resize",sizeCanvas)},[src]);
+ const [ready,setReady]=useState(false);
+ const [draftProblem,setDraftProblem]=useState(false);
  useEffect(()=>{
-  if(!restoreArtwork)return;
-  let active=true,url=null;
-  loadArtwork(profileId,itemId).then(record=>{
-   if(!active||!record?.layer)return;
-   url=URL.createObjectURL(record.layer);
-   const image=new Image();
-   image.onload=()=>{
-    if(!active)return;
-    const c=canvasRef.current;
-    if(c?.width&&c?.height)c.getContext("2d").drawImage(image,0,0,c.width,c.height);
-    URL.revokeObjectURL(url);url=null;
-   };
-   image.onerror=()=>{URL.revokeObjectURL(url);url=null};
-   image.src=url;
-  }).catch(()=>{});
-  return()=>{active=false;if(url)URL.revokeObjectURL(url)};
- },[restoreArtwork,profileId,itemId,src]);
- const snapshot=()=>{const c=canvasRef.current;if(!c)return;undoStack.current.push(c.toDataURL());if(undoStack.current.length>15)undoStack.current.shift()};
+  let active=true,url;
+  async function restore(){
+   if(restoreArtwork===true){
+    const record=await loadArtwork(profileId,itemId);
+    if(!active||!record?.layer)return;
+    url=URL.createObjectURL(record.layer);
+    const image=new Image();
+    image.src=url;
+    await image.decode();
+    const canvas=canvasRef.current;
+    if(active&&canvas)canvas.getContext("2d").drawImage(image,0,0,canvas.width,canvas.height);
+   }else{
+    const draft=await loadDraft(profileId);
+    if(!active||draft?.itemId!==itemId)return;
+    const {pixels}=draft;
+    const original=document.createElement("canvas");
+    original.width=pixels.width;original.height=pixels.height;
+    original.getContext("2d").putImageData(pixels,0,0);
+    const canvas=canvasRef.current;
+    canvas.getContext("2d").drawImage(original,0,0,canvas.width,canvas.height);
+   }
+  }
+  restore().then(()=>{if(active)setReady(true);}).catch(()=>{
+   if(active){setDraftProblem(true);if(!restoreArtwork)setReady(true);}
+  }).finally(()=>{if(url)URL.revokeObjectURL(url);});
+  return()=>{active=false;};
+ },[restoreArtwork,profileId,itemId]);
+ const saveCurrentDraft=()=>{
+  const canvas=canvasRef.current;
+  if(!canvas||!ready)return;
+  const pixels=canvas.getContext("2d").getImageData(0,0,canvas.width,canvas.height);
+  saveDraft(profileId,itemId,pixels).then(()=>setDraftProblem(false)).catch(()=>setDraftProblem(true));
+ };
+ useEffect(()=>{
+  const flush=()=>{if(drawing.current){drawing.current=false;saveCurrentDraft();}};
+  const onVisibility=()=>{if(document.hidden)flush();};
+  window.addEventListener("pagehide",flush);
+  document.addEventListener("visibilitychange",onVisibility);
+  return()=>{window.removeEventListener("pagehide",flush);document.removeEventListener("visibilitychange",onVisibility);};
+ },[ready,profileId,itemId]);
+ const snapshot=()=>{
+  const canvas=canvasRef.current;
+  if(!canvas)return;
+  const pixels=canvas.getContext("2d").getImageData(0,0,canvas.width,canvas.height);
+  const history=undoStack.current;
+  history.push(pixels);
+  let bytes=history.reduce((total,frame)=>total+frame.data.byteLength,0);
+  while(history.length>1&&(history.length>15||bytes>24*1024*1024)){
+   bytes-=history.shift().data.byteLength;
+  }
+ };
  const point=e=>{const r=canvasRef.current.getBoundingClientRect();return{x:Math.max(0,Math.min(canvasRef.current.width-1,Math.round((e.clientX-r.left)*canvasRef.current.width/r.width))),y:Math.max(0,Math.min(canvasRef.current.height-1,Math.round((e.clientY-r.top)*canvasRef.current.height/r.height)))}};
  const celebrate=e=>{
   const c=canvasRef.current;if(!c)return;const r=c.getBoundingClientRect();
@@ -226,13 +276,13 @@ const RasterPainter=forwardRef(function RasterPainter({src,color,tool,onFeedback
   const area=w*h;
   if(painted<90){undoStack.current.pop();onFeedback?.("small");return}
   if(painted>area*.62){undoStack.current.pop();onFeedback?.("leak");return}
-  ctx.putImageData(img,0,0);celebrate(e);
+  ctx.putImageData(img,0,0);celebrate(e);saveCurrentDraft();
  };
  const stamp=p=>{
   const c=canvasRef.current,fit=fitRectRef.current;
-  if(!c||!fit||!STICKERS.some(s=>s.id===sticker))return;
+  if(!ready||!c||!fit||!STICKERS.some(s=>s.id===sticker))return;
   snapshot();drawSticker(c.getContext("2d"),sticker,stickerPlacement(fit,p,stickerSize));
-  setStickerNotice(n=>n+1);
+  setStickerNotice(n=>n+1);saveCurrentDraft();
  };
  const stickerKey=e=>{
   if(tool!=="sticker")return;
@@ -241,6 +291,7 @@ const RasterPainter=forwardRef(function RasterPainter({src,color,tool,onFeedback
   if(e.key==="Enter"||e.key===" "){e.preventDefault();const c=canvasRef.current;stamp({x:stickerCursor.x*c.width,y:stickerCursor.y*c.height});}
  };
  const down=e=>{
+  if(!ready)return;
   if(tool==="sticker"){stamp(point(e));return}
   e.currentTarget.setPointerCapture?.(e.pointerId);
   if(tool==="fill"){fillAt(e);return}
@@ -268,7 +319,7 @@ const RasterPainter=forwardRef(function RasterPainter({src,color,tool,onFeedback
   ctx.lineWidth=tool==="eraser"?30:16;
  }
  ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.restore();ctx.globalCompositeOperation="source-over";last.current=p};
- const up=()=>{drawing.current=false;last.current=null};
+ const up=()=>{if(drawing.current)saveCurrentDraft();drawing.current=false;last.current=null};
  const dataUrlToBlob=dataUrl=>{
   const [meta,data]=dataUrl.split(","),mime=(meta.match(/data:(.*?);/)||[])[1]||"image/png",binary=atob(data),bytes=new Uint8Array(binary.length);
   for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
@@ -288,11 +339,21 @@ const RasterPainter=forwardRef(function RasterPainter({src,color,tool,onFeedback
    }else fallback();
   }catch{fallback()}
  };
- const clear=()=>{const c=canvasRef.current;if(!c)return;snapshot();c.getContext("2d").clearRect(0,0,c.width,c.height)};
- const undo=()=>{const data=undoStack.current.pop(),c=canvasRef.current;if(!data||!c)return;const ctx=c.getContext("2d");ctx.clearRect(0,0,c.width,c.height);const img=new Image();img.onload=()=>ctx.drawImage(img,0,0,c.width,c.height);img.src=data};
+ const clear=()=>{const c=canvasRef.current;if(!ready||!c)return;snapshot();c.getContext("2d").clearRect(0,0,c.width,c.height);saveCurrentDraft()};
+ const undo=()=>{
+  const pixels=undoStack.current.pop(),canvas=canvasRef.current;
+  if(!pixels||!canvas||!ready)return;
+  const source=document.createElement("canvas");
+  source.width=pixels.width;source.height=pixels.height;
+  source.getContext("2d").putImageData(pixels,0,0);
+  const ctx=canvas.getContext("2d");
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(source,0,0,canvas.width,canvas.height);
+  saveCurrentDraft();
+ };
  const capture=async()=>{
   const paint=canvasRef.current,base=baseRef.current;
-  if(!paint||!base||!hasVisiblePaint(paint.getContext("2d").getImageData(0,0,paint.width,paint.height).data))return null;
+  if(!ready||!paint||!base||!hasVisiblePaint(paint.getContext("2d").getImageData(0,0,paint.width,paint.height).data))return null;
   const output=document.createElement("canvas");
   output.width=paint.width;output.height=paint.height;
   const context=output.getContext("2d");
@@ -304,7 +365,7 @@ const RasterPainter=forwardRef(function RasterPainter({src,color,tool,onFeedback
   return {preview,layer};
  };
  useImperativeHandle(ref,()=>({undo,clear,save,capture}));
- return <div className={`rasterPainter ${fillPulse?"fillSuccess":""}`}><img id="malino-paint-image" src={src} alt="Malbild" draggable="false" onLoad={drawBase}/><canvas ref={baseRef} className="baseMap" aria-hidden="true"/><canvas ref={canvasRef} tabIndex={tool==="sticker"?0:undefined} aria-label={tool==="sticker"?(language==="pl"?"Naklejki: strzałki przesuwają cel, Enter wstawia naklejkę":"Sticker: Pfeiltasten bewegen das Ziel, Enter setzt den Sticker"):undefined} onKeyDown={stickerKey} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}/>{tool==="sticker"&&<span className="stickerCursor" aria-hidden="true" style={{left:`${stickerCursor.x*100}%`,top:`${stickerCursor.y*100}%`}}>＋</span>}<span className="stickerAnnounce" role="status" aria-live="polite" data-i18n-ignore="true">{stickerNotice>0?(language==="pl"?`Dodano naklejkę ${stickerNotice}`:`Sticker ${stickerNotice} hinzugefügt`):""}</span>{sparkles.map(s=><span key={s.id} className="fillSparkle" style={{left:s.x+"%",top:s.y+"%"}} aria-hidden="true"><i>✦</i><i>✧</i><i>★</i></span>)}</div>
+ return <div className={`rasterPainter ${fillPulse?"fillSuccess":""}`}><img id="malino-paint-image" src={src} alt="Malbild" draggable="false" onLoad={drawBase}/><canvas ref={baseRef} className="baseMap" aria-hidden="true"/><canvas ref={canvasRef} tabIndex={tool==="sticker"?0:undefined} aria-label={tool==="sticker"?(language==="pl"?"Naklejki: strzałki przesuwają cel, Enter wstawia naklejkę":"Sticker: Pfeiltasten bewegen das Ziel, Enter setzt den Sticker"):undefined} onKeyDown={stickerKey} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}/>{draftProblem&&<small role="alert" className="draftError">{language==="pl"?"Problem z pamięcią urządzenia. Szkic może być niedostępny.":"Speicherproblem. Der Entwurf ist möglicherweise nicht verfügbar."}</small>}{tool==="sticker"&&<span className="stickerCursor" aria-hidden="true" style={{left:`${stickerCursor.x*100}%`,top:`${stickerCursor.y*100}%`}}>＋</span>}<span className="stickerAnnounce" role="status" aria-live="polite" data-i18n-ignore="true">{stickerNotice>0?(language==="pl"?`Dodano naklejkę ${stickerNotice}`:`Sticker ${stickerNotice} hinzugefügt`):""}</span>{sparkles.map(s=><span key={s.id} className="fillSparkle" style={{left:s.x+"%",top:s.y+"%"}} aria-hidden="true"><i>✦</i><i>✧</i><i>★</i></span>)}</div>
 });
 const PROFILE_AVATARS=[
  {id:"lion",emoji:"🦁",label:"Löwe"},
@@ -1859,7 +1920,7 @@ export default function Page(){
  const dailySeed=[...todayKey].reduce((sum,ch)=>sum+ch.charCodeAt(0),0);
  const dailyItem=items[dailySeed%items.length];
  const dailyClaimed=dailyClaims.includes(todayKey);
- const recentItem=gallery?.[0]?items.find(it=>it.id===gallery[0].id):null;
+ const recentItem=[...items,secretMalinoItem].find(item=>item.id===gallery[0]?.id);
  const continueItem=recentItem||dailyItem;
  const doneItems=items.filter(it=>done.includes(it.id));
  const doneByCat=cat=>doneItems.filter(it=>it.cat===cat).length;
@@ -2788,6 +2849,7 @@ export default function Page(){
   startRewardSequence("chest200");
  };
  const open=(it,restore=false)=>{setCurrent(it);setRestoreArtwork(restore);setFills({});setHistory([]);setTool("fill");setFillFeedback(null);setScreen("paint")};
+ const openContinueItem=()=>open(continueItem,Boolean(recentItem));
  const showFillFeedback=kind=>{clearTimeout(feedbackTimer.current);setFillFeedback(kind);feedbackTimer.current=setTimeout(()=>setFillFeedback(null),1100)};
  const paint=k=>{const old=fills[k]||"#fff",next=tool==="eraser"?"#fff":selected;if(old===next)return;setHistory([...history,{k,old}]);setFills({...fills,[k]:next})};
  const undo=()=>{if(current.mode==="draw"){rasterRef.current?.undo();return}const x=history.at(-1);if(!x)return;setFills({...fills,[x.k]:x.old});setHistory(history.slice(0,-1))};
@@ -2955,9 +3017,12 @@ export default function Page(){
     <button onClick={()=>setScreen("library")}>Alle Bilder ›</button>
    </div>
 
+   <DraftShortcut key={activeProfileId} profileId={activeProfileId} language={language} onOpen={open}/>
    <div className={`continueCard premiumContinueCard ${recentItem?"hasRecent":""}`}>
-    <button className="continueThumb continueThumbButton" onClick={()=>open(continueItem)} aria-label={`${continueItem.name} öffnen`}>
-     <Thumb it={continueItem} done={done.includes(continueItem.id)}/>
+    <button className="continueThumb continueThumbButton" onClick={openContinueItem} aria-label={`${continueItem.name} öffnen`}>
+     {recentItem
+      ?<ArtworkThumb key={activeProfileId+"-"+recentItem.id} it={recentItem} profileId={activeProfileId}/>
+      :<Thumb it={dailyItem} done={done.includes(dailyItem.id)}/>}
      <span className="continueImageBadge">{done.includes(continueItem.id)?"✓ Fertig":"🖌️ Weitermalen"}</span>
     </button>
     <div className="continueCopy premiumContinueCopy">
@@ -2972,7 +3037,7 @@ export default function Page(){
       <span>{done.includes(continueItem.id)?"⭐ Bereits geschafft":"✨ Neues Abenteuer"}</span>
      </div>
      <div className="continueActions">
-      <button className="continuePrimary" onClick={()=>open(continueItem)}>🖌️ {recentItem?"Weiter malen":"Jetzt malen"}</button>
+      <button className="continuePrimary" onClick={openContinueItem}>🖌️ {recentItem?"Weiter malen":"Jetzt malen"}</button>
       <button className="continueBrowse" onClick={()=>setScreen("library")}>Mehr Bilder ›</button>
      </div>
     </div>
@@ -3627,7 +3692,7 @@ export default function Page(){
     <button className={tool==="eraser"?"on":""} onClick={()=>setTool("eraser")}><ToolIcon type="eraser"/><span>Radierer</span></button>
     <button className="historyTool" onClick={undo}><ToolIcon type="undo"/><span>Rückgängig</span></button>
     <button className="newTool" onClick={()=>{if(current.mode==="draw")rasterRef.current?.clear();else{setFills({});setHistory([])}}}><ToolIcon type="new"/><span>Neu</span></button>
-   </aside><div className="canvas">{current.mode==="draw"?<RasterPainter ref={rasterRef} src={current.image} color={selected} tool={tool} onFeedback={showFillFeedback} profileId={activeProfileId} itemId={current.id} restoreArtwork={restoreArtwork} sticker={sticker} stickerSize={stickerSize} language={language}/>:<Dino fills={fills} paint={paint}/>}</div></div>
+   </aside><div className="canvas">{current.mode==="draw"?<RasterPainter key={JSON.stringify([activeProfileId,current.id,restoreArtwork])} ref={rasterRef} src={current.image} color={selected} tool={tool} onFeedback={showFillFeedback} profileId={activeProfileId} itemId={current.id} restoreArtwork={restoreArtwork} sticker={sticker} stickerSize={stickerSize} language={language}/>:<Dino fills={fills} paint={paint}/>}</div></div>
    <div className={`toolHelp ${fillFeedback?"feedback "+fillFeedback:""}`}>{fillFeedback==="small"?"👆 Diese Fläche ist sehr klein – probiere eine größere.":fillFeedback==="leak"?"🛡️ Malino hat ein Auslaufen gestoppt – tippe in eine geschlossene Fläche.":fillFeedback==="empty"?"🎨 Male zuerst etwas, bevor du das Bild fertigstellst.":fillFeedback==="save-failed"?"⚠️ Das Bild konnte nicht gespeichert werden. Bitte versuche es erneut.":tool==="sticker"?(language==="pl"?"✨ Dotknij obrazka, aby dodać naklejkę. Klawiatura: Tab do obrazka, strzałki i Enter.":"✨ Tippe auf dein Bild. Tastatur: Tab zum Bild, Pfeiltasten und Enter."):tool==="fill"?"🪣 Tippe in eine Fläche – Malino füllt sie für dich aus.":tool==="brush"?"🖌️ Male frei mit dem Finger.":"🧽 Wische über Farbe, um sie zu entfernen."}</div>
    <div className={`palette ${hasChest50?"hasBonusColors":""}`}>{paintColors.map(c=>{const bonus=chest50Colors.some(x=>x.value===c);return <button key={c} title={bonus?(chest50Colors.find(x=>x.value===c)?.name||"Bonusfarbe"):""} style={{background:c}} className={`${selected===c&&tool!=="eraser"?"sel":""} ${bonus?"bonusColor":""}`} onClick={()=>{playSound("color");setSelected(c);if(tool==="eraser"||tool==="sticker")setTool("fill")}}>{bonus&&<span className="bonusSpark">✦</span>}</button>})}</div>
    <div className="actions"><button onClick={()=>setScreen("library")}>Vorlagen</button><button className="finish" onClick={finish}>✓ Fertig!</button><button className="saveImageBtn" onClick={()=>rasterRef.current?.save()}><SaveIcon/><span>Bild speichern</span></button></div>
