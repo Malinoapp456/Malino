@@ -1859,7 +1859,7 @@ export default function Page(){
  const dailySeed=[...todayKey].reduce((sum,ch)=>sum+ch.charCodeAt(0),0);
  const dailyItem=items[dailySeed%items.length];
  const dailyClaimed=dailyClaims.includes(todayKey);
- const recentItem=gallery?.[0]?items.find(it=>it.id===gallery[0].id):null;
+ const recentItem=[...items,secretMalinoItem].find(item=>item.id===gallery[0]?.id);
  const continueItem=recentItem||dailyItem;
  const doneItems=items.filter(it=>done.includes(it.id));
  const doneByCat=cat=>doneItems.filter(it=>it.cat===cat).length;
@@ -2788,6 +2788,7 @@ export default function Page(){
   startRewardSequence("chest200");
  };
  const open=(it,restore=false)=>{setCurrent(it);setRestoreArtwork(restore);setFills({});setHistory([]);setTool("fill");setFillFeedback(null);setScreen("paint")};
+ const openContinueItem=()=>open(continueItem,Boolean(recentItem));
  const showFillFeedback=kind=>{clearTimeout(feedbackTimer.current);setFillFeedback(kind);feedbackTimer.current=setTimeout(()=>setFillFeedback(null),1100)};
  const paint=k=>{const old=fills[k]||"#fff",next=tool==="eraser"?"#fff":selected;if(old===next)return;setHistory([...history,{k,old}]);setFills({...fills,[k]:next})};
  const undo=()=>{if(current.mode==="draw"){rasterRef.current?.undo();return}const x=history.at(-1);if(!x)return;setFills({...fills,[x.k]:x.old});setHistory(history.slice(0,-1))};
@@ -2956,8 +2957,10 @@ export default function Page(){
    </div>
 
    <div className={`continueCard premiumContinueCard ${recentItem?"hasRecent":""}`}>
-    <button className="continueThumb continueThumbButton" onClick={()=>open(continueItem)} aria-label={`${continueItem.name} öffnen`}>
-     <Thumb it={continueItem} done={done.includes(continueItem.id)}/>
+    <button className="continueThumb continueThumbButton" onClick={openContinueItem} aria-label={`${continueItem.name} öffnen`}>
+     {recentItem
+      ?<ArtworkThumb key={activeProfileId+"-"+recentItem.id} it={recentItem} profileId={activeProfileId}/>
+      :<Thumb it={dailyItem} done={done.includes(dailyItem.id)}/>}
      <span className="continueImageBadge">{done.includes(continueItem.id)?"✓ Fertig":"🖌️ Weitermalen"}</span>
     </button>
     <div className="continueCopy premiumContinueCopy">
@@ -2972,7 +2975,7 @@ export default function Page(){
       <span>{done.includes(continueItem.id)?"⭐ Bereits geschafft":"✨ Neues Abenteuer"}</span>
      </div>
      <div className="continueActions">
-      <button className="continuePrimary" onClick={()=>open(continueItem)}>🖌️ {recentItem?"Weiter malen":"Jetzt malen"}</button>
+      <button className="continuePrimary" onClick={openContinueItem}>🖌️ {recentItem?"Weiter malen":"Jetzt malen"}</button>
       <button className="continueBrowse" onClick={()=>setScreen("library")}>Mehr Bilder ›</button>
      </div>
     </div>

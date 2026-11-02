@@ -28,7 +28,9 @@ test("four illustrated play choices link to original activities and preserve act
  }
  assert.ok(home.includes('setPuzzleFeedback(null);setPuzzleWrong(null);setScreen("puzzles")'));
  assert.ok(home.includes('onClick={()=>open(dailyItem)}'));
- assert.ok(home.includes('onClick={()=>open(continueItem)}'));
+ assert.equal(home.match(/onClick=\{openContinueItem\}/g)?.length,2,"thumbnail and action both resume saved art");
+ assert.ok(page.includes('open(continueItem,Boolean(recentItem))'));
+ assert.ok(home.includes('it={recentItem} profileId={activeProfileId}'));
  assert.ok(home.includes('onClick={openParentArea}'));
  assert.ok(home.includes('setScreen("gallery")'));
  for(const img of ['/ui/home-coloring.svg','/ui/home-puzzles.svg','/ui/home-crafts.svg','/ui/home-rewards.svg']){
