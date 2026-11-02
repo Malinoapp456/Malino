@@ -10,6 +10,7 @@ import {numberColoringNote,numberColoringPrintCopy,numberColoringBoardTitle} fro
 import InteractiveMaze from "../components/InteractiveMaze.jsx";
 import InteractivePuzzle from "../components/InteractivePuzzle.jsx";
 import ShadowGame, {PenguinShadowIcon} from "../components/ShadowGame.jsx";
+import CraftTileIcon from "../components/CraftTileIcon.jsx";
 import MemoryGame from "../components/MemoryGame.jsx";
 import {STICKERS,stickerPlacement,drawSticker} from "../lib/magic-stickers.mjs";
 import {worldStatus,worldProgressMessage,worldAccessibilityLabel} from "../lib/world-map.mjs";
@@ -3010,12 +3011,12 @@ export default function Page(){
    </div>
 
    <div className="craftModeTabs craftModeTabs5 craftModeTabs6" onClick={enterCraftGame} role="tablist" aria-label="Basteln & Spielen">
-    <button className={craftMode==="puzzle"?"active":""} onClick={()=>setCraftMode("puzzle")}><span>🧩</span><div><b>Meine Puzzle</b><small>Ausmalen, schneiden & puzzeln</small></div></button>
-    <button className={craftMode==="maze"?"active":""} onClick={()=>setCraftMode("maze")}><span>🌀</span><div><b>Labyrinthe</b><small>Weg finden, speichern & drucken</small></div></button>
-    <button className={craftMode==="difference"?"active":""} onClick={()=>setCraftMode("difference")}><span>🔎</span><div><b>Unterschiede</b><small>Genau hinschauen & entdecken</small></div></button>
-    <button className={craftMode==="hidden"?"active":""} onClick={()=>setCraftMode("hidden")}><span>🔍</span><div><b>Versteckte Dinge</b><small>Suchen, finden & markieren</small></div></button>
-    <button className={craftMode==="numbers"?"active":""} onClick={()=>setCraftMode("numbers")}><span>🎨</span><div><b>Malen nach Zahlen</b><small>Farben nach Nummern entdecken</small></div></button>
-    <button className={craftMode==="memory"?"active":""} aria-pressed={craftMode==="memory"} onClick={()=>setCraftMode("memory")}><span>🧠</span><div><b>Memory</b><small>Paare finden & entdecken</small></div></button>
+    <button className={craftMode==="puzzle"?"active":""} onClick={()=>setCraftMode("puzzle")}><span>🧩</span>{savedCraftPuzzles.length>0&&<em className="craftSavedBadge" data-i18n-ignore="true" aria-label={(language==="pl"?"Zapisane: ":"Gespeichert: ")+savedCraftPuzzles.length}><span aria-hidden="true">▤ </span>{savedCraftPuzzles.length}</em>}<div><b>Meine Puzzle</b><small>Ausmalen, schneiden & puzzeln</small></div></button>
+    <button className={craftMode==="maze"?"active":""} onClick={()=>setCraftMode("maze")}><span>🌀</span>{savedMazes.length>0&&<em className="craftSavedBadge" data-i18n-ignore="true" aria-label={(language==="pl"?"Zapisane: ":"Gespeichert: ")+savedMazes.length}><span aria-hidden="true">▤ </span>{savedMazes.length}</em>}<div><b>Labyrinthe</b><small>Weg finden, speichern & drucken</small></div></button>
+    <button className={craftMode==="difference"?"active":""} onClick={()=>setCraftMode("difference")}><CraftTileIcon game="difference"/><div><b>Unterschiede</b><small>Genau hinschauen & entdecken</small></div></button>
+    <button className={craftMode==="hidden"?"active":""} onClick={()=>setCraftMode("hidden")}><CraftTileIcon game="hidden"/><div><b>Versteckte Dinge</b><small>Suchen, finden & markieren</small></div></button>
+    <button className={craftMode==="numbers"?"active":""} onClick={()=>setCraftMode("numbers")}><span>🎨</span><div><b data-i18n-ignore="true">{language==="pl"?"Maluj po numerach":"Malen nach Zahlen"}</b><small>Farben nach Nummern entdecken</small></div></button>
+    <button className={craftMode==="memory"?"active":""} aria-pressed={craftMode==="memory"} onClick={()=>setCraftMode("memory")}><CraftTileIcon game="memory"/><div><b>Memory</b><small>Paare finden & entdecken</small></div></button>
     <button className={craftMode==="shadow"?"active":""} aria-pressed={craftMode==="shadow"} onClick={()=>setCraftMode("shadow")}><PenguinShadowIcon/><div><b>{language==="pl"?"Znajdź cień":"Finde den Schatten"}</b><small>{language==="pl"?"Dopasuj zwierzę":"Tierschatten entdecken"}</small></div></button>
    </div>
 
