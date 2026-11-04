@@ -186,7 +186,7 @@ export default function InteractivePuzzle({imageSrc,imageWidth,imageHeight,piece
      })}
     </div>
     {done&&<div className="malinoPuzzleWin" role="status" aria-live="polite">
-     <span aria-hidden="true">🌟 🦁 🌟</span>
+     <img className="successMascot" src="/ui/malino-mascot.webp" alt=""/>
      <b>{t.complete}</b>
      <button type="button" onClick={reset}>↻ {t.replay}</button>
     </div>}
@@ -209,7 +209,7 @@ export default function InteractivePuzzle({imageSrc,imageWidth,imageHeight,piece
       <span className="malinoPuzzlePieceNumber" aria-hidden="true">{id+1}</span>
      </button>)}
     </div>
-    <p className="malinoPuzzlePlayNote" role="status" aria-live="polite">{done?t.complete:selected!==null?`${t.selected}: ${selected+1}. ${t.chosen}`:t.hint}</p>
+    {!done&&<p className="malinoPuzzlePlayNote" role="status" aria-live="polite">{selected!==null?`${t.selected}: ${selected+1}. ${t.chosen}`:t.hint}</p>}
     {selected!==null&&<button type="button" className="malinoPuzzleReturn" onClick={()=>putBack(selectedRef.current)}>↩ {t.return}</button>}
     {!done&&<button className="malinoPuzzleReset" type="button" onClick={reset}>↻ {t.replay}</button>}
    </div>
