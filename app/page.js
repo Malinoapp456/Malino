@@ -1,4 +1,5 @@
 "use client";
+import CompletionGreeting from "../components/CompletionGreeting.jsx";
 import {forwardRef,useEffect,useImperativeHandle,useMemo,useRef,useState} from "react";
 import {advanceDailyUsage,hasVisiblePaint} from "../lib/progress.mjs";
 import {createPinRecord,verifyPinRecord,recordFailedPin,remainingPinLockMs} from "../lib/parent-pin.mjs";
@@ -86,9 +87,6 @@ function useStore(key,initial){
  useEffect(()=>{try{const s=localStorage.getItem(key);if(s)setV(JSON.parse(s))}catch{}},[key]);
  useEffect(()=>{try{localStorage.setItem(key,JSON.stringify(v))}catch{}},[key,v]);
  return [v,setV];
-}
-function SuccessMascot(){
- return <img className="successMascot" src="/ui/malino-mascot.webp" alt=""/>
 }
 function Logo(){return <div className="logo logoV3 logoPremium" aria-label="Malino"><img src="/ui/malino-logo-premium-approved.webp" alt="Malino"/></div>}
 function HomeMascot(){return <div className="homeMascot" aria-label="Malino, dein kreativer Freund"><img src="/ui/malino-mascot.webp" alt="Fröhlicher Malino mit Pinsel"/><span className="mascotSpark s1">✦</span><span className="mascotSpark s2">✦</span><span className="mascotSpark s3">•</span></div>}
@@ -3281,10 +3279,10 @@ export default function Page(){
            aria-pressed={differenceFound.includes(i)}
           >{t}{differenceFound.includes(i)&&<em>✓</em>}</button>
          )}</div>
+         {differenceChanges.length>0&&differenceFound.length===differenceChanges.length&&<CompletionGreeting language={language}>{language==="pl"?"Brawo! Wszystkie różnice znalezione!":"Super! Alle Unterschiede gefunden!"}</CompletionGreeting>}
         </div>
        </div>
       </div>
-      {differenceFound.length===differenceChanges.length&&<p className="differenceDone" role="status"><SuccessMascot/> {language==="pl"?"Brawo! Wszystkie różnice znalezione!":"Super! Alle Unterschiede gefunden!"}</p>}
       <div className="mazeActions">
        <button className="craftSaveBtn" onClick={saveDifference}>💾 Speichern</button>
        <button className="craftPrintBtn" onClick={shareDifferencePdf}>↗️ Teilen / Drucken</button>
@@ -3347,9 +3345,7 @@ export default function Page(){
        })}
        <div className="hiddenCounter">{hiddenFound.length}/{hiddenTargets.length}</div>
        {hiddenMiss&&<div className="hiddenMissPulse">✦</div>}
-       {hiddenComplete&&<div className="hiddenCompleteCard">
-        <SuccessMascot/><div><b>{language==="pl"?"Brawo!":"Geschafft!"}</b><small>{hiddenAlreadySolved?"Du hast dieses Suchbild erneut gelöst.":"+3 Sterne für dich!"}</small></div>
-       </div>}
+       {hiddenComplete&&<CompletionGreeting language={language}>{hiddenAlreadySolved?(language==="pl"?"Brawo!":"Geschafft!"):(language==="pl"?"Brawo! +3 ⭐":"Geschafft! +3 ⭐")}</CompletionGreeting>}
       </div>
       <div className="hiddenTargets"><b>Finde diese Gegenstände:</b><div>{hiddenTargets.map((t,i)=>{
        const found=hiddenFound.includes(i);
@@ -3408,7 +3404,7 @@ export default function Page(){
           customSeeds={activeNumberBoard.seeds}
           allowBorderSeeds={!!activeNumberBoard.allowBorderSeeds}
           resetKey={activeNumberBoard.id}/>
-         {numberPainted.length>=numberFloodTotal&&numberFloodTotal>1&&<div className="numberComplete"><SuccessMascot/><b>{language==="pl"?"Brawo!":"Geschafft!"}</b><small>+3 ⭐</small></div>}
+         {numberPainted.length>=numberFloodTotal&&numberFloodTotal>1&&<CompletionGreeting language={language}>{language==="pl"?"Brawo! +3 ⭐":"Geschafft! +3 ⭐"}</CompletionGreeting>}
         </div>
        :useImageNumberBoard
        ?<div className="imageNumberBoardWrap">
@@ -3424,7 +3420,7 @@ export default function Page(){
             </g>
            })}
           </svg>
-          {imageNumberDone&&<div className="numberComplete"><SuccessMascot/><b>{language==="pl"?"Brawo!":"Geschafft!"}</b><small>+3 ⭐</small></div>}
+          {imageNumberDone&&<CompletionGreeting language={language}>{language==="pl"?"Brawo! +3 ⭐":"Geschafft! +3 ⭐"}</CompletionGreeting>}
          </div>
         </div>
        :useRealNumberBoard
@@ -3475,12 +3471,12 @@ export default function Page(){
            </>}
           </g>
          </svg>
-         {realNumberDone&&<div className="numberComplete"><SuccessMascot/><b>{language==="pl"?"Brawo!":"Geschafft!"}</b><small>+3 ⭐</small></div>}
+         {realNumberDone&&<CompletionGreeting language={language}>{language==="pl"?"Brawo! +3 ⭐":"Geschafft! +3 ⭐"}</CompletionGreeting>}
         </div>
        :<div className="numberCanvas" style={{gridTemplateColumns:`repeat(${activeNumberDifficulty.cols},1fr)`}}>
          {numberCells.map(cell=>{const painted=numberPainted.includes(cell.id);return <button key={cell.id} onClick={()=>paintNumberCell(cell)} className={painted?"painted":""} style={painted?{background:numberPalette[cell.n-1]}:{}}><b>{painted?"✓":cell.n}</b></button>})}
          <div className="numberCenterIcon">{activeNumberTheme.icon}</div>
-         {numberDone&&<div className="numberComplete"><SuccessMascot/><b>{language==="pl"?"Brawo!":"Geschafft!"}</b><small>+3 ⭐</small></div>}
+         {numberDone&&<CompletionGreeting language={language}>{language==="pl"?"Brawo! +3 ⭐":"Geschafft! +3 ⭐"}</CompletionGreeting>}
         </div>}
       <div className="numberProgress"><span style={{width:`${Math.round(numberPainted.length/(useFloodNumberBoard?numberFloodTotal:(useImageNumberBoard?activeImageNumberMasks.length:(useRealNumberBoard?activeRealNumberRegions.length:numberCells.length)))*100)}%`}}/><b>{numberPainted.length}/{useFloodNumberBoard?numberFloodTotal:(useImageNumberBoard?activeImageNumberMasks.length:(useRealNumberBoard?activeRealNumberRegions.length:numberCells.length))}</b></div>
       <div className="mazeActions"><button className="craftSaveBtn" onClick={saveNumberArt}>💾 Speichern</button><button className="craftPrintBtn" onClick={shareNumberPdf}>↗️ Teilen / Drucken (A4)</button></div>
@@ -3591,6 +3587,7 @@ export default function Page(){
      </div>
 
      <article className={`puzzleFocusCard ${solved?"solved":""} ${wrong?"wrong":""}`}>
+      {feedback&&<CompletionGreeting key={p.id} language={language}/>}
       <div className="puzzleFocusTitle">
        <div className="puzzleIcon big">{p.icon}</div>
        <div><span className="eyebrow">{puzzleText(currentPuzzleWorld?.title||"Rätsel")}</span><h2>{puzzleText(p.title)}</h2></div>
@@ -3603,7 +3600,7 @@ export default function Page(){
       </div>
       <div className="puzzleFooter puzzleFooterLarge">
        {feedback
-        ?<div className="puzzleSuccess"><SuccessMascot/><p><b>{language==="pl"?"Brawo!":"Geschafft!"}</b><small>{puzzleText(puzzleFeedback.firstTime?"+3 Sterne für dich!":"Dieses Rätsel kennst du schon.")}</small></p></div>
+        ?<div className="puzzleSuccess"><p><b>{language==="pl"?"Brawo!":"Geschafft!"}</b><small>{puzzleText(puzzleFeedback.firstTime?"+3 Sterne für dich!":"Dieses Rätsel kennst du schon.")}</small></p></div>
         :wrong
          ?<div className="puzzleTry"><span>💡</span><p><b>Fast!</b><small>{puzzleText(p.hint)}</small></p></div>
          :<div className="puzzleHint"><span>{solved?"✓":"⭐"}</span><p><b>{puzzleText(solved?"Schon gelöst":"Belohnung")}</b><small>{puzzleText(solved?"Du kannst es jederzeit wiederholen.":"3 Sterne beim ersten richtigen Lösen")}</small></p></div>}
@@ -3711,8 +3708,11 @@ export default function Page(){
   {screen==="celebrate"&&<section className="reward celebrationScreen celebrationV3">
    <Logo/>
    <div className="rewardgrid">
-    <div className="celebrateMascot"><img src="/ui/malino-mascot.webp" alt="Malino"/></div>
-    <div><h1>{language==="pl"?"Brawo!":"Geschafft!"}</h1><p>{current.mode==="draw"?(language==="pl"?"Obrazek jest już w galerii.":"Dein Bild ist jetzt in der Galerie."):celebration.repeat?"Du hast dieses Bild noch einmal wunderschön gemalt! 💗":"Du hast ein neues Kunstwerk fertiggestellt! 💗"}</p><Thumb it={current} done/></div>
+    <div className="finishedArtwork">
+     {current.mode==="draw"?<ArtworkThumb it={current} profileId={activeProfileId}/>:<Dino fills={fills} paint={()=>{}}/>}
+     <CompletionGreeting language={language}/>
+    </div>
+    <div><h1>{language==="pl"?"Brawo!":"Geschafft!"}</h1><p>{current.mode==="draw"?(language==="pl"?"Obrazek jest już w galerii.":"Dein Bild ist jetzt in der Galerie."):celebration.repeat?"Du hast dieses Bild noch einmal wunderschön gemalt! 💗":"Du hast ein neues Kunstwerk fertiggestellt! 💗"}</p></div>
    </div>
 
    <div className="realRewards">

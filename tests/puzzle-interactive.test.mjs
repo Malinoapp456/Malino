@@ -115,7 +115,7 @@ test("touch movement, tap selection, occupied-slot swaps and tray return are wir
   'setPointerCapture(event.pointerId)','puzzleTargetFromPoint(','clickOccupiedSlot(event,piece,slot)',
   'movePiece(selectedRef.current,slot)','puzzleMovePiece(before,id,slot)',
   'puzzleReturnToTray(before,id)','puzzleIsComplete(next)','aria-pressed={selected===id}',
-  'aria-live="polite"','malinoPuzzleWin','onComplete?.()','setRound(r=>r+1)','malinoPuzzleDragGhost'
+  'aria-live="polite"','CompletionGreeting','onComplete?.()','setRound(r=>r+1)','malinoPuzzleDragGhost'
  ])assert.ok(comp.includes(needle),needle);
  assert.ok(comp.includes('const correct=layout.filter((piece,slot)=>piece===slot).length'));
  assert.ok(!comp.includes("localStorage"),"game leaves profile storage alone");

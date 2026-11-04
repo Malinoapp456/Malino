@@ -1,4 +1,5 @@
 "use client";
+import CompletionGreeting from "./CompletionGreeting.jsx";
 import {useEffect,useMemo,useRef,useState} from "react";
 import {puzzleGridForCount,puzzleIsComplete,puzzleMovePiece,puzzlePieceBackground,puzzleReturnToTray,puzzleShuffledOrder,puzzleTargetFromPoint} from "../lib/puzzle-play.mjs";
 
@@ -184,10 +185,7 @@ export default function InteractivePuzzle({imageSrc,imageWidth,imageHeight,piece
        {isCorrect&&<span className="malinoPuzzlePlacedCheck" aria-hidden="true">✓</span>}
       </button>;
      })}
-     {done&&<div className="malinoPuzzleWin" role="status">
-      <img className="successMascot" src="/ui/malino-mascot.webp" alt=""/>
-      <b>{t.complete}</b>
-     </div>}
+     {done&&<CompletionGreeting language={language}>{t.complete}</CompletionGreeting>}
     </div>
     {done&&<button className="malinoPuzzleReset malinoPuzzleReplay" type="button" onClick={reset}>↻ {t.replay}</button>}
    </div>

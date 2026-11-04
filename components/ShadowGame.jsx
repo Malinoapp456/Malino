@@ -1,4 +1,5 @@
 "use client";
+import CompletionGreeting from "./CompletionGreeting.jsx";
 import {useId,useState} from "react";
 import {getImageProps} from "next/image";
 import {animals,makeRounds} from "../lib/shadow-game.mjs";
@@ -38,12 +39,12 @@ export default function ShadowGame({language}){
   setIndex(i=>i+1);setMisses([]);setMatched(false);
  }
  const round=rounds[index];
- return <section className={styles.game} data-i18n-ignore="true" aria-label={t.title}>
+ return <section className={styles.game} style={{position:"relative"}} data-i18n-ignore="true" aria-label={t.title}>
   <h2>🔍 {t.title}</h2>
   {demo?<><b>{t.demo}</b><p>{t.intro}</p>
    <div className={styles.demo}><Animal id="pinguin" color/><span aria-hidden="true">➜</span><div className={styles.demoTarget}><Animal id="pinguin"/><div className={styles.demoOverlay}><Animal id="pinguin" color/></div></div></div>
    <button className={styles.primary} onClick={start}>▶ {t.play}</button>
-  </>:!round?<><h3>{t.done}</h3><p>{t.matches} · {rounds.length} / {rounds.length}</p><button className={styles.primary} onClick={start}>↻ {t.again}</button></>:<>
+  </>:!round?<><CompletionGreeting language={language}/><h3>{t.done}</h3><p>{t.matches} · {rounds.length} / {rounds.length}</p><button className={styles.primary} onClick={start}>↻ {t.again}</button></>:<>
    <b>{t.round} {index+1} / {rounds.length}</b>
    <div className={styles.reference}><Animal id={round.target} color/><strong>{name(round.target)}</strong></div>
    <h3>{t.question}</h3>

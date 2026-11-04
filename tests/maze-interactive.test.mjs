@@ -75,7 +75,7 @@ test("three existing difficulties and nine maze themes remain",()=>{
 });
 
 test("component includes tap, touch drag, keyboard, accessible D-pad, celebration and replay",()=>{
- for(const key of ["onPointerDown={pointerDown}","onPointerMove={pointerMove}","setPointerCapture","mazeTraceDrag(","onKeyDown={onKeys}","ArrowUp","ArrowRight","ArrowDown","ArrowLeft","malinoMazeDirectionPad","aria-label={t.up}","aria-label={t.down}","aria-label={t.right}","aria-label={t.left}","malinoMazeVictory","setReplays(n=>n+1)","onComplete?.()"])
+ for(const key of ["onPointerDown={pointerDown}","onPointerMove={pointerMove}","setPointerCapture","mazeTraceDrag(","onKeyDown={onKeys}","ArrowUp","ArrowRight","ArrowDown","ArrowLeft","malinoMazeDirectionPad","aria-label={t.up}","aria-label={t.down}","aria-label={t.right}","aria-label={t.left}","CompletionGreeting","setReplays(n=>n+1)","onComplete?.()"])
   assert.ok(component.includes(key),key);
  assert.ok(component.includes('goalEmoji'));
  assert.ok(component.includes('🦁'));

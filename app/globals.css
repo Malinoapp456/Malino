@@ -10977,3 +10977,14 @@ header:has(.languageSwitcher){z-index:31}
  35%{transform:rotate(-7deg)}
  70%{transform:rotate(4deg)}
 }
+
+.malinoMemoryGrid,.puzzleFocusCard,.finishedArtwork{position:relative}
+.finishedArtwork svg{display:block;width:100%;max-height:300px;pointer-events:none}
+.finishedArtwork .thumb img{object-fit:contain}
+.completionGreeting{
+ position:absolute;z-index:12;top:50%;left:50%;transform:translate(-50%,-50%);
+ display:grid;justify-items:center;gap:4px;width:max-content;max-width:86%;
+ padding:10px 16px;border:2px solid white;border-radius:18px;pointer-events:none;
+ text-align:center;color:#553772;background:linear-gradient(135deg,#fff3cb,#ffe5f6,#e6eeff);
+ box-shadow:0 5px 18px #49366435;font-size:clamp(14px,3.8vw,18px);line-height:1.25
+}
