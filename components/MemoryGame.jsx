@@ -1,5 +1,6 @@
 "use client";
 
+import CompletionGreeting from "./CompletionGreeting.jsx";
 import {useEffect,useMemo,useRef,useState} from "react";
 import {MEMORY_LEVELS,MEMORY_THEMES,memoryDeck,memoryHideMismatch,memoryInitialTurn,memoryReveal} from "../lib/memory-game.mjs";
 
@@ -138,10 +139,10 @@ export default function MemoryGame({language="de",onSound}){
       </span>
      </button>;
     })}
+    {turn.complete&&<CompletionGreeting language={language}>{t.success}</CompletionGreeting>}
    </div>
    <p className="malinoMemoryMessage" role="status" aria-live="polite">{feedback||t.intro}</p>
    {turn.complete&&<div className="malinoMemoryVictory" role="status">
-    <span aria-hidden="true">🌟 🦁 🌟</span>
     <strong>{t.success}</strong>
     <p>{t.winDetail}</p>
     <button type="button" onClick={restart}>🔄 {t.again}</button>

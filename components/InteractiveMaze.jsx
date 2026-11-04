@@ -1,4 +1,5 @@
 "use client";
+import CompletionGreeting from "./CompletionGreeting.jsx";
 import {useEffect,useRef,useState} from "react";
 import {mazeCanStep,mazeTraceDrag,mazeTryMove} from "../lib/maze-play.mjs";
 
@@ -162,11 +163,7 @@ export default function InteractiveMaze({maze,goalEmoji="🏠",language="de",res
     <circle cx={x(position)} cy={y(position)} r="21" fill="#fff" stroke="#e7b6e5" strokeWidth="3"/>
     <text x={x(position)} y={y(position)+10} fontSize="30" textAnchor="middle" aria-hidden="true">🦁</text>
    </svg>
-   {done&&<div className="malinoMazeVictory" role="status">
-    <div className="malinoMazeStars" aria-hidden="true">🌟 ⭐ 🌟</div>
-    <strong>{t.success}</strong>
-    <button type="button" onClick={()=>setReplays(n=>n+1)}>🔄 {t.replay}</button>
-   </div>}
+   {done&&<CompletionGreeting language={language}>{t.success}</CompletionGreeting>}
   </div>
   <div className="malinoMazeDirectionPad" aria-label={t.keyboard}>
    <button type="button" className="mazePadUp" onClick={()=>move("up")} disabled={done} aria-label={t.up}>▲</button>
@@ -174,7 +171,7 @@ export default function InteractiveMaze({maze,goalEmoji="🏠",language="de",res
    <button type="button" className="mazePadDown" onClick={()=>move("down")} disabled={done} aria-label={t.down}>▼</button>
    <button type="button" className="mazePadRight" onClick={()=>move("right")} disabled={done} aria-label={t.right}>▶</button>
   </div>
-  <p className="malinoMazeHelp" role="status" aria-live="polite">{notice||t.keyboard}</p>
-  {!done&&<button type="button" className="malinoMazeRestart" onClick={()=>setReplays(n=>n+1)}>↻ {t.replay}</button>}
+  <p className="malinoMazeHelp" role="status" aria-live="polite">{done?t.success:notice||t.keyboard}</p>
+  <button type="button" className="malinoMazeRestart" onClick={()=>setReplays(n=>n+1)}>↻ {t.replay}</button>
  </div>;
 }

@@ -1,4 +1,5 @@
 "use client";
+import CompletionGreeting from "./CompletionGreeting.jsx";
 import {useEffect,useMemo,useRef,useState} from "react";
 import {puzzleGridForCount,puzzleIsComplete,puzzleMovePiece,puzzlePieceBackground,puzzleReturnToTray,puzzleShuffledOrder,puzzleTargetFromPoint} from "../lib/puzzle-play.mjs";
 
@@ -184,12 +185,9 @@ export default function InteractivePuzzle({imageSrc,imageWidth,imageHeight,piece
        {isCorrect&&<span className="malinoPuzzlePlacedCheck" aria-hidden="true">✓</span>}
       </button>;
      })}
+     {done&&<CompletionGreeting language={language}>{t.complete}</CompletionGreeting>}
     </div>
-    {done&&<div className="malinoPuzzleWin" role="status" aria-live="polite">
-     <span aria-hidden="true">🌟 🦁 🌟</span>
-     <b>{t.complete}</b>
-     <button type="button" onClick={reset}>↻ {t.replay}</button>
-    </div>}
+    {done&&<button className="malinoPuzzleReset malinoPuzzleReplay" type="button" onClick={reset}>↻ {t.replay}</button>}
    </div>
 
    <div className="malinoPuzzlePlayTraySide" ref={trayRef}>
@@ -209,7 +207,7 @@ export default function InteractivePuzzle({imageSrc,imageWidth,imageHeight,piece
       <span className="malinoPuzzlePieceNumber" aria-hidden="true">{id+1}</span>
      </button>)}
     </div>
-    <p className="malinoPuzzlePlayNote" role="status" aria-live="polite">{done?t.complete:selected!==null?`${t.selected}: ${selected+1}. ${t.chosen}`:t.hint}</p>
+    {!done&&<p className="malinoPuzzlePlayNote" role="status" aria-live="polite">{selected!==null?`${t.selected}: ${selected+1}. ${t.chosen}`:t.hint}</p>}
     {selected!==null&&<button type="button" className="malinoPuzzleReturn" onClick={()=>putBack(selectedRef.current)}>↩ {t.return}</button>}
     {!done&&<button className="malinoPuzzleReset" type="button" onClick={reset}>↻ {t.replay}</button>}
    </div>
