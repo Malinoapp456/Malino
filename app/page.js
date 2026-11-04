@@ -87,6 +87,9 @@ function useStore(key,initial){
  useEffect(()=>{try{localStorage.setItem(key,JSON.stringify(v))}catch{}},[key,v]);
  return [v,setV];
 }
+function SuccessMascot(){
+ return <img className="successMascot" src="/ui/malino-mascot.webp" alt=""/>
+}
 function Logo(){return <div className="logo logoV3 logoPremium" aria-label="Malino"><img src="/ui/malino-logo-premium-approved.webp" alt="Malino"/></div>}
 function HomeMascot(){return <div className="homeMascot" aria-label="Malino, dein kreativer Freund"><img src="/ui/malino-mascot.webp" alt="Fröhlicher Malino mit Pinsel"/><span className="mascotSpark s1">✦</span><span className="mascotSpark s2">✦</span><span className="mascotSpark s3">•</span></div>}
 function Lion(){return <div className="lion">🦁</div>}
@@ -3281,7 +3284,7 @@ export default function Page(){
         </div>
        </div>
       </div>
-      {differenceFound.length===differenceChanges.length&&<p className="differenceDone" role="status">🎉 {language==="pl"?"Brawo! Wszystkie różnice znalezione!":"Super! Alle Unterschiede gefunden!"}</p>}
+      {differenceFound.length===differenceChanges.length&&<p className="differenceDone" role="status"><SuccessMascot/> {language==="pl"?"Brawo! Wszystkie różnice znalezione!":"Super! Alle Unterschiede gefunden!"}</p>}
       <div className="mazeActions">
        <button className="craftSaveBtn" onClick={saveDifference}>💾 Speichern</button>
        <button className="craftPrintBtn" onClick={shareDifferencePdf}>↗️ Teilen / Drucken</button>
@@ -3345,7 +3348,7 @@ export default function Page(){
        <div className="hiddenCounter">{hiddenFound.length}/{hiddenTargets.length}</div>
        {hiddenMiss&&<div className="hiddenMissPulse">✦</div>}
        {hiddenComplete&&<div className="hiddenCompleteCard">
-        <span>🎉</span><div><b>Geschafft!</b><small>{hiddenAlreadySolved?"Du hast dieses Suchbild erneut gelöst.":"+3 Sterne für dich!"}</small></div>
+        <SuccessMascot/><div><b>{language==="pl"?"Brawo!":"Geschafft!"}</b><small>{hiddenAlreadySolved?"Du hast dieses Suchbild erneut gelöst.":"+3 Sterne für dich!"}</small></div>
        </div>}
       </div>
       <div className="hiddenTargets"><b>Finde diese Gegenstände:</b><div>{hiddenTargets.map((t,i)=>{
@@ -3405,7 +3408,7 @@ export default function Page(){
           customSeeds={activeNumberBoard.seeds}
           allowBorderSeeds={!!activeNumberBoard.allowBorderSeeds}
           resetKey={activeNumberBoard.id}/>
-         {numberPainted.length>=numberFloodTotal&&numberFloodTotal>1&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
+         {numberPainted.length>=numberFloodTotal&&numberFloodTotal>1&&<div className="numberComplete"><SuccessMascot/><b>{language==="pl"?"Brawo!":"Geschafft!"}</b><small>+3 ⭐</small></div>}
         </div>
        :useImageNumberBoard
        ?<div className="imageNumberBoardWrap">
@@ -3421,7 +3424,7 @@ export default function Page(){
             </g>
            })}
           </svg>
-          {imageNumberDone&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
+          {imageNumberDone&&<div className="numberComplete"><SuccessMascot/><b>{language==="pl"?"Brawo!":"Geschafft!"}</b><small>+3 ⭐</small></div>}
          </div>
         </div>
        :useRealNumberBoard
@@ -3472,12 +3475,12 @@ export default function Page(){
            </>}
           </g>
          </svg>
-         {realNumberDone&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
+         {realNumberDone&&<div className="numberComplete"><SuccessMascot/><b>{language==="pl"?"Brawo!":"Geschafft!"}</b><small>+3 ⭐</small></div>}
         </div>
        :<div className="numberCanvas" style={{gridTemplateColumns:`repeat(${activeNumberDifficulty.cols},1fr)`}}>
          {numberCells.map(cell=>{const painted=numberPainted.includes(cell.id);return <button key={cell.id} onClick={()=>paintNumberCell(cell)} className={painted?"painted":""} style={painted?{background:numberPalette[cell.n-1]}:{}}><b>{painted?"✓":cell.n}</b></button>})}
          <div className="numberCenterIcon">{activeNumberTheme.icon}</div>
-         {numberDone&&<div className="numberComplete"><span>🎉</span><b>Geschafft!</b><small>+3 ⭐</small></div>}
+         {numberDone&&<div className="numberComplete"><SuccessMascot/><b>{language==="pl"?"Brawo!":"Geschafft!"}</b><small>+3 ⭐</small></div>}
         </div>}
       <div className="numberProgress"><span style={{width:`${Math.round(numberPainted.length/(useFloodNumberBoard?numberFloodTotal:(useImageNumberBoard?activeImageNumberMasks.length:(useRealNumberBoard?activeRealNumberRegions.length:numberCells.length)))*100)}%`}}/><b>{numberPainted.length}/{useFloodNumberBoard?numberFloodTotal:(useImageNumberBoard?activeImageNumberMasks.length:(useRealNumberBoard?activeRealNumberRegions.length:numberCells.length))}</b></div>
       <div className="mazeActions"><button className="craftSaveBtn" onClick={saveNumberArt}>💾 Speichern</button><button className="craftPrintBtn" onClick={shareNumberPdf}>↗️ Teilen / Drucken (A4)</button></div>
@@ -3600,7 +3603,7 @@ export default function Page(){
       </div>
       <div className="puzzleFooter puzzleFooterLarge">
        {feedback
-        ?<div className="puzzleSuccess"><span>🎉</span><p><b>Richtig!</b><small>{puzzleText(puzzleFeedback.firstTime?"+3 Sterne für dich!":"Dieses Rätsel kennst du schon.")}</small></p></div>
+        ?<div className="puzzleSuccess"><SuccessMascot/><p><b>{language==="pl"?"Brawo!":"Geschafft!"}</b><small>{puzzleText(puzzleFeedback.firstTime?"+3 Sterne für dich!":"Dieses Rätsel kennst du schon.")}</small></p></div>
         :wrong
          ?<div className="puzzleTry"><span>💡</span><p><b>Fast!</b><small>{puzzleText(p.hint)}</small></p></div>
          :<div className="puzzleHint"><span>{solved?"✓":"⭐"}</span><p><b>{puzzleText(solved?"Schon gelöst":"Belohnung")}</b><small>{puzzleText(solved?"Du kannst es jederzeit wiederholen.":"3 Sterne beim ersten richtigen Lösen")}</small></p></div>}
@@ -3709,7 +3712,7 @@ export default function Page(){
    <Logo/>
    <div className="rewardgrid">
     <div className="celebrateMascot"><img src="/ui/malino-mascot.webp" alt="Malino"/></div>
-    <div><h1>Super gemacht!</h1><p>{celebration.repeat?"Du hast dieses Bild noch einmal wunderschön gemalt! 💗":"Du hast ein neues Kunstwerk fertiggestellt! 💗"}</p><Thumb it={current} done/></div>
+    <div><h1>{language==="pl"?"Brawo!":"Geschafft!"}</h1><p>{current.mode==="draw"?(language==="pl"?"Obrazek jest już w galerii.":"Dein Bild ist jetzt in der Galerie."):celebration.repeat?"Du hast dieses Bild noch einmal wunderschön gemalt! 💗":"Du hast ein neues Kunstwerk fertiggestellt! 💗"}</p><Thumb it={current} done/></div>
    </div>
 
    <div className="realRewards">
