@@ -96,12 +96,9 @@ function ToolIcon({type}){
  if(type==="new")return <svg className="toolSvg" viewBox="0 0 64 64" aria-hidden="true"><rect x="15" y="10" width="34" height="44" rx="6" fill="#fff" stroke="currentColor" strokeWidth="5"/><path d="M23 23h18M23 32h12" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/><path d="m47 8 2.4 5.3L55 16l-5.6 2.7L47 24l-2.4-5.3L39 16l5.6-2.7L47 8Z" fill="#ffd43b" stroke="#f4a000" strokeWidth="2"/></svg>;
  return <span className="toolEmoji" aria-hidden="true">{type==="brush"?"🖌️":type==="fill"?"🪣":"🧽"}</span>
 }
-function SaveIcon(){
- return <svg className="saveSvg" viewBox="0 0 64 64" aria-hidden="true">
-  <rect x="8" y="12" width="44" height="38" rx="8" fill="#eef7ff" stroke="currentColor" strokeWidth="4"/>
-  <circle cx="21" cy="25" r="5" fill="#ffd43b"/>
-  <path d="M13 44l11-11 8 7 7-8 9 12" fill="none" stroke="#59bf4a" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"/>
-  <path d="m51 6 2.2 5 5 2.2-5 2.2-2.2 5-2.2-5-5-2.2 5-2.2L51 6Z" fill="#ffbf19" stroke="#f39b00" strokeWidth="1.5"/>
+function ExportIcon(){
+ return <svg className="saveSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <path d="M12 15V3m-4 4 4-4 4 4M7 10H5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-2"/>
  </svg>
 }
 function Thumb({it,done}){return <div className="thumb" style={{background:it.bg}}>{it.image?<img src={it.image} alt={it.name}/>:<span>{it.emoji}</span>}{done&&<i>✓</i>}</div>}
@@ -3696,7 +3693,16 @@ export default function Page(){
    </aside><div className="canvas">{current.mode==="draw"?<RasterPainter key={JSON.stringify([activeProfileId,current.id,restoreArtwork])} ref={rasterRef} src={current.image} color={selected} tool={tool} onFeedback={showFillFeedback} profileId={activeProfileId} itemId={current.id} restoreArtwork={restoreArtwork} sticker={sticker} stickerSize={stickerSize} language={language}/>:<Dino fills={fills} paint={paint}/>}</div></div>
    <div className={`toolHelp ${fillFeedback?"feedback "+fillFeedback:""}`}>{fillFeedback==="small"?"👆 Diese Fläche ist sehr klein – probiere eine größere.":fillFeedback==="leak"?"🛡️ Malino hat ein Auslaufen gestoppt – tippe in eine geschlossene Fläche.":fillFeedback==="empty"?"🎨 Male zuerst etwas, bevor du das Bild fertigstellst.":fillFeedback==="save-failed"?"⚠️ Das Bild konnte nicht gespeichert werden. Bitte versuche es erneut.":tool==="sticker"?(language==="pl"?"✨ Dotknij obrazka, aby dodać naklejkę. Klawiatura: Tab do obrazka, strzałki i Enter.":"✨ Tippe auf dein Bild. Tastatur: Tab zum Bild, Pfeiltasten und Enter."):tool==="fill"?"🪣 Tippe in eine Fläche – Malino füllt sie für dich aus.":tool==="brush"?"🖌️ Male frei mit dem Finger.":"🧽 Wische über Farbe, um sie zu entfernen."}</div>
    <div className={`palette ${hasChest50?"hasBonusColors":""}`}>{paintColors.map(c=>{const bonus=chest50Colors.some(x=>x.value===c);return <button key={c} title={bonus?(chest50Colors.find(x=>x.value===c)?.name||"Bonusfarbe"):""} style={{background:c}} className={`${selected===c&&tool!=="eraser"?"sel":""} ${bonus?"bonusColor":""}`} onClick={()=>{playSound("color");setSelected(c);if(tool==="eraser"||tool==="sticker")setTool("fill")}}>{bonus&&<span className="bonusSpark">✦</span>}</button>})}</div>
-   <div className="actions"><button onClick={()=>setScreen("library")}>Vorlagen</button><button className="finish" onClick={finish}>✓ Fertig!</button><button className="saveImageBtn" onClick={()=>rasterRef.current?.save()}><SaveIcon/><span>Bild speichern</span></button></div>
+   <div className="actions paintActions" data-i18n-ignore="true">
+    <button type="button" className="finish" onClick={finish}>
+     <strong>✓ {language==="pl"?"Gotowe!":"Fertig!"}</strong>
+     <small>{language==="pl"?"Do galerii":"In die Galerie"}</small>
+    </button>
+    <button type="button" className="paintTemplates" onClick={()=>setScreen("library")}>← {language==="pl"?"Szablony":"Vorlagen"}</button>
+    <button type="button" className="saveImageBtn" onClick={()=>rasterRef.current?.save()}>
+     <ExportIcon/><span>{language==="pl"?"Eksportuj obrazek":"Bild exportieren"}</span>
+    </button>
+   </div>
   </section>}
 
   {screen==="celebrate"&&<section className="reward celebrationScreen celebrationV3">
